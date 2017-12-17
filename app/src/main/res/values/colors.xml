@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#26A69A</color>
+    <color name="colorPrimaryDark">#00897B</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="routColor_red">#D32F2F</color>
+    <color name="routColor_blue">#1976D2</color>
+    <color name="routColor_green">#388E3C</color>
+    <color name="routColor_yellow">#FBC02D</color>
+</resources>
