@@ -1,7 +1,7 @@
-package com.example.m712658.bartable.Repository;
+package com.example.eddystudio.bartable.Repository;
 
 
-import com.example.m712658.bartable.Repository.Response.Bart;
+import com.example.eddystudio.bartable.Repository.Response.Bart;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

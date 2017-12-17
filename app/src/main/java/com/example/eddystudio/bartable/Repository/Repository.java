@@ -1,9 +1,9 @@
-package com.example.m712658.bartable.Repository;
+package com.example.eddystudio.bartable.Repository;
 
 
 import android.util.Log;
 
-import com.example.m712658.bartable.Repository.Response.Bart;
+import com.example.eddystudio.bartable.Repository.Response.Bart;
 
 import java.util.concurrent.TimeUnit;
 

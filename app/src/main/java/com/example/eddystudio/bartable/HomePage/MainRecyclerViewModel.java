@@ -1,9 +1,8 @@
-package com.example.m712658.bartable.HomePage;
+package com.example.eddystudio.bartable.HomePage;
 
 
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
-import android.util.Log;
 
 public class MainRecyclerViewModel {
     public final ObservableField<String> destination = new ObservableField<>("");

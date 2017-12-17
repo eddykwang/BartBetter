@@ -1,4 +1,4 @@
-package com.example.m712658.bartable.HomePage;
+package com.example.eddystudio.bartable.HomePage;
 
 
 import android.databinding.DataBindingUtil;
@@ -11,9 +11,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
-import com.example.m712658.bartable.R;
-import com.example.m712658.bartable.application.Application;
-import com.example.m712658.bartable.databinding.SingleRecyclerViewItemBinding;
+import com.example.eddystudio.bartable.R;
+import com.example.eddystudio.bartable.application.Application;
+import com.example.eddystudio.bartable.databinding.SingleRecyclerViewItemBinding;
 
 import java.util.ArrayList;
 

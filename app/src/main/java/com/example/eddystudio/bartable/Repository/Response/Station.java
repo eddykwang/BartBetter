@@ -1,5 +1,5 @@
 
-package com.example.m712658.bartable.Repository.Response;
+package com.example.eddystudio.bartable.Repository.Response;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

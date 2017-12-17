@@ -1,4 +1,4 @@
-package com.example.m712658.bartable;
+package com.example.eddystudio.bartable;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import com.example.m712658.bartable.HomePage.MainRecyclerViewFragment;
+import com.example.eddystudio.bartable.HomePage.MainRecyclerViewFragment;
 
 public class MainActivity extends AppCompatActivity {
 

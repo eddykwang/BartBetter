@@ -1,4 +1,4 @@
-package com.example.m712658.bartable;
+package com.example.eddystudio.bartable;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

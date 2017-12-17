@@ -1,4 +1,4 @@
-package com.example.m712658.bartable.HomePage;
+package com.example.eddystudio.bartable.HomePage;
 
 
 import android.graphics.Color;
@@ -13,12 +13,11 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 
-import com.example.m712658.bartable.R;
-import com.example.m712658.bartable.Repository.Repository;
-import com.example.m712658.bartable.Repository.Response.Bart;
-import com.example.m712658.bartable.Repository.Response.Etd;
-import com.example.m712658.bartable.Repository.StationModel;
-import com.example.m712658.bartable.databinding.FragmentMainRecyclerViewBinding;
+import com.example.eddystudio.bartable.R;
+import com.example.eddystudio.bartable.Repository.Repository;
+import com.example.eddystudio.bartable.Repository.Response.Bart;
+import com.example.eddystudio.bartable.Repository.Response.Etd;
+import com.example.eddystudio.bartable.databinding.FragmentMainRecyclerViewBinding;
 
 import java.util.ArrayList;
 import java.util.List;

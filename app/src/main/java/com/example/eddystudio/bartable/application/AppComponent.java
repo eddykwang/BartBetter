@@ -1,4 +1,4 @@
-package com.example.m712658.bartable.application;
+package com.example.eddystudio.bartable.application;
 
 import android.content.Context;
 

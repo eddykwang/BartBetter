@@ -1,4 +1,4 @@
-package com.example.m712658.bartable.Repository;
+package com.example.eddystudio.bartable.Repository;
 
 
 public class StationModel {
