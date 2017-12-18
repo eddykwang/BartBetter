@@ -2,6 +2,7 @@ package com.example.eddystudio.bartable.HomePage;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Repository.Repository;
@@ -40,6 +43,7 @@ public class MainRecyclerViewFragment extends Fragment {
     private FragmentMainRecyclerViewBinding binding;
     private Repository repository;
     private static String selectedStation="DALY";
+    private static int sinpperPos = 0;
     private final ArrayList<String> stationList = new ArrayList<>();
     private final ArrayList<String> stationListSortcut = new ArrayList<>();
     private ArrayAdapter<String> spinnerAdapter;
@@ -49,6 +53,21 @@ public class MainRecyclerViewFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("selectedStation",selectedStation);
+        outState.putInt("spinnerPos", sinpperPos);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            sinpperPos = savedInstanceState.getInt("spinnerPos");
+            selectedStation = savedInstanceState.getString("selectedStation");
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,9 +76,25 @@ public class MainRecyclerViewFragment extends Fragment {
         repository = new Repository();
         //binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_main_recycler_view);
         binding = FragmentMainRecyclerViewBinding.inflate(inflater, container, false);
+
         ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
         binding.setVm(mainViewModel);
         spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, stationList);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.stationSpinner.setAdapter(spinnerAdapter);
+        binding.stationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                selectedStation = stationListSortcut.get(i);
+                sinpperPos = i;
+                init(selectedStation);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         binding.swipeRefreshLy.setOnRefreshListener(() -> init(selectedStation));
         return binding.getRoot();
     }
@@ -69,20 +104,12 @@ public class MainRecyclerViewFragment extends Fragment {
         super.onStart();
         init(selectedStation);
         getAllStations();
-
-            mainViewModel.clicked
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnNext(ignored -> selectedStation = stationListSortcut.get( mainViewModel.clickedPos.get()))
-                    .subscribe();
-
     }
 
     private void init(String stationShort) {
 
         repository.getEstimate(stationShort)
                 .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(bart -> getEtd(bart))
                 .concatMap(Observable::fromArray)
@@ -108,6 +135,7 @@ public class MainRecyclerViewFragment extends Fragment {
                 .map(station -> getAllStations(station))
                 .concatMap(Observable::fromArray)
                 .doOnNext(stations -> setupSinnper(stations))
+                .doOnNext(ignored -> binding.stationSpinner.setSelection(sinpperPos))
                 .doOnError(this::handleError)
                 .subscribe();
     }
@@ -118,11 +146,7 @@ public class MainRecyclerViewFragment extends Fragment {
             stationList.add(stations.get(i).getName());
             stationListSortcut.add(stations.get(i).getAbbr());
         }
-
         spinnerAdapter.notifyDataSetChanged();
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.stationSpinner.setAdapter(spinnerAdapter);
-
     }
 
     private List<com.example.eddystudio.bartable.Repository.Response.Stations.Station> getAllStations(BartStations station) {

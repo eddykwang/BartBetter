@@ -13,5 +13,5 @@ import io.reactivex.subjects.Subject;
 public class MainViewModel {
     public final ObservableInt clickedPos = new ObservableInt(0);
 
-    public final Subject clicked = PublishSubject.create();
+    public final Subject<Integer> clicked = PublishSubject.create();
 }
