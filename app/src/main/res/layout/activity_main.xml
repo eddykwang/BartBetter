@@ -7,24 +7,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.eddystudio.bartable.MainActivity">
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/app_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_scrollFlags="scroll|enterAlways"/>
-
-    </android.support.design.widget.AppBarLayout>
     <FrameLayout
         android:id="@+id/main_frame_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="58sp"
-        android:layout_marginTop="58sp"
         >
     </FrameLayout>
 

@@ -1,28 +1,32 @@
 package com.example.eddystudio.bartable.HomePage;
 
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.ArrayAdapter;
 
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Repository.Repository;
-import com.example.eddystudio.bartable.Repository.Response.Bart;
-import com.example.eddystudio.bartable.Repository.Response.Etd;
+import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Bart;
+import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Etd;
+import com.example.eddystudio.bartable.Repository.Response.Stations.BartStations;
 import com.example.eddystudio.bartable.databinding.FragmentMainRecyclerViewBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -32,9 +36,14 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class MainRecyclerViewFragment extends Fragment {
 
-    private final MainRecyclerViewModel viewModel = new MainRecyclerViewModel();
+    //private final RecyclerViewItemModel viewModel = new RecyclerViewItemModel();
     private FragmentMainRecyclerViewBinding binding;
     private Repository repository;
+    private static String selectedStation="DALY";
+    private final ArrayList<String> stationList = new ArrayList<>();
+    private final ArrayList<String> stationListSortcut = new ArrayList<>();
+    private ArrayAdapter<String> spinnerAdapter;
+    private final MainViewModel mainViewModel= new MainViewModel();
 
     public MainRecyclerViewFragment() {
         // Required empty public constructor
@@ -48,25 +57,36 @@ public class MainRecyclerViewFragment extends Fragment {
         repository = new Repository();
         //binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_main_recycler_view);
         binding = FragmentMainRecyclerViewBinding.inflate(inflater, container, false);
-
-        binding.swipeRefreshLy.setOnRefreshListener(this::init);
+        ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
+        binding.setVm(mainViewModel);
+        spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, stationList);
+        binding.swipeRefreshLy.setOnRefreshListener(() -> init(selectedStation));
         return binding.getRoot();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        init();
+        init(selectedStation);
+        getAllStations();
+
+            mainViewModel.clicked
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext(ignored -> selectedStation = stationListSortcut.get( mainViewModel.clickedPos.get()))
+                    .subscribe();
+
     }
 
-    private void init() {
+    private void init(String stationShort) {
 
-        repository.getResponse()
+        repository.getEstimate(stationShort)
                 .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(bart -> getEtd(bart))
-                .concatMap(Observable::fromArray).map(etds -> convertToVM(etds))
+                .concatMap(Observable::fromArray)
+                .map(etds -> convertToVM(etds))
                 .doOnNext(data -> {
                     int resId = R.anim.layout_animation_fall_down;
                     LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), resId);
@@ -79,7 +99,34 @@ public class MainRecyclerViewFragment extends Fragment {
                 .doOnError(this::handleError)
                 .doOnComplete(() -> binding.swipeRefreshLy.setRefreshing(false))
                 .subscribe();
+    }
 
+    private void getAllStations(){
+        repository.getStations()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(station -> getAllStations(station))
+                .concatMap(Observable::fromArray)
+                .doOnNext(stations -> setupSinnper(stations))
+                .doOnError(this::handleError)
+                .subscribe();
+    }
+
+    private void setupSinnper(List<com.example.eddystudio.bartable.Repository.Response.Stations.Station> stations) {
+
+        for (int i = 0; i < stations.size(); ++i){
+            stationList.add(stations.get(i).getName());
+            stationListSortcut.add(stations.get(i).getAbbr());
+        }
+
+        spinnerAdapter.notifyDataSetChanged();
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.stationSpinner.setAdapter(spinnerAdapter);
+
+    }
+
+    private List<com.example.eddystudio.bartable.Repository.Response.Stations.Station> getAllStations(BartStations station) {
+        return station.getRoot().getStations().getStation();
     }
 
     private void handleError(Throwable throwable) {
@@ -87,44 +134,12 @@ public class MainRecyclerViewFragment extends Fragment {
         Snackbar.make(binding.recylerView, "error on loading", Snackbar.LENGTH_LONG).show();
     }
 
-    private ArrayList<MainRecyclerViewModel> convertToVM(List<Etd> stations) {
-        String m = " minus";
-        ArrayList<MainRecyclerViewModel> vmList = new ArrayList<>();
-        for (int i = 0; i < stations.size(); ++i) {
-            String first = "";
-            String second = "";
-            String third = "";
-            if (stations.get(i).getEstimate().size() == 1) {
-                first = stations.get(i).getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving" : stations.get(i).getEstimate().get(0).getMinutes() + m;
-            } else if (stations.get(i).getEstimate().size() == 2) {
-                first = stations.get(i).getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving" : stations.get(i).getEstimate().get(0).getMinutes() + m;
-                second = stations.get(i).getEstimate().get(1).getMinutes() +m;
-            } else {
-                first = stations.get(i).getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving" : stations.get(i).getEstimate().get(0).getMinutes() +m;
-                second = stations.get(i).getEstimate().get(1).getMinutes() + m;
-                third = stations.get(i).getEstimate().get(2).getMinutes() + m;
-            }
-
-            vmList.add(new MainRecyclerViewModel(
-                    stations.get(i).getDestination(),
-                    first,
-                    second,
-                    third,
-                    matchMaterialColor(stations.get(i).getEstimate().get(0).getColor())));
+    private ArrayList<RecyclerViewItemModel> convertToVM(List<Etd> stations) {
+        ArrayList<RecyclerViewItemModel> vmList = new ArrayList<>();
+        for (int i = 0; i < stations.size(); ++i){
+            vmList.add(new RecyclerViewItemModel(stations.get(i)));
         }
         return vmList;
-    }
-
-    private int matchMaterialColor(String color){
-        int mColor = 1;
-        switch (color){
-            case "GREEN": mColor = Color.parseColor("#388E3C"); break;
-            case "BLUE": mColor = Color.parseColor("#1976D2") ;break;
-            case "RED": mColor = Color.parseColor("#D32F2F") ; break;
-            case "YELLOW": mColor = Color.parseColor("#FBC02D") ; break;
-            default: mColor = R.color.routColor_yellow ;
-        }
-        return mColor;
     }
 
     private List<Etd> getEtd(Bart bart) {

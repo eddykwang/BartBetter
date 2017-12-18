@@ -42,9 +42,6 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.main_frame_layout, fragment, fragment.getClass().getSimpleName()).commit();
         requestInternetPermission();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_toolbar);
-        setSupportActionBar(toolbar);
-
     }
 
     private void requestInternetPermission() {

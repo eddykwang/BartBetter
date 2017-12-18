@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Toast;
 
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.application.Application;
@@ -19,10 +18,10 @@ import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ItemHolder> {
 
-    private  final ArrayList<MainRecyclerViewModel> bartModelArrayList;
+    private  final ArrayList<RecyclerViewItemModel> bartModelArrayList;
     private static int lastPosition = 0;
 
-    public RecyclerViewAdapter(ArrayList<MainRecyclerViewModel> bartModelArrayList) {
+    public RecyclerViewAdapter(ArrayList<RecyclerViewItemModel> bartModelArrayList) {
         this.bartModelArrayList = bartModelArrayList;
     }
 
@@ -44,7 +43,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.itemView.setOnClickListener((view)->{
             Log.d("recyclerView",position + " clicked");
-            Toast.makeText(Application.appComponet.injectAppContext(),"postion: "+ position,Toast.LENGTH_LONG).show();
+            //Toast.makeText(Application.appComponet.injectAppContext(),"postion: "+ position,Toast.LENGTH_LONG).show();
         });
     }
 
