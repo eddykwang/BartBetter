@@ -1,8 +1,10 @@
 package com.example.eddystudio.bartable;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -12,9 +14,16 @@ import android.view.MenuItem;
 import com.example.eddystudio.bartable.Dashboard.DashboardFragment;
 import com.example.eddystudio.bartable.HomePage.HomePageRecyclerViewFragment;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class MainActivity extends AppCompatActivity {
     private final HomePageRecyclerViewFragment homePageRecyclerViewFragment = new HomePageRecyclerViewFragment();
     private final DashboardFragment dashboardFragment = new DashboardFragment();
+    public static SharedPreferences preference;
+    public static Set<String> dashboardRouts;
+    public final static String DASHBOARDROUTS = "dashboardRouts";
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -42,16 +51,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+
+        preference = PreferenceManager.getDefaultSharedPreferences(this);
+        dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
+
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_frame_layout, homePageRecyclerViewFragment, homePageRecyclerViewFragment.getClass().getSimpleName()).commit();
         requestInternetPermission();
-
     }
 
     private void requestInternetPermission() {
         ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                new String[]{Manifest.permission.INTERNET},
                 1);
     }
 

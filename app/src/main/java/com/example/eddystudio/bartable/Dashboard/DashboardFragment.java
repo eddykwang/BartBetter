@@ -32,6 +32,9 @@ import java.util.Set;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
+import static com.example.eddystudio.bartable.MainActivity.DASHBOARDROUTS;
+import static com.example.eddystudio.bartable.MainActivity.preference;
+
 
 public class DashboardFragment extends Fragment {
 
@@ -39,8 +42,6 @@ public class DashboardFragment extends Fragment {
     private final Repository repository = new Repository();
     private String originStation;
     private final ArrayList<DashboardRecyclerViewItemModel> dashboardVmList = new ArrayList<>();
-    private SharedPreferences preferences;
-    private final static String DASHBOARDROUTS = "dashboardRouts";
 
 
     public DashboardFragment() {
@@ -53,7 +54,6 @@ public class DashboardFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
-        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
         binding.appToolbar.setTitle("Dashboard");
 
@@ -71,7 +71,7 @@ public class DashboardFragment extends Fragment {
 
     private void loadFromPrerence(){
         Set<String> dashboardRouts= new HashSet<>();
-        dashboardRouts = preferences.getStringSet(DASHBOARDROUTS, new HashSet<>());
+        dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
         ArrayList<String> list = new ArrayList<>(dashboardRouts);
         Log.d("dashboard", list.toString());
         dashboardVmList.clear();

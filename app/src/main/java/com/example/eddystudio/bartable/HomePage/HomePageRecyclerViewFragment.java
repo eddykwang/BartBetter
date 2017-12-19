@@ -4,7 +4,6 @@ package com.example.eddystudio.bartable.HomePage;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -33,13 +32,15 @@ import com.example.eddystudio.bartable.Uilts.SwipeControllerActions;
 import com.example.eddystudio.bartable.databinding.FragmentHomePageBinding;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.example.eddystudio.bartable.MainActivity.DASHBOARDROUTS;
+import static com.example.eddystudio.bartable.MainActivity.dashboardRouts;
+import static com.example.eddystudio.bartable.MainActivity.preference;
 
 
 /**
@@ -56,11 +57,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
     private final ArrayList<String> stationListSortcut = new ArrayList<>();
     private ArrayAdapter<String> spinnerAdapter;
     private final HomePageViewModel homePageViewModel = new HomePageViewModel();
-    private SharedPreferences preferences;
-    private Set<String> dashboardRouts;
     private final ArrayList<String> EtdStations = new ArrayList<>();
-    private final static String DASHBOARDROUTS = "dashboardRouts";
-
 
     public HomePageRecyclerViewFragment() {
         // Required empty public constructor
@@ -109,8 +106,6 @@ public class HomePageRecyclerViewFragment extends Fragment {
             }
         });
         binding.swipeRefreshLy.setOnRefreshListener(() -> init(selectedStation));
-        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        dashboardRouts = preferences.getStringSet(DASHBOARDROUTS, new HashSet<>());
         return binding.getRoot();
     }
 
@@ -125,7 +120,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
                 super.onRightClicked(position);
                 String rout = selectedStation+"-"+EtdStations.get(position);
                 dashboardRouts.add(rout);
-                SharedPreferences.Editor editor = preferences.edit();
+                SharedPreferences.Editor editor = preference.edit();
                 editor.putStringSet(DASHBOARDROUTS,  dashboardRouts);
                 editor.apply();
                 Snackbar.make(binding.recylerView,"Added " + rout +" to dashboard", Snackbar.LENGTH_LONG).show();
