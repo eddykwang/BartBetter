@@ -6,7 +6,7 @@
 
         <variable
             name="vm"
-            type="com.example.eddystudio.bartable.HomePage.MainViewModel" />
+            type="com.example.eddystudio.bartable.HomePage.HomePageViewModel" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -34,7 +34,7 @@
 
 
         <android.support.v4.widget.SwipeRefreshLayout
-            android:layout_marginTop="116sp"
+            android:layout_marginTop="106sp"
             android:id="@+id/swipeRefreshLy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

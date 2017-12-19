@@ -1,39 +1,33 @@
-package com.example.eddystudio.bartable.HomePage;
+package com.example.eddystudio.bartable.Uilts;
 
 
 import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.example.eddystudio.bartable.BR;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.application.Application;
-import com.example.eddystudio.bartable.databinding.SingleRecyclerViewItemBinding;
 
-import java.util.ArrayList;
+public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<BaseRecyclerViewAdapter.ItemHolder> {
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ItemHolder> {
-
-    private  final ArrayList<RecyclerViewItemModel> bartModelArrayList;
     private static int lastPosition = 0;
-
-    public RecyclerViewAdapter(ArrayList<RecyclerViewItemModel> bartModelArrayList) {
-        this.bartModelArrayList = bartModelArrayList;
-    }
 
     @Override
     public ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View singleItemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_recycler_view_item, parent, false);
+        View singleItemView = LayoutInflater.from(parent.getContext()).inflate(getlayoutId(), parent, false);
         return new ItemHolder(singleItemView) ;
     }
 
     @Override
     public void onBindViewHolder(ItemHolder holder, int position) {
-        holder.getBinding().setViewModel(bartModelArrayList.get(position));
+        Object obj = getObjectForPosition(position);
+        holder.bind(obj);
 
         Animation animation = AnimationUtils.loadAnimation(Application.appComponet.injectAppContext(),
                 (position > lastPosition) ? R.anim.up_from_bottom
@@ -42,10 +36,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         lastPosition = position;
 
         holder.itemView.setOnClickListener((view)->{
-            Log.d("recyclerView",position + " clicked");
-            //Toast.makeText(Application.appComponet.injectAppContext(),"postion: "+ position,Toast.LENGTH_LONG).show();
         });
     }
+
+    protected abstract Object getObjectForPosition(int position);
 
     @Override
     public void onViewDetachedFromWindow(ItemHolder holder) {
@@ -55,25 +49,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public int getItemViewType(int position) {
-        return super.getItemViewType(position);
+        return getLayoutIdForPosition(position);
     }
 
-    @Override
-    public int getItemCount() {
-        return bartModelArrayList.size();
-    }
+    protected abstract int getLayoutIdForPosition(int position);
+    protected abstract int getlayoutId();
 
     public static class ItemHolder extends RecyclerView.ViewHolder{
 
-        private static SingleRecyclerViewItemBinding singleRecyclerViewItemBinding;
+        private final ViewDataBinding binding;
 
         public ItemHolder(View itemView) {
             super(itemView);
-            singleRecyclerViewItemBinding = DataBindingUtil.bind(itemView);
+            binding = DataBindingUtil.bind(itemView);
         }
 
-        public SingleRecyclerViewItemBinding getBinding(){
-            return singleRecyclerViewItemBinding;
+        public void bind(Object obj){
+            binding.setVariable(BR.obj, obj);
+            binding.executePendingBindings();
         }
     }
 }

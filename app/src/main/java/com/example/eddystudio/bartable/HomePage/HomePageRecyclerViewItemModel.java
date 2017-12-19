@@ -8,7 +8,7 @@ import android.graphics.Color;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Etd;
 
-public class RecyclerViewItemModel {
+public class HomePageRecyclerViewItemModel {
     public final ObservableField<String> destination = new ObservableField<>("");
     public final ObservableField<String> firstTrain = new ObservableField<>("");
     public final ObservableField<String> secondTrain = new ObservableField<>("");
@@ -16,7 +16,7 @@ public class RecyclerViewItemModel {
     public final ObservableInt routColor = new ObservableInt(1);
     private final Etd etd;
 
-    RecyclerViewItemModel(Etd etd) {
+    HomePageRecyclerViewItemModel(Etd etd) {
         this.etd = etd;
         updateUi();
     }

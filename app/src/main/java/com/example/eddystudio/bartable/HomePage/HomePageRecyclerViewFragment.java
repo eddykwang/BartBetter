@@ -1,13 +1,18 @@
 package com.example.eddystudio.bartable.HomePage;
 
 
+import android.content.SharedPreferences;
+import android.graphics.Canvas;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,20 +21,23 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Repository.Repository;
 import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Bart;
 import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Etd;
 import com.example.eddystudio.bartable.Repository.Response.Stations.BartStations;
-import com.example.eddystudio.bartable.databinding.FragmentMainRecyclerViewBinding;
+import com.example.eddystudio.bartable.Uilts.BaseRecyclerViewAdapter;
+import com.example.eddystudio.bartable.Uilts.CardSwipeController;
+import com.example.eddystudio.bartable.Uilts.SwipeControllerActions;
+import com.example.eddystudio.bartable.databinding.FragmentHomePageBinding;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -37,19 +45,24 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainRecyclerViewFragment extends Fragment {
+public class HomePageRecyclerViewFragment extends Fragment {
 
-    //private final RecyclerViewItemModel viewModel = new RecyclerViewItemModel();
-    private FragmentMainRecyclerViewBinding binding;
+    //private final HomePageRecyclerViewItemModel viewModel = new HomePageRecyclerViewItemModel();
+    private FragmentHomePageBinding binding;
     private Repository repository;
     private static String selectedStation="DALY";
     private static int sinpperPos = 0;
     private final ArrayList<String> stationList = new ArrayList<>();
     private final ArrayList<String> stationListSortcut = new ArrayList<>();
     private ArrayAdapter<String> spinnerAdapter;
-    private final MainViewModel mainViewModel= new MainViewModel();
+    private final HomePageViewModel homePageViewModel = new HomePageViewModel();
+    private SharedPreferences preferences;
+    private Set<String> dashboardRouts;
+    private final ArrayList<String> EtdStations = new ArrayList<>();
+    private final static String DASHBOARDROUTS = "dashboardRouts";
 
-    public MainRecyclerViewFragment() {
+
+    public HomePageRecyclerViewFragment() {
         // Required empty public constructor
     }
 
@@ -74,11 +87,11 @@ public class MainRecyclerViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         repository = new Repository();
-        //binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_main_recycler_view);
-        binding = FragmentMainRecyclerViewBinding.inflate(inflater, container, false);
+        //binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_home_page);
+        binding = FragmentHomePageBinding.inflate(inflater, container, false);
 
         ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
-        binding.setVm(mainViewModel);
+        binding.setVm(homePageViewModel);
         spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, stationList);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.stationSpinner.setAdapter(spinnerAdapter);
@@ -96,6 +109,8 @@ public class MainRecyclerViewFragment extends Fragment {
             }
         });
         binding.swipeRefreshLy.setOnRefreshListener(() -> init(selectedStation));
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        dashboardRouts = preferences.getStringSet(DASHBOARDROUTS, new HashSet<>());
         return binding.getRoot();
     }
 
@@ -104,6 +119,27 @@ public class MainRecyclerViewFragment extends Fragment {
         super.onStart();
         init(selectedStation);
         getAllStations();
+        CardSwipeController cardSwipeController = new CardSwipeController(new SwipeControllerActions() {
+            @Override
+            public void onRightClicked(int position) {
+                super.onRightClicked(position);
+                String rout = selectedStation+"-"+EtdStations.get(position);
+                dashboardRouts.add(rout);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putStringSet(DASHBOARDROUTS,  dashboardRouts);
+                editor.apply();
+                Snackbar.make(binding.recylerView,"Added " + rout +" to dashboard", Snackbar.LENGTH_LONG).show();
+
+            }
+        });
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(cardSwipeController);
+        itemTouchHelper.attachToRecyclerView(binding.recylerView);
+        binding.recylerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                cardSwipeController.onDraw(c);
+            }
+        });
     }
 
     private void init(String stationShort) {
@@ -118,7 +154,7 @@ public class MainRecyclerViewFragment extends Fragment {
                     int resId = R.anim.layout_animation_fall_down;
                     LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), resId);
                     binding.recylerView.setLayoutAnimation(animation);
-                    RecyclerViewAdapter adapters = new RecyclerViewAdapter(data);
+                    BaseRecyclerViewAdapter adapters = new HomePageRecyclerViewAdapter(data,binding.recylerView.getId(),R.layout.home_page_single_recycler_view_item);
                     binding.recylerView.setAdapter(adapters);
                     binding.recylerView.setNestedScrollingEnabled(false);
                     binding.recylerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
@@ -158,10 +194,12 @@ public class MainRecyclerViewFragment extends Fragment {
         Snackbar.make(binding.recylerView, "error on loading", Snackbar.LENGTH_LONG).show();
     }
 
-    private ArrayList<RecyclerViewItemModel> convertToVM(List<Etd> stations) {
-        ArrayList<RecyclerViewItemModel> vmList = new ArrayList<>();
+    private ArrayList<HomePageRecyclerViewItemModel> convertToVM(List<Etd> stations) {
+        EtdStations.clear();
+        ArrayList<HomePageRecyclerViewItemModel> vmList = new ArrayList<>();
         for (int i = 0; i < stations.size(); ++i){
-            vmList.add(new RecyclerViewItemModel(stations.get(i)));
+            vmList.add(new HomePageRecyclerViewItemModel(stations.get(i)));
+            EtdStations.add(stations.get(i).getAbbreviation());
         }
         return vmList;
     }

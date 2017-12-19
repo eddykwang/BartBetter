@@ -7,12 +7,14 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import com.example.eddystudio.bartable.HomePage.MainRecyclerViewFragment;
+import com.example.eddystudio.bartable.Dashboard.DashboardFragment;
+import com.example.eddystudio.bartable.HomePage.HomePageRecyclerViewFragment;
 
 public class MainActivity extends AppCompatActivity {
+    private final HomePageRecyclerViewFragment homePageRecyclerViewFragment = new HomePageRecyclerViewFragment();
+    private final DashboardFragment dashboardFragment = new DashboardFragment();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -21,8 +23,12 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main_frame_layout, homePageRecyclerViewFragment, homePageRecyclerViewFragment.getClass().getSimpleName()).commit();
                     return true;
                 case R.id.navigation_dashboard:
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main_frame_layout,dashboardFragment,dashboardFragment.getClass().getSimpleName()).commit();
                     return true;
                 case R.id.navigation_notifications:
                     return true;
@@ -37,9 +43,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        MainRecyclerViewFragment fragment = new MainRecyclerViewFragment();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_frame_layout, fragment, fragment.getClass().getSimpleName()).commit();
+                .replace(R.id.main_frame_layout, homePageRecyclerViewFragment, homePageRecyclerViewFragment.getClass().getSimpleName()).commit();
         requestInternetPermission();
 
     }
