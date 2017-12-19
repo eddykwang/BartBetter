@@ -114,6 +114,10 @@ public class HomePageRecyclerViewFragment extends Fragment {
         super.onStart();
         init(selectedStation);
         getAllStations();
+        attachOnCardSwipe();
+    }
+
+    private void attachOnCardSwipe() {
         CardSwipeController cardSwipeController = new CardSwipeController(new SwipeControllerActions() {
             @Override
             public void onRightClicked(int position) {
@@ -132,7 +136,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
         binding.recylerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                cardSwipeController.onDraw(c);
+                cardSwipeController.onDraw(c, "Add", "#FF4081");
             }
         });
     }

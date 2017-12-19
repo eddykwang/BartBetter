@@ -132,7 +132,7 @@ public class CardSwipeController extends ItemTouchHelper.Callback {
         }
     }
 
-    private void drawButtons(Canvas c, RecyclerView.ViewHolder viewHolder) {
+    private void drawButtons(Canvas c, RecyclerView.ViewHolder viewHolder, String buttonText, String color) {
         float buttonWidthWithoutPadding = buttonWidth - 20;
         float corners = 8;
 
@@ -140,9 +140,9 @@ public class CardSwipeController extends ItemTouchHelper.Callback {
         Paint p = new Paint();
 
         RectF rightButton = new RectF(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-        p.setColor(Color.parseColor("#FF4081"));
+        p.setColor(Color.parseColor(color));
         c.drawRoundRect(rightButton, corners, corners, p);
-        drawText("Add", c, rightButton, p);
+        drawText(buttonText, c, rightButton, p);
 
         buttonInstance = null;
         if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
@@ -160,9 +160,9 @@ public class CardSwipeController extends ItemTouchHelper.Callback {
         c.drawText(text, button.centerX() - (textWidth / 2), button.centerY() + (textSize / 2), p);
     }
 
-    public void onDraw(Canvas c) {
+    public void onDraw(Canvas c, String buttonText, String color) {
         if (currentItemViewHolder != null) {
-            drawButtons(c, currentItemViewHolder);
+            drawButtons(c, currentItemViewHolder, buttonText, color);
         }
     }
 }

@@ -1,13 +1,16 @@
 package com.example.eddystudio.bartable.Dashboard;
 
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +25,8 @@ import com.example.eddystudio.bartable.Repository.Repository;
 import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Bart;
 import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Etd;
 import com.example.eddystudio.bartable.Uilts.BaseRecyclerViewAdapter;
+import com.example.eddystudio.bartable.Uilts.CardSwipeController;
+import com.example.eddystudio.bartable.Uilts.SwipeControllerActions;
 import com.example.eddystudio.bartable.databinding.FragmentDashboardBinding;
 
 import java.util.ArrayList;
@@ -33,6 +38,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 import static com.example.eddystudio.bartable.MainActivity.DASHBOARDROUTS;
+import static com.example.eddystudio.bartable.MainActivity.dashboardRouts;
 import static com.example.eddystudio.bartable.MainActivity.preference;
 
 
@@ -66,6 +72,31 @@ public class DashboardFragment extends Fragment {
         loadFromPrerence();
         binding.swipeRefreshLy.setOnRefreshListener(()->{
             loadFromPrerence();
+        });
+        attachOnCardSwipe();
+    }
+
+    private void attachOnCardSwipe() {
+        CardSwipeController cardSwipeController = new CardSwipeController(new SwipeControllerActions() {
+            @Override
+            public void onRightClicked(int position) {
+                super.onRightClicked(position);
+                ArrayList<String> arrayList = new ArrayList<>(dashboardRouts);
+                arrayList.remove(position);
+                SharedPreferences.Editor editor = preference.edit();
+                editor.putStringSet(DASHBOARDROUTS,  new HashSet<>(arrayList));
+                editor.apply();
+                Snackbar.make(binding.recylerView,"Removed", Snackbar.LENGTH_LONG).show();
+                loadFromPrerence();
+            }
+        });
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(cardSwipeController);
+        itemTouchHelper.attachToRecyclerView(binding.recylerView);
+        binding.recylerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                cardSwipeController.onDraw(c,"Remove","#D32F2F");
+            }
         });
     }
 
