@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +54,8 @@ public class DashboardFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
+        binding.appToolbar.setTitle("Dashboard");
 
         return binding.getRoot();
     }
@@ -60,6 +64,9 @@ public class DashboardFragment extends Fragment {
     public void onStart() {
         super.onStart();
         loadFromPrerence();
+        binding.swipeRefreshLy.setOnRefreshListener(()->{
+            loadFromPrerence();
+        });
     }
 
     private void loadFromPrerence(){

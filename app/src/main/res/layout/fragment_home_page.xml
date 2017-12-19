@@ -29,15 +29,16 @@
                 android:id="@+id/station_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="end"/>
+                android:autofillHints="Choose station to start "
+                android:gravity="end" />
         </android.support.design.widget.AppBarLayout>
 
 
         <android.support.v4.widget.SwipeRefreshLayout
-            android:layout_marginTop="106sp"
             android:id="@+id/swipeRefreshLy"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="106sp">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recylerView"
