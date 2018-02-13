@@ -27,6 +27,7 @@ import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Etd;
 import com.example.eddystudio.bartable.Uilts.BaseRecyclerViewAdapter;
 import com.example.eddystudio.bartable.Uilts.CardSwipeController;
 import com.example.eddystudio.bartable.Uilts.SwipeControllerActions;
+import com.example.eddystudio.bartable.application.Application;
 import com.example.eddystudio.bartable.databinding.FragmentDashboardBinding;
 
 import java.util.ArrayList;
@@ -34,12 +35,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 import static com.example.eddystudio.bartable.MainActivity.DASHBOARDROUTS;
 import static com.example.eddystudio.bartable.MainActivity.dashboardRouts;
-import static com.example.eddystudio.bartable.MainActivity.preference;
 
 
 public class DashboardFragment extends Fragment {
@@ -49,6 +51,9 @@ public class DashboardFragment extends Fragment {
     private String originStation;
     private final ArrayList<DashboardRecyclerViewItemModel> dashboardVmList = new ArrayList<>();
 
+
+    @Inject
+    public SharedPreferences preference;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -62,6 +67,8 @@ public class DashboardFragment extends Fragment {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
         binding.appToolbar.setTitle("Dashboard");
+
+        Application.getAppComponet().inject(this);
 
         return binding.getRoot();
     }
@@ -84,6 +91,7 @@ public class DashboardFragment extends Fragment {
                 ArrayList<String> arrayList = new ArrayList<>(dashboardRouts);
                 arrayList.remove(position);
                 SharedPreferences.Editor editor = preference.edit();
+                editor.clear();
                 editor.putStringSet(DASHBOARDROUTS,  new HashSet<>(arrayList));
                 editor.apply();
                 Snackbar.make(binding.recylerView,"Removed", Snackbar.LENGTH_LONG).show();
@@ -101,7 +109,7 @@ public class DashboardFragment extends Fragment {
     }
 
     private void loadFromPrerence(){
-        Set<String> dashboardRouts= new HashSet<>();
+        Set<String> dashboardRouts;
         dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
         ArrayList<String> list = new ArrayList<>(dashboardRouts);
         Log.d("dashboard", list.toString());

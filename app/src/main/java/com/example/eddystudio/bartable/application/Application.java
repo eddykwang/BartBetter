@@ -4,14 +4,19 @@ package com.example.eddystudio.bartable.application;
 
 public class Application extends android.app.Application {
 
-    public static AppComponent appComponet;
+    private static AppComponent appComponet;
 
     @Override
     public void onCreate() {
         super.onCreate();
         appComponet = DaggerAppComponent
                 .builder()
-                .appContextModule(new AppContextModule(getApplicationContext()))
+                .appContextModule(new AppContextModule(this))
+                .retrofitModule(new RetrofitModule("http://api.bart.gov/"))
                 .build();
+    }
+
+    public static AppComponent getAppComponet(){
+        return appComponet;
     }
 }

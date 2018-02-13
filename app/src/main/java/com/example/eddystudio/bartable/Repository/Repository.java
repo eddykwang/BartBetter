@@ -5,8 +5,11 @@ import android.util.Log;
 
 import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Bart;
 import com.example.eddystudio.bartable.Repository.Response.Stations.BartStations;
+import com.example.eddystudio.bartable.application.Application;
 
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
@@ -19,24 +22,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Repository {
     private BartService bartService;
 
-    {
+    @Inject
+    Retrofit retrofit;
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://api.bart.gov/")
-                .client(provideOkHttpClient())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
+    public Repository(){
+        Application.getAppComponet().inject(this);
         bartService = retrofit.create(BartService.class);
     }
 
-    private OkHttpClient provideOkHttpClient() {
-        OkHttpClient.Builder okhttpClientBuilder = new OkHttpClient.Builder();
-        okhttpClientBuilder.connectTimeout(30, TimeUnit.SECONDS);
-        okhttpClientBuilder.readTimeout(30, TimeUnit.SECONDS);
-        okhttpClientBuilder.writeTimeout(30, TimeUnit.SECONDS);
-        return okhttpClientBuilder.build();
-    }
 //?cmd=etd&orig={fromStation}&key=MW9S-E7SL-26DU-VV8V&json=y"
 
     public io.reactivex.Observable<Bart> getEstimate(String fromStation){

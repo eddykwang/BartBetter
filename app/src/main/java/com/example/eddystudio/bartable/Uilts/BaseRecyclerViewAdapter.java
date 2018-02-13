@@ -14,12 +14,18 @@ import com.example.eddystudio.bartable.BR;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.application.Application;
 
+import javax.inject.Inject;
+
 public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<BaseRecyclerViewAdapter.ItemHolder> {
 
     private static int lastPosition = 0;
 
+    @Inject
+    Application application;
+
     @Override
     public ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Application.getAppComponet().inject(this);
         View singleItemView = LayoutInflater.from(parent.getContext()).inflate(getlayoutId(), parent, false);
         return new ItemHolder(singleItemView) ;
     }
@@ -29,7 +35,7 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<BaseR
         Object obj = getObjectForPosition(position);
         holder.bind(obj);
 
-        Animation animation = AnimationUtils.loadAnimation(Application.appComponet.injectAppContext(),
+        Animation animation = AnimationUtils.loadAnimation(application,
                 (position > lastPosition) ? R.anim.up_from_bottom
                         : R.anim.down_from_top);
         holder.itemView.startAnimation(animation);

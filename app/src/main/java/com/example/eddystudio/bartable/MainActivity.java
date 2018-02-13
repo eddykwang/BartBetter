@@ -13,14 +13,18 @@ import android.view.MenuItem;
 
 import com.example.eddystudio.bartable.Dashboard.DashboardFragment;
 import com.example.eddystudio.bartable.HomePage.HomePageRecyclerViewFragment;
+import com.example.eddystudio.bartable.application.Application;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 public class MainActivity extends AppCompatActivity {
     private final HomePageRecyclerViewFragment homePageRecyclerViewFragment = new HomePageRecyclerViewFragment();
     private final DashboardFragment dashboardFragment = new DashboardFragment();
-    public static SharedPreferences preference;
+    @Inject
+    public SharedPreferences preference;
     public static Set<String> dashboardRouts;
     public final static String DASHBOARDROUTS = "dashboardRouts";
 
@@ -52,13 +56,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
 
-        preference = PreferenceManager.getDefaultSharedPreferences(this);
-        dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
+        Application.getAppComponet().inject(this);
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_frame_layout, homePageRecyclerViewFragment, homePageRecyclerViewFragment.getClass().getSimpleName()).commit();
         requestInternetPermission();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
     }
 
     private void requestInternetPermission() {

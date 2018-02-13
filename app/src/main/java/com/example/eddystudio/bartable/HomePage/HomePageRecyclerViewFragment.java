@@ -29,10 +29,13 @@ import com.example.eddystudio.bartable.Repository.Response.Stations.BartStations
 import com.example.eddystudio.bartable.Uilts.BaseRecyclerViewAdapter;
 import com.example.eddystudio.bartable.Uilts.CardSwipeController;
 import com.example.eddystudio.bartable.Uilts.SwipeControllerActions;
+import com.example.eddystudio.bartable.application.Application;
 import com.example.eddystudio.bartable.databinding.FragmentHomePageBinding;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -40,7 +43,6 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.example.eddystudio.bartable.MainActivity.DASHBOARDROUTS;
 import static com.example.eddystudio.bartable.MainActivity.dashboardRouts;
-import static com.example.eddystudio.bartable.MainActivity.preference;
 
 
 /**
@@ -58,6 +60,9 @@ public class HomePageRecyclerViewFragment extends Fragment {
     private ArrayAdapter<String> spinnerAdapter;
     private final HomePageViewModel homePageViewModel = new HomePageViewModel();
     private final ArrayList<String> EtdStations = new ArrayList<>();
+
+    @Inject
+    public SharedPreferences preference;
 
     public HomePageRecyclerViewFragment() {
         // Required empty public constructor
@@ -82,6 +87,9 @@ public class HomePageRecyclerViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Application.getAppComponet().inject(this);
+
         // Inflate the layout for this fragment
         repository = new Repository();
         //binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_home_page);
@@ -125,6 +133,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
                 String rout = selectedStation+"-"+EtdStations.get(position);
                 dashboardRouts.add(rout);
                 SharedPreferences.Editor editor = preference.edit();
+                editor.clear();
                 editor.putStringSet(DASHBOARDROUTS,  dashboardRouts);
                 editor.apply();
                 Snackbar.make(binding.recylerView,"Added " + rout +" to dashboard", Snackbar.LENGTH_LONG).show();
