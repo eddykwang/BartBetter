@@ -77,9 +77,7 @@ public class DashboardFragment extends Fragment {
     public void onStart() {
         super.onStart();
         loadFromPrerence();
-        binding.swipeRefreshLy.setOnRefreshListener(()->{
-            loadFromPrerence();
-        });
+        binding.swipeRefreshLy.setOnRefreshListener(this::loadFromPrerence);
         attachOnCardSwipe();
     }
 
@@ -91,7 +89,6 @@ public class DashboardFragment extends Fragment {
                 ArrayList<String> arrayList = new ArrayList<>(dashboardRouts);
                 arrayList.remove(position);
                 SharedPreferences.Editor editor = preference.edit();
-                editor.clear();
                 editor.putStringSet(DASHBOARDROUTS,  new HashSet<>(arrayList));
                 editor.apply();
                 Snackbar.make(binding.recylerView,"Removed", Snackbar.LENGTH_LONG).show();
@@ -127,7 +124,7 @@ public class DashboardFragment extends Fragment {
         repository.getEstimate(fromStation)
                 .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(bart -> getEtd(bart))
+                .map(this::getEtd)
                 .concatMap(Observable::fromArray)
                 .map(etds -> convertToVM(etds, toStation))
                 .doOnNext(data -> {

@@ -53,35 +53,24 @@ public class HomePageRecyclerViewFragment extends Fragment {
     //private final HomePageRecyclerViewItemModel viewModel = new HomePageRecyclerViewItemModel();
     private FragmentHomePageBinding binding;
     private Repository repository;
-    private static String selectedStation="DALY";
-    private static int sinpperPos = 0;
+    private static String selectedStation;
+    private static int sinpperPos;
     private final ArrayList<String> stationList = new ArrayList<>();
     private final ArrayList<String> stationListSortcut = new ArrayList<>();
     private ArrayAdapter<String> spinnerAdapter;
     private final HomePageViewModel homePageViewModel = new HomePageViewModel();
     private final ArrayList<String> EtdStations = new ArrayList<>();
 
+    private static boolean isInitOpen = true;
+
+    private static final String lastSelectedStation = "LAST_SELECTED_STATION";
+    private static final String lastSelectedSinperPosition = "LAST_SELECTED_SINPER_POSITION";
+
     @Inject
     public SharedPreferences preference;
 
     public HomePageRecyclerViewFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("selectedStation",selectedStation);
-        outState.putInt("spinnerPos", sinpperPos);
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
-            sinpperPos = savedInstanceState.getInt("spinnerPos");
-            selectedStation = savedInstanceState.getString("selectedStation");
-        }
     }
 
     @Override
@@ -97,15 +86,39 @@ public class HomePageRecyclerViewFragment extends Fragment {
 
         ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
         binding.setVm(homePageViewModel);
+
+        setupSinnper();
+
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        setLastSelectedStation();
+        getAllStations();
+        attachOnCardSwipe();
+    }
+
+    private void setupSinnper(){
         spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, stationList);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.stationSpinner.setAdapter(spinnerAdapter);
         binding.stationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                selectedStation = stationListSortcut.get(i);
-                sinpperPos = i;
-                init(selectedStation);
+                if (isInitOpen){
+                    init(selectedStation);
+                    isInitOpen = false;
+                }else {
+                    selectedStation = stationListSortcut.get(i);
+                    sinpperPos = i;
+                    SharedPreferences.Editor editor = preference.edit();
+                    editor.putString(lastSelectedStation, selectedStation);
+                    editor.putInt(lastSelectedSinperPosition, sinpperPos);
+                    editor.apply();
+                    init(selectedStation);
+                }
             }
 
             @Override
@@ -114,15 +127,13 @@ public class HomePageRecyclerViewFragment extends Fragment {
             }
         });
         binding.swipeRefreshLy.setOnRefreshListener(() -> init(selectedStation));
-        return binding.getRoot();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        init(selectedStation);
-        getAllStations();
-        attachOnCardSwipe();
+    private void setLastSelectedStation(){
+        selectedStation = preference.getString(lastSelectedStation,"12TH");
+        sinpperPos = preference.getInt(lastSelectedSinperPosition,0);
+
+        Log.d("lastStation", selectedStation + " : " + sinpperPos);
     }
 
     private void attachOnCardSwipe() {
@@ -133,7 +144,6 @@ public class HomePageRecyclerViewFragment extends Fragment {
                 String rout = selectedStation+"-"+EtdStations.get(position);
                 dashboardRouts.add(rout);
                 SharedPreferences.Editor editor = preference.edit();
-                editor.clear();
                 editor.putStringSet(DASHBOARDROUTS,  dashboardRouts);
                 editor.apply();
                 Snackbar.make(binding.recylerView,"Added " + rout +" to dashboard", Snackbar.LENGTH_LONG).show();
