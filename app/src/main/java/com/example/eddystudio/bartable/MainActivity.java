@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -20,9 +19,12 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.example.eddystudio.bartable.Notification.NotificationFragment;
+
 public class MainActivity extends AppCompatActivity {
     private final HomePageRecyclerViewFragment homePageRecyclerViewFragment = new HomePageRecyclerViewFragment();
     private final DashboardFragment dashboardFragment = new DashboardFragment();
+    private final NotificationFragment notificationFragment = new NotificationFragment();
     @Inject
     public SharedPreferences preference;
     public static Set<String> dashboardRouts;
@@ -30,25 +32,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_frame_layout, homePageRecyclerViewFragment, homePageRecyclerViewFragment.getClass().getSimpleName()).commit();
-                    return true;
-                case R.id.navigation_dashboard:
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_frame_layout,dashboardFragment,dashboardFragment.getClass().getSimpleName()).commit();
-                    return true;
-                case R.id.navigation_notifications:
-                    return true;
-            }
-            return false;
-        }
-    };
+            = item -> {
+                switch (item.getItemId()) {
+                    case R.id.navigation_home:
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.main_frame_layout, homePageRecyclerViewFragment, homePageRecyclerViewFragment.getClass().getSimpleName()).commit();
+                        return true;
+                    case R.id.navigation_dashboard:
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.main_frame_layout,dashboardFragment,dashboardFragment.getClass().getSimpleName()).commit();
+                        return true;
+                    case R.id.navigation_notifications:
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.main_frame_layout,notificationFragment , notificationFragment.getClass().getSimpleName()).commit();
+                        return true;
+                }
+                return false;
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

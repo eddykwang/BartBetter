@@ -18,8 +18,6 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 
-import com.example.eddystudio.bartable.HomePage.HomePageRecyclerViewAdapter;
-import com.example.eddystudio.bartable.HomePage.HomePageRecyclerViewItemModel;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Repository.Repository;
 import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Bart;

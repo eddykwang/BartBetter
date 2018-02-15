@@ -1,6 +1,8 @@
 package com.example.eddystudio.bartable.Repository;
 
 
+import com.example.eddystudio.bartable.Repository.Response.DelayReport.DelayReport;
+import com.example.eddystudio.bartable.Repository.Response.ElevatorStatus.ElevatorStatus;
 import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Bart;
 import com.example.eddystudio.bartable.Repository.Response.Stations.BartStations;
 
@@ -15,4 +17,10 @@ public interface BartService {
 
     @GET("api/stn.aspx?cmd=stns&key=MW9S-E7SL-26DU-VV8V&json=y")
     Call<BartStations> bartStations();
+
+    @GET("api/bsa.aspx?cmd=bsa&key=MW9S-E7SL-26DU-VV8V&json=y")
+    Call<DelayReport> delayReport();
+
+    @GET("api/bsa.aspx?cmd=elev&key=MW9S-E7SL-26DU-VV8V&json=y")
+    Call<ElevatorStatus> elevatorStatus();
 }

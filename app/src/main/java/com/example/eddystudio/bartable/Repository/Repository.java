@@ -3,6 +3,8 @@ package com.example.eddystudio.bartable.Repository;
 
 import android.util.Log;
 
+import com.example.eddystudio.bartable.Repository.Response.DelayReport.DelayReport;
+import com.example.eddystudio.bartable.Repository.Response.ElevatorStatus.ElevatorStatus;
 import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Bart;
 import com.example.eddystudio.bartable.Repository.Response.Stations.BartStations;
 import com.example.eddystudio.bartable.application.Application;
@@ -46,6 +48,19 @@ public class Repository {
                 .subscribeOn(Schedulers.io());
     }
 
+    public Observable<DelayReport> getDelayReport(){
+        return Observable.fromCallable(()-> bartService.delayReport().execute())
+                .map(Response::body)
+                .doOnError(this::error)
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Observable<ElevatorStatus> getElevatorStatus(){
+        return Observable.fromCallable(()-> bartService.elevatorStatus().execute())
+                .map(Response::body)
+                .doOnError(this::error)
+                .subscribeOn(Schedulers.io());
+    }
     private void error(Throwable e) {
         Log.e("error", "error", e);
     }
