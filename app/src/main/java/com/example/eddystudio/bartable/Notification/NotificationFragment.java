@@ -1,6 +1,7 @@
 package com.example.eddystudio.bartable.Notification;
 
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,9 +12,12 @@ import android.view.ViewGroup;
 import com.example.eddystudio.bartable.Repository.Repository;
 import com.example.eddystudio.bartable.Repository.Response.DelayReport.DelayReport;
 import com.example.eddystudio.bartable.Repository.Response.ElevatorStatus.ElevatorStatus;
+import com.example.eddystudio.bartable.application.Application;
 import com.example.eddystudio.bartable.databinding.FragmentNotificationBinding;
 
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -22,6 +26,10 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
     private FragmentNotificationBinding binding;
     private final NotificationViewModel viewModel = new NotificationViewModel();
     private final Repository repository = new Repository();
+    private static final String savedViewMorePreference = "VIEW_MORE_PREFERENCE";
+
+    @Inject
+    public SharedPreferences sharedPreferences;
 
     public NotificationFragment() {
         // Required empty public constructor
@@ -33,6 +41,7 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentNotificationBinding.inflate(inflater, container, false);
         ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
+        Application.getAppComponet().inject(this);
         binding.appToolbar.setTitle("Notifications");
         binding.setVm(viewModel);
         binding.swipeRefreshLy.setOnRefreshListener(()->{
@@ -44,7 +53,16 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        viewModel.isViewDetailChecked.set(sharedPreferences.getBoolean(savedViewMorePreference,false));
         init();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(savedViewMorePreference, viewModel.isViewDetailChecked.get());
+        editor.apply();
     }
 
     private void init(){

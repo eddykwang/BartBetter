@@ -34,6 +34,7 @@ import com.example.eddystudio.bartable.databinding.FragmentHomePageBinding;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -186,10 +187,13 @@ public class HomePageRecyclerViewFragment extends Fragment {
         repository.getStations()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .delay(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .doOnSubscribe(ignored -> homePageViewModel.showSpinnerProgess.set(true))
                 .map(station -> getAllStations(station))
                 .concatMap(Observable::fromArray)
                 .doOnNext(stations -> setupSinnper(stations))
                 .doOnNext(ignored -> binding.stationSpinner.setSelection(sinpperPos))
+                .doOnComplete(()-> homePageViewModel.showSpinnerProgess.set(false))
                 .doOnError(this::handleError)
                 .subscribe();
     }

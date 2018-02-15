@@ -5,6 +5,7 @@ import android.content.Context;
 import com.example.eddystudio.bartable.Dashboard.DashboardFragment;
 import com.example.eddystudio.bartable.HomePage.HomePageRecyclerViewFragment;
 import com.example.eddystudio.bartable.MainActivity;
+import com.example.eddystudio.bartable.Notification.NotificationFragment;
 import com.example.eddystudio.bartable.Repository.Repository;
 import com.example.eddystudio.bartable.Uilts.BaseRecyclerViewAdapter;
 
@@ -22,4 +23,5 @@ public interface AppComponent {
     void inject(DashboardFragment dashboardFragment);
     void inject(Repository repository);
     void inject(BaseRecyclerViewAdapter baseRecyclerViewAdapter);
+    void inject(NotificationFragment notificationFragment);
 }
