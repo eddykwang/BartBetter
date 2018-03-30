@@ -3,8 +3,10 @@ package com.example.eddystudio.bartable.Notification;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,9 +46,7 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
         Application.getAppComponet().inject(this);
         binding.appToolbar.setTitle("Notifications");
         binding.setVm(viewModel);
-        binding.swipeRefreshLy.setOnRefreshListener(()->{
-            init();
-        });
+        binding.swipeRefreshLy.setOnRefreshListener(this::init);
         return binding.getRoot();
     }
 
@@ -73,12 +73,11 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
                 })
                 .delay(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .doOnNext(delayReport -> convertToVM(delayReport))
-                .doOnComplete(() -> {
+                .subscribe(delayReport -> {
+                    convertToVM(delayReport);
                     binding.swipeRefreshLy.setRefreshing(false);
                     viewModel.isDelayReportProgressVisible.set(false);
-                })
-                .subscribe();
+                }, this::onError);
 
         repository.getElevatorStatus()
                 .doOnSubscribe(ignored->{
@@ -87,13 +86,20 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
                 })
                 .delay(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .doOnNext(delayReport -> convertToVM(delayReport))
-                .doOnComplete(() -> {
+                .subscribe(elevatorStatus -> {
+                    convertToVM(elevatorStatus);
                     binding.swipeRefreshLy.setRefreshing(false);
                     viewModel.isElevatorProgressVisible.set(false);
-                })
-                .subscribe();
+                }, this::onError);
 
+    }
+
+    private void onError(Throwable throwable) {
+        Log.e("error", "error on getting response", throwable);
+        binding.swipeRefreshLy.setRefreshing(false);
+        viewModel.isElevatorProgressVisible.set(false);
+        viewModel.isDelayReportProgressVisible.set(false);
+        Snackbar.make(binding.linearLayout, "Error on loading", Snackbar.LENGTH_LONG).show();
     }
 
     private void convertToVM(ElevatorStatus elevatorStatus) {

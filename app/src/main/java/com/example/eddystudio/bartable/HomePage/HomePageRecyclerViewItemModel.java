@@ -22,7 +22,7 @@ public class HomePageRecyclerViewItemModel {
     }
 
     private void updateUi(){
-        String m = " minus";
+        String m = " minutes";
         String first = "";
         String second = "";
         String third = "";

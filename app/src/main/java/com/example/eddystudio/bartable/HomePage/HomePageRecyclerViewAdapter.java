@@ -16,6 +16,12 @@ public class HomePageRecyclerViewAdapter extends BaseRecyclerViewAdapter {
         this.recyclerViewlayout = recyclerViewlayout;
     }
 
+    public void setData(ArrayList<HomePageRecyclerViewItemModel> bartList){
+        this.bartList.clear();
+        this.bartList.addAll(bartList);
+        this.notifyDataSetChanged();
+    }
+
     @Override
     protected Object getObjectForPosition(int position) {
         return bartList.get(position);
