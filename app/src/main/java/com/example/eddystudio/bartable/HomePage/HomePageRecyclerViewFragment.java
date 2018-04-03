@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,8 @@ import com.example.eddystudio.bartable.Uilts.SwipeControllerActions;
 import com.example.eddystudio.bartable.application.Application;
 import com.example.eddystudio.bartable.databinding.FragmentHomePageBinding;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -65,6 +68,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
   private HomePageRecyclerViewAdapter adapters;
   private static final String lastSelectedStation = "LAST_SELECTED_STATION";
   private static final String lastSelectedSinperPosition = "LAST_SELECTED_SINPER_POSITION";
+  private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
   @Inject
   public SharedPreferences preference;
@@ -97,13 +101,18 @@ public class HomePageRecyclerViewFragment extends Fragment {
   @Override
   public void onStart() {
     super.onStart();
-    if (binding.onErrorImageView.getVisibility() == View.VISIBLE ) {
-      binding.onErrorImageView.setVisibility(View.GONE);
+    if (binding.onErrorRelaticeLayout.getVisibility() == View.VISIBLE) {
+      binding.onErrorRelaticeLayout.setVisibility(View.GONE);
       binding.recylerView.setVisibility(View.VISIBLE);
     }
     setLastSelectedStation();
     getAllStations();
     attachOnCardSwipe();
+  }
+
+  @Override public void onStop() {
+    super.onStop();
+    compositeDisposable.clear();
   }
 
   private void setupSinnper() {
@@ -134,10 +143,6 @@ public class HomePageRecyclerViewFragment extends Fragment {
       }
     });
     binding.swipeRefreshLy.setOnRefreshListener(() -> {
-      //if (binding.onErrorImageView.getVisibility() == View.VISIBLE ) {
-      //  binding.onErrorImageView.setVisibility(View.GONE);
-      //  binding.recylerView.setVisibility(View.VISIBLE);
-      //}
       init(selectedStation);
     });
   }
@@ -175,17 +180,25 @@ public class HomePageRecyclerViewFragment extends Fragment {
 
   private void init(String stationShort) {
 
-    repository.getEstimate(stationShort)
+    List<Pair<String, String>> stations = new ArrayList<>();
+    stations.add(new Pair<>(stationShort, ""));
+
+    Disposable disposable = repository.getEstimate(stations)
         .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
         .observeOn(AndroidSchedulers.mainThread())
-        .map(bart -> getEtd(bart))
+        .map(bart -> getEtd(bart.first))
         .concatMap(Observable::fromArray)
         .map(etds -> convertToVM(etds))
-        .subscribe(data ->{
-          bartList = data;
-          adapters.setData(bartList);
-          binding.swipeRefreshLy.setRefreshing(false);
-        }, this::handleError);
+        .subscribe(data -> bartList = data,
+            this::handleError,
+            this::onComplete);
+
+    compositeDisposable.add(disposable);
+  }
+
+  private void onComplete() {
+    adapters.setData(bartList);
+    binding.swipeRefreshLy.setRefreshing(false);
   }
 
   private void setUpAdapter() {
@@ -200,7 +213,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
   }
 
   private void getAllStations() {
-    repository.getStations()
+    Disposable disposable = repository.getStations()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .delay(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
@@ -212,6 +225,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
           binding.stationSpinner.setSelection(sinpperPos);
           homePageViewModel.showSpinnerProgess.set(false);
         }, this::handleError);
+    compositeDisposable.add(disposable);
   }
 
   private void setupSinnper(
@@ -237,11 +251,11 @@ public class HomePageRecyclerViewFragment extends Fragment {
     homePageViewModel.showSpinnerProgess.set(false);
   }
 
-  private void loadErrorIV(){
-    if (binding.onErrorImageView.getVisibility() == View.GONE ) {
+  private void loadErrorIV() {
+    if (binding.onErrorRelaticeLayout.getVisibility() == View.GONE) {
       binding.recylerView.setVisibility(View.GONE);
-      binding.onErrorImageView.setVisibility(View.VISIBLE);
-      Glide.with(this).load(R.drawable.wrong).into(binding.onErrorImageView);
+      binding.onErrorRelaticeLayout.setVisibility(View.VISIBLE);
+      Glide.with(this).load(R.drawable.wentwrong).into(binding.onErrorImageView);
     }
   }
 

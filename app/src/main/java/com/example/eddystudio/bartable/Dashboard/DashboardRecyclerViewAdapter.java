@@ -3,21 +3,22 @@ package com.example.eddystudio.bartable.Dashboard;
 import com.example.eddystudio.bartable.Uilts.BaseRecyclerViewAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
 
-  private ArrayList<DashboardRecyclerViewItemModel> itemList;
+  private List<DashboardRecyclerViewItemModel> itemList;
   private final int layoutId;
   private final int recyclerViewLayout;
 
-  public DashboardRecyclerViewAdapter(ArrayList<DashboardRecyclerViewItemModel> itemList,
+  public DashboardRecyclerViewAdapter(List<DashboardRecyclerViewItemModel> itemList,
       int layoutId, int recyclerViewLayout) {
     this.itemList = itemList;
     this.layoutId = layoutId;
     this.recyclerViewLayout = recyclerViewLayout;
   }
 
-  public void setData(ArrayList<DashboardRecyclerViewItemModel> itemList) {
+  public void setData(List<DashboardRecyclerViewItemModel> itemList) {
     this.itemList = itemList;
     this.notifyDataSetChanged();
   }

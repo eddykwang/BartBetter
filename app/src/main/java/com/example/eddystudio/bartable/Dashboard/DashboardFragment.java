@@ -1,10 +1,8 @@
 package com.example.eddystudio.bartable.Dashboard;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,16 +22,17 @@ import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Repository.Repository;
 import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Bart;
 import com.example.eddystudio.bartable.Repository.Response.EstimateResponse.Etd;
-import com.example.eddystudio.bartable.Uilts.BaseRecyclerViewAdapter;
 import com.example.eddystudio.bartable.Uilts.CardSwipeController;
 import com.example.eddystudio.bartable.Uilts.SwipeControllerActions;
 import com.example.eddystudio.bartable.application.Application;
 import com.example.eddystudio.bartable.databinding.FragmentDashboardBinding;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -48,9 +48,9 @@ public class DashboardFragment extends Fragment {
   private final Repository repository = new Repository();
   private String originStation;
   //private final ArrayList<DashboardRecyclerViewItemModel> dashboardVmList = new ArrayList<>();
-  private ArrayList<DashboardRecyclerViewItemModel> itemList = new ArrayList<>();
+  private List<DashboardRecyclerViewItemModel> itemList = new ArrayList<>();
   private DashboardRecyclerViewAdapter adapter;
-
+  private final CompositeDisposable compositeDisposable = new CompositeDisposable();
   @Inject
   public SharedPreferences preference;
 
@@ -104,39 +104,48 @@ public class DashboardFragment extends Fragment {
   }
 
   private void loadFromPrerence() {
-    Set<String> dashboardRouts;
     dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
     ArrayList<String> list = new ArrayList<>(dashboardRouts);
     Log.d("dashboard", list.toString());
     //dashboardVmList.clear();
-    itemList.clear();
-    for (int i = 0; i < list.size(); ++i) {
-      String from = list.get(i).split("-", 2)[0];
-      String to = list.get(i).split("-", 2)[1];
-      Log.d("dashboard", "From " + from + " to " + to);
-      init(from, to);
+
+    if (list.size() == 0) {
+      binding.swipeRefreshLy.setRefreshing(false);
+      adapter.setData(Collections.EMPTY_LIST);
+    } else {
+      itemList.clear();
+      List<Pair<String, String>> stationPairList = new ArrayList<>();
+      for (int i = 0; i < list.size(); ++i) {
+        String fromStation = list.get(i).split("-", 2)[0];
+        String toStation = list.get(i).split("-", 2)[1];
+        Log.d("dashboard", "From " + fromStation + " to " + toStation);
+        stationPairList.add(new Pair<>(fromStation, toStation));
+      }
+      init(stationPairList);
     }
   }
 
-  private void init(String fromStation, String toStation) {
+  private void init(List<Pair<String, String>> pairList) {
 
-    repository.getEstimate(fromStation)
+    Disposable disposable = repository.getEstimate(pairList)
         .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
         .observeOn(AndroidSchedulers.mainThread())
         .map(this::getEtd)
         .concatMap(Observable::fromArray)
-        .map(etds -> convertToVM(etds, toStation))
-
-        //.doOnError(this::handleError)
-        //.doOnComplete(() -> binding.swipeRefreshLy.setRefreshing(false))
-        .subscribe(data->{
-          itemList.add(data);
-          adapter.setData(itemList);
-          binding.swipeRefreshLy.setRefreshing(false);
-          }, this::handleError);
+        .map(etds -> convertToVM(etds.first, etds.second))
+        .subscribe(data ->
+                itemList.add(data),
+            this::handleError,
+            this::onComplete);
+    compositeDisposable.add(disposable);
   }
 
-  private void setUpAdapter(){
+  private void onComplete() {
+    adapter.setData(itemList);
+    binding.swipeRefreshLy.setRefreshing(false);
+  }
+
+  private void setUpAdapter() {
     int resId = R.anim.layout_animation_fall_down;
     LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), resId);
     binding.recylerView.setLayoutAnimation(animation);
@@ -155,7 +164,8 @@ public class DashboardFragment extends Fragment {
   }
 
   private DashboardRecyclerViewItemModel convertToVM(List<Etd> etd, String toStation) {
-    DashboardRecyclerViewItemModel vm = new DashboardRecyclerViewItemModel(etd.get(0), originStation);
+    DashboardRecyclerViewItemModel vm =
+        new DashboardRecyclerViewItemModel(etd.get(0), originStation);
     for (int i = 0; i < etd.size(); ++i) {
       if (etd.get(i).getAbbreviation().equals(toStation)) {
         vm = new DashboardRecyclerViewItemModel(etd.get(i), originStation);
@@ -166,8 +176,13 @@ public class DashboardFragment extends Fragment {
     return vm;
   }
 
-  private List<Etd> getEtd(Bart bart) {
-    originStation = bart.getRoot().getStation().get(0).getName();
-    return bart.getRoot().getStation().get(0).getEtd();
+  private Pair<List<Etd>, String> getEtd(Pair<Bart, String> bart) {
+    originStation = bart.first.getRoot().getStation().get(0).getName();
+    return new Pair<>(bart.first.getRoot().getStation().get(0).getEtd(), bart.second);
+  }
+
+  @Override public void onStop() {
+    super.onStop();
+    compositeDisposable.clear();
   }
 }

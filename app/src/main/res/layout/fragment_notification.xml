@@ -13,7 +13,10 @@
         <import type="android.view.View"/>
     </data>
 
-
+<android.support.design.widget.CoordinatorLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -229,7 +232,7 @@
                             android:layout_marginBottom="8dp"
                             android:layout_marginEnd="16dp"
                             android:layout_marginTop="8dp"
-                            bind:src="@drawable/smiling"
+                            bind:src="@drawable/unhappy"
                             android:src="@{vm.isNotDelay ? @drawable/smiling : @drawable/unhappy }"
                             android:visibility="@{vm.isDelayReportProgressVisible ? View.GONE : View.VISIBLE}"
                             app:layout_constraintBottom_toTopOf="@+id/space"
@@ -345,7 +348,7 @@
                             android:layout_marginTop="8dp"
                             android:src="@{vm.isElevaorWorking ? @drawable/smiling : @drawable/unhappy }"
                             android:visibility="@{vm.isElevatorProgressVisible ? View.GONE : View.VISIBLE}"
-                            bind:src="@drawable/smiling"
+                            bind:src="@drawable/unhappy"
                             app:layout_constraintBottom_toBottomOf="@+id/space2"
                             app:layout_constraintEnd_toEndOf="@+id/space2"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -355,5 +358,5 @@
             </LinearLayout>
         </android.support.v4.widget.SwipeRefreshLayout>
     </android.support.constraint.ConstraintLayout>
-
+</android.support.design.widget.CoordinatorLayout>
 </layout>

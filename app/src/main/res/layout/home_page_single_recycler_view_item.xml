@@ -63,7 +63,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/textView4"
                 app:layout_constraintTop_toBottomOf="@+id/textView3"
-                bind:text="2nd" />
+                bind:text="17 minutes"
+                />
 
             <TextView
                 android:id="@+id/textView3"
@@ -72,9 +73,10 @@
                 android:layout_marginTop="16dp"
                 android:maxLines="1"
                 android:text="@{obj.firstTrain}"
-                app:layout_constraintStart_toStartOf="@+id/textView2"
+                app:layout_constraintEnd_toEndOf="@+id/textView2"
                 app:layout_constraintTop_toTopOf="parent"
-                bind:text="1st" />
+                bind:text="1 minutes"
+                />
 
             <TextView
                 android:id="@+id/textView4"
@@ -86,7 +88,8 @@
                 android:text="@{obj.thirdTrain}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                bind:text="3st" />
+                bind:text="24 mintues"
+                />
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
