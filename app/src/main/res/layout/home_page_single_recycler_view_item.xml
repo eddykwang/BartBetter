@@ -7,7 +7,7 @@
 
         <variable
             name="obj"
-            type="com.example.eddystudio.bartable.HomePage.HomePageRecyclerViewItemModel" />
+            type="com.example.eddystudio.bartable.ViewModel.HomePageRecyclerViewItemModel" />
     </data>
 
     <android.support.v7.widget.CardView

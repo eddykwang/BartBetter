@@ -8,18 +8,17 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 
-import com.example.eddystudio.bartable.Dashboard.DashboardFragment;
-import com.example.eddystudio.bartable.HomePage.HomePageRecyclerViewFragment;
-import com.example.eddystudio.bartable.application.Application;
+import com.example.eddystudio.bartable.UI.DashboardFragment;
+import com.example.eddystudio.bartable.UI.HomePageRecyclerViewFragment;
+import com.example.eddystudio.bartable.DI.Application;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-import com.example.eddystudio.bartable.Notification.NotificationFragment;
+import com.example.eddystudio.bartable.UI.NotificationFragment;
 
 public class MainActivity extends AppCompatActivity {
     private final HomePageRecyclerViewFragment homePageRecyclerViewFragment = new HomePageRecyclerViewFragment();
