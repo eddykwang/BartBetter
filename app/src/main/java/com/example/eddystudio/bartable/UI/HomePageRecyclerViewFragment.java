@@ -20,6 +20,7 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
+import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.eddystudio.bartable.Adapter.HomePageRecyclerViewAdapter;
 import com.example.eddystudio.bartable.R;
@@ -32,6 +33,7 @@ import com.example.eddystudio.bartable.Adapter.SwipeControllerActions;
 import com.example.eddystudio.bartable.DI.Application;
 import com.example.eddystudio.bartable.ViewModel.HomePageRecyclerViewItemModel;
 import com.example.eddystudio.bartable.ViewModel.HomePageViewModel;
+import com.example.eddystudio.bartable.ViewModel.ItemClickListener;
 import com.example.eddystudio.bartable.databinding.FragmentHomePageBinding;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -97,6 +99,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
     setupSinnper();
 
     setUpAdapter();
+    getAllStations();
 
     return binding.getRoot();
   }
@@ -109,7 +112,6 @@ public class HomePageRecyclerViewFragment extends Fragment {
       binding.recylerView.setVisibility(View.VISIBLE);
     }
     setLastSelectedStation();
-    getAllStations();
     attachOnCardSwipe();
   }
 
@@ -139,6 +141,8 @@ public class HomePageRecyclerViewFragment extends Fragment {
           init(selectedStation);
         }
       }
+
+
 
       @Override
       public void onNothingSelected(AdapterView<?> adapterView) {
@@ -191,7 +195,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
         .observeOn(AndroidSchedulers.mainThread())
         .map(bart -> getEtd(bart.first))
         .concatMap(Observable::fromArray)
-        .map(etds -> convertToVM(etds))
+        .map(this::convertToVM)
         .subscribe(data -> bartList = data,
             this::handleError,
             this::onComplete);
@@ -221,7 +225,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
         .observeOn(AndroidSchedulers.mainThread())
         .delay(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
         .doOnSubscribe(ignored -> homePageViewModel.showSpinnerProgess.set(true))
-        .map(station -> getAllStations(station))
+        .map(this::getAllStations)
         .concatMap(Observable::fromArray)
         .subscribe(stations -> {
           setupSinnper(stations);
@@ -266,7 +270,11 @@ public class HomePageRecyclerViewFragment extends Fragment {
     EtdStations.clear();
     ArrayList<HomePageRecyclerViewItemModel> vmList = new ArrayList<>();
     for (int i = 0; i < stations.size(); ++i) {
-      vmList.add(new HomePageRecyclerViewItemModel(stations.get(i)));
+      HomePageRecyclerViewItemModel vm = new HomePageRecyclerViewItemModel(selectedStation, stations.get(i));
+      vm.setItemClickListener((from,  to)->{
+        Toast.makeText(getContext(), from + " to " + to, Toast.LENGTH_LONG).show();
+      });
+      vmList.add(vm);
       EtdStations.add(stations.get(i).getAbbreviation());
     }
     return vmList;

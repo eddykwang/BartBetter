@@ -17,11 +17,21 @@ public class DashboardRecyclerViewItemModel {
     public final ObservableInt routColor = new ObservableInt(1);
     private final Etd etd;
     private final String origin;
+    private ItemClickListener itemClickListener;
 
     public DashboardRecyclerViewItemModel(Etd etd, String origin) {
         this.etd = etd;
         this.origin = origin;
         updateUi();
+    }
+
+    public void setItemClickListener(
+        ItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
+
+    public void onItemClicked(){
+        itemClickListener.onItemClicked(origin, destination.get());
     }
 
     private void updateUi(){

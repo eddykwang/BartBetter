@@ -16,9 +16,19 @@ public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
     this.recyclerViewLayout = recyclerViewLayout;
   }
 
-  public void setData(List<DashboardRecyclerViewItemModel> itemList) {
-    this.itemList = itemList;
-    this.notifyDataSetChanged();
+  public void setData(DashboardRecyclerViewItemModel item) {
+    this.itemList.add(item);
+    this.notifyItemChanged(itemList.size());
+  }
+
+  public void deleteData(int position){
+    this.itemList.remove(position);
+    this.notifyItemRemoved(position);
+  }
+
+  public void clearList(){
+    this.itemList.clear();
+    notifyDataSetChanged();
   }
 
   @Override

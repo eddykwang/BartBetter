@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:onClick="@{()-> obj.onItemClicked()}"
         app:cardBackgroundColor="@color/cardview_light_background"
         app:cardCornerRadius="2dp"
         app:cardElevation="4dp">
@@ -25,22 +26,28 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8sp"
                     android:text="@{obj.fromStation}"
-                    android:textSize="25sp"
-                    bind:text="Fremont"/>
+                    android:textSize="20sp"
+                    bind:text="Fremont"
+                    />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="5sp"
                     android:layout_marginLeft="8sp"
                     android:layout_marginRight="8sp"
-                    android:background="@{obj.routColor}" />
+                    android:background="@{obj.routColor}"
+                    />
 
                 <TextView
                     android:id="@+id/textView"
@@ -48,8 +55,9 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="8sp"
                     android:text="@{obj.destination}"
-                    android:textSize="25sp"
-                    bind:text="Daly City" />
+                    android:textSize="20sp"
+                    bind:text="Daly City"
+                    />
             </LinearLayout>
 
             <RelativeLayout

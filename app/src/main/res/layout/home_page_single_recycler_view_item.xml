@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:onClick="@{() -> obj.onItemClicked()}"
         app:cardBackgroundColor="@color/cardview_light_background"
         app:cardCornerRadius="2dp"
         app:cardElevation="4dp">
@@ -29,14 +30,15 @@
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:text="@{obj.destination}"
-                android:textSize="25sp"
+                android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                bind:text="Daly City" />
+                app:layout_constraintTop_toTopOf="@+id/textView3"
+                bind:text="Daly City"
+                />
 
             <FrameLayout
                 android:id="@+id/linearLayout"
@@ -47,7 +49,8 @@
                 android:background="@{obj.routColor}"
                 app:layout_constraintEnd_toEndOf="@+id/textView"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
+                app:layout_constraintTop_toBottomOf="@+id/textView"
+                />
 
 
             <TextView

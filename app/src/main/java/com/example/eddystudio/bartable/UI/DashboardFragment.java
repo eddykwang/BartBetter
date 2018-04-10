@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 
+import android.widget.Toast;
 import com.example.eddystudio.bartable.Adapter.DashboardRecyclerViewAdapter;
 import com.example.eddystudio.bartable.ViewModel.DashboardRecyclerViewItemModel;
 import com.example.eddystudio.bartable.R;
@@ -48,7 +49,6 @@ public class DashboardFragment extends Fragment {
 
   private FragmentDashboardBinding binding;
   private String originStation;
-  //private final ArrayList<DashboardRecyclerViewItemModel> dashboardVmList = new ArrayList<>();
   private List<DashboardRecyclerViewItemModel> itemList = new ArrayList<>();
   private DashboardRecyclerViewAdapter adapter;
   private final CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -88,13 +88,14 @@ public class DashboardFragment extends Fragment {
       @Override
       public void onRightClicked(int position) {
         super.onRightClicked(position);
+        dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
         ArrayList<String> arrayList = new ArrayList<>(dashboardRouts);
         arrayList.remove(position);
         SharedPreferences.Editor editor = preference.edit();
         editor.putStringSet(DASHBOARDROUTS, new HashSet<>(arrayList));
         editor.apply();
         Snackbar.make(binding.recylerView, "Removed", Snackbar.LENGTH_LONG).show();
-        loadFromPrerence();
+        adapter.deleteData(position);
       }
     });
     ItemTouchHelper itemTouchHelper = new ItemTouchHelper(cardSwipeController);
@@ -115,9 +116,8 @@ public class DashboardFragment extends Fragment {
 
     if (list.size() == 0) {
       binding.swipeRefreshLy.setRefreshing(false);
-      adapter.setData(Collections.EMPTY_LIST);
     } else {
-      itemList.clear();
+      adapter.clearList();
       List<Pair<String, String>> stationPairList = new ArrayList<>();
       for (int i = 0; i < list.size(); ++i) {
         String fromStation = list.get(i).split("-", 2)[0];
@@ -138,14 +138,13 @@ public class DashboardFragment extends Fragment {
         .concatMap(Observable::fromArray)
         .map(etds -> convertToVM(etds.first, etds.second))
         .subscribe(data ->
-                itemList.add(data),
+                adapter.setData(data),
             this::handleError,
             this::onComplete);
     compositeDisposable.add(disposable);
   }
 
   private void onComplete() {
-    adapter.setData(itemList);
     binding.swipeRefreshLy.setRefreshing(false);
   }
 
@@ -168,16 +167,17 @@ public class DashboardFragment extends Fragment {
   }
 
   private DashboardRecyclerViewItemModel convertToVM(List<Etd> etd, String toStation) {
-    DashboardRecyclerViewItemModel vm =
-        new DashboardRecyclerViewItemModel(etd.get(0), originStation);
     for (int i = 0; i < etd.size(); ++i) {
       if (etd.get(i).getAbbreviation().equals(toStation)) {
-        vm = new DashboardRecyclerViewItemModel(etd.get(i), originStation);
-        break;
+        DashboardRecyclerViewItemModel vm = new DashboardRecyclerViewItemModel(etd.get(i), originStation);
+        vm.setItemClickListener((from, to)->{
+          Toast.makeText(getContext(), from  + " to "+ to, Toast.LENGTH_LONG).show();
+        });
+        return vm;
       }
     }
 
-    return vm;
+    return null;
   }
 
   private Pair<List<Etd>, String> getEtd(Pair<Bart, String> bart) {

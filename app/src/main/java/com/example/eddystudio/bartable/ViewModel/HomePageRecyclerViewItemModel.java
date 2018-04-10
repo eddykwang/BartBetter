@@ -9,6 +9,7 @@ import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Model.Response.EstimateResponse.Etd;
 
 public class HomePageRecyclerViewItemModel {
+    public final String from;
     public final ObservableField<String> destination = new ObservableField<>("");
     public final ObservableField<String> firstTrain = new ObservableField<>("");
     public final ObservableField<String> secondTrain = new ObservableField<>("");
@@ -16,9 +17,20 @@ public class HomePageRecyclerViewItemModel {
     public final ObservableInt routColor = new ObservableInt(1);
     private final Etd etd;
 
-    public HomePageRecyclerViewItemModel(Etd etd) {
+    private ItemClickListener itemClickListener;
+
+    public HomePageRecyclerViewItemModel(String from, Etd etd) {
+        this.from = from;
         this.etd = etd;
         updateUi();
+    }
+
+    public void setItemClickListener (ItemClickListener itemClickListener){
+        this.itemClickListener = itemClickListener;
+    }
+
+    public void onItemClicked(){
+        itemClickListener.onItemClicked(from, destination.get());
     }
 
     private void updateUi(){

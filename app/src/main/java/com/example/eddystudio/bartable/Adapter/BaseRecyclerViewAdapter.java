@@ -40,9 +40,6 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<BaseR
                         : R.anim.down_from_top);
         holder.itemView.startAnimation(animation);
         lastPosition = position;
-
-        holder.itemView.setOnClickListener((view)->{
-        });
     }
 
     protected abstract Object getObjectForPosition(int position);
