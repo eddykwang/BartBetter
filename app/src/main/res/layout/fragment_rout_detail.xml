@@ -1,0 +1,119 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+  <data>
+    <variable
+        name="vm"
+        type="com.example.eddystudio.bartable.ViewModel.RouteDetailViewModel"
+        />
+  </data>
+
+  <!--<android.support.design.widget.CoordinatorLayout-->
+  <!--android:layout_width="match_parent"-->
+  <!--android:layout_height="match_parent"-->
+  <!--android:fitsSystemWindows="true"-->
+  <!--android:orientation="vertical">-->
+
+  <!--<android.support.design.widget.AppBarLayout-->
+  <!--android:layout_width="match_parent"-->
+  <!--android:layout_height="wrap_content"-->
+  <!--android:id="@+id/app_bar"-->
+  <!--android:theme="@style/AppTheme.AppBarOverlay"-->
+  <!--android:fitsSystemWindows="true">-->
+
+  <!--<android.support.design.widget.CollapsingToolbarLayout-->
+  <!--android:id="@+id/toolbar_layout"-->
+  <!--android:layout_width="match_parent"-->
+  <!--android:layout_height="match_parent"-->
+  <!--android:fitsSystemWindows="true"-->
+  <!--app:contentScrim="?attr/colorPrimary"-->
+  <!--app:layout_scrollFlags="scroll|exitUntilCollapsed"-->
+  <!--app:toolbarId="@+id/toolbar"-->
+  <!--&gt;-->
+
+  <!--<android.support.v7.widget.Toolbar-->
+  <!--android:id="@+id/toolbar"-->
+  <!--android:layout_width="match_parent"-->
+  <!--android:layout_height="?attr/actionBarSize"-->
+  <!--app:layout_collapseMode="pin"-->
+  <!--app:popupTheme="@style/AppTheme.PopupOverlay"-->
+  <!--/>-->
+
+  <!--</android.support.design.widget.CollapsingToolbarLayout>-->
+
+  <!--</android.support.design.widget.AppBarLayout>-->
+
+  <android.support.v4.widget.SwipeRefreshLayout
+      android:id="@+id/swipeRefreshLy"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="0sp"
+      >
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/activity_main"
+        >
+      <android.support.constraint.ConstraintLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          >
+
+        <ImageView
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:background="@{vm.color}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+        <TextView
+            android:id="@+id/textView18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@{vm.from}"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="25sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="FROME"
+            />
+        <TextView
+            android:id="@+id/destination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@{vm.to}"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="25sp"
+            android:transitionName="@string/textTransition"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView18"
+            tools:text="TO"
+            />
+
+      </android.support.constraint.ConstraintLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+  </android.support.v4.widget.SwipeRefreshLayout>
+
+  <!--<android.support.design.widget.FloatingActionButton-->
+  <!--android:id="@+id/fab"-->
+  <!--android:layout_width="wrap_content"-->
+  <!--android:layout_height="wrap_content"-->
+  <!--android:layout_margin="@dimen/fab_margin"-->
+  <!--app:layout_anchor="@id/app_bar"-->
+  <!--app:layout_anchorGravity="bottom|end"-->
+  <!--app:srcCompat="@android:drawable/ic_media_play"-->
+  <!--/>-->
+
+  <!--</android.support.design.widget.CoordinatorLayout>-->
+</layout>

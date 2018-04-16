@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:onClick="@{()-> obj.onItemClicked()}"
+        android:onClick="@{(view)-> obj.onItemClicked(view)}"
         app:cardBackgroundColor="@color/cardview_light_background"
         app:cardCornerRadius="2dp"
         app:cardElevation="4dp">
@@ -33,6 +33,7 @@
                 >
 
                 <TextView
+                    android:id="@+id/dashboard_from_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8sp"
@@ -41,7 +42,8 @@
                     bind:text="Fremont"
                     />
 
-                <LinearLayout
+                <ImageView
+                    android:id="@+id/dashboard_color_block_iv"
                     android:layout_width="match_parent"
                     android:layout_height="5sp"
                     android:layout_marginLeft="8sp"
@@ -50,7 +52,7 @@
                     />
 
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/destination"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8sp"

@@ -46,9 +46,9 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     binding = FragmentNotificationBinding.inflate(inflater, container, false);
-    ((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
+    //((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) binding.toolbar);
     Application.getAppComponet().inject(this);
-    binding.appToolbar.setTitle("Notifications");
+    //binding.appToolbar.setTitle("Notifications");
     binding.setVm(viewModel);
     binding.swipeRefreshLy.setOnRefreshListener(this::init);
     return binding.getRoot();

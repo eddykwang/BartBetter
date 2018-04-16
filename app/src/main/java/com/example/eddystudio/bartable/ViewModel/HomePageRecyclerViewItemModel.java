@@ -5,6 +5,7 @@ import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
 import android.graphics.Color;
 
+import android.view.View;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Model.Response.EstimateResponse.Etd;
 
@@ -29,8 +30,8 @@ public class HomePageRecyclerViewItemModel {
         this.itemClickListener = itemClickListener;
     }
 
-    public void onItemClicked(){
-        itemClickListener.onItemClicked(from, destination.get());
+    public void onItemClicked(View view){
+        itemClickListener.onItemClicked(from, destination.get(), routColor.get(), view);
     }
 
     private void updateUi(){

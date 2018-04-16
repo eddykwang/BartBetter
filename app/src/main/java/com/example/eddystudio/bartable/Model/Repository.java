@@ -38,6 +38,7 @@ public class Repository {
                     .execute())
                 .map(Response::body)
                 .map(bart -> new Pair<>(bart, pair.second))
+            .onErrorResumeNext(Observable.empty())
         )
         .subscribeOn(Schedulers.io());
   }

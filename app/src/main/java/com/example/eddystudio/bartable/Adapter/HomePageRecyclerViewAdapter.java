@@ -1,6 +1,7 @@
 package com.example.eddystudio.bartable.Adapter;
 
 
+import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.ViewModel.HomePageRecyclerViewItemModel;
 import java.util.ArrayList;
 
@@ -19,6 +20,16 @@ public class HomePageRecyclerViewAdapter extends BaseRecyclerViewAdapter {
         this.bartList.clear();
         this.bartList.addAll(bartList);
         this.notifyDataSetChanged();
+    }
+
+    @Override public void onBindViewHolder(ItemHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
+
+        // the view being shared
+        holder.itemView.findViewById(R.id.boder_image_view)
+            .setTransitionName(application.getString(R.string.goToDetailTransition) + position);
+        holder.itemView.findViewById(R.id.destination)
+            .setTransitionName(application.getString(R.string.textTransition) + position);
     }
 
     @Override

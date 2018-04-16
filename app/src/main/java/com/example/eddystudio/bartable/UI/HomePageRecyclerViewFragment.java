@@ -5,11 +5,15 @@ import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -20,9 +24,12 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
-import android.widget.Toast;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.eddystudio.bartable.Adapter.HomePageRecyclerViewAdapter;
+import com.example.eddystudio.bartable.MainActivity;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Model.Repository;
 import com.example.eddystudio.bartable.Model.Response.EstimateResponse.Bart;
@@ -33,7 +40,6 @@ import com.example.eddystudio.bartable.Adapter.SwipeControllerActions;
 import com.example.eddystudio.bartable.DI.Application;
 import com.example.eddystudio.bartable.ViewModel.HomePageRecyclerViewItemModel;
 import com.example.eddystudio.bartable.ViewModel.HomePageViewModel;
-import com.example.eddystudio.bartable.ViewModel.ItemClickListener;
 import com.example.eddystudio.bartable.databinding.FragmentHomePageBinding;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -93,13 +99,14 @@ public class HomePageRecyclerViewFragment extends Fragment {
     //binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_home_page);
     binding = FragmentHomePageBinding.inflate(inflater, container, false);
 
-    ((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
+    //((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
     binding.setVm(homePageViewModel);
 
     setupSinnper();
 
     setUpAdapter();
     getAllStations();
+    attachOnCardSwipe();
 
     return binding.getRoot();
   }
@@ -112,7 +119,6 @@ public class HomePageRecyclerViewFragment extends Fragment {
       binding.recylerView.setVisibility(View.VISIBLE);
     }
     setLastSelectedStation();
-    attachOnCardSwipe();
   }
 
   @Override public void onStop() {
@@ -141,8 +147,6 @@ public class HomePageRecyclerViewFragment extends Fragment {
           init(selectedStation);
         }
       }
-
-
 
       @Override
       public void onNothingSelected(AdapterView<?> adapterView) {
@@ -270,9 +274,11 @@ public class HomePageRecyclerViewFragment extends Fragment {
     EtdStations.clear();
     ArrayList<HomePageRecyclerViewItemModel> vmList = new ArrayList<>();
     for (int i = 0; i < stations.size(); ++i) {
-      HomePageRecyclerViewItemModel vm = new HomePageRecyclerViewItemModel(selectedStation, stations.get(i));
-      vm.setItemClickListener((from,  to)->{
-        Toast.makeText(getContext(), from + " to " + to, Toast.LENGTH_LONG).show();
+      HomePageRecyclerViewItemModel vm =
+          new HomePageRecyclerViewItemModel(selectedStation, stations.get(i));
+      vm.setItemClickListener((from, to, color, view) -> {
+        //Toast.makeText(getContext(), from + " to " + to, Toast.LENGTH_LONG).show();
+        goToDetail(from, to, color, view);
       });
       vmList.add(vm);
       EtdStations.add(stations.get(i).getAbbreviation());
@@ -283,5 +289,32 @@ public class HomePageRecyclerViewFragment extends Fragment {
   private List<Etd> getEtd(Bart bart) {
     Log.d("destination", bart.toString());
     return bart.getRoot().getStation().get(0).getEtd();
+  }
+
+  private void goToDetail(String from, String to, int color, View view) {
+    if (getActivity() != null) {
+      ImageView imageView = view.findViewById(R.id.boder_image_view);
+      TextView textView = view.findViewById(R.id.destination);
+      RouteDetailFragment fragment = new RouteDetailFragment();
+
+      //fragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
+      fragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
+      fragment.setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
+
+      Bundle arg = new Bundle();
+      arg.putString(MainActivity.BUDDLE_ARG_FROM, from);
+      arg.putString(MainActivity.BUDDLE_ARG_TO, to);
+      arg.putInt("color", color);
+      arg.putString("transitionName",getString(R.string.goToDetailTransition) );
+      fragment.setArguments(arg);
+      getActivity().getSupportFragmentManager()
+          .beginTransaction()
+          .addToBackStack(null)
+          .replace(R.id.main_frame_layout, fragment)
+          .setReorderingAllowed(true)
+          .addSharedElement(imageView, getString(R.string.goToDetailTransition) )
+          .addSharedElement(textView, getString(R.string.textTransition))
+          .commit();
+    }
   }
 }

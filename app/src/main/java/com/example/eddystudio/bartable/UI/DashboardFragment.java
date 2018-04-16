@@ -10,6 +10,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -18,8 +20,11 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.example.eddystudio.bartable.Adapter.DashboardRecyclerViewAdapter;
+import com.example.eddystudio.bartable.MainActivity;
 import com.example.eddystudio.bartable.ViewModel.DashboardRecyclerViewItemModel;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Model.Repository;
@@ -67,8 +72,10 @@ public class DashboardFragment extends Fragment {
       Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     binding = FragmentDashboardBinding.inflate(inflater, container, false);
-    ((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
-    binding.appToolbar.setTitle("Dashboard");
+    //((AppCompatActivity) getActivity()).setSupportActionBar(container.findViewById(R.id.toolbar));
+    //binding.appToolbar.setTitle("My Routes");
+
+
 
     Application.getAppComponet().inject(this);
     setUpAdapter();
@@ -109,6 +116,7 @@ public class DashboardFragment extends Fragment {
   }
 
   private void loadFromPrerence() {
+
     dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
     ArrayList<String> list = new ArrayList<>(dashboardRouts);
     Log.d("dashboard", list.toString());
@@ -170,8 +178,9 @@ public class DashboardFragment extends Fragment {
     for (int i = 0; i < etd.size(); ++i) {
       if (etd.get(i).getAbbreviation().equals(toStation)) {
         DashboardRecyclerViewItemModel vm = new DashboardRecyclerViewItemModel(etd.get(i), originStation);
-        vm.setItemClickListener((from, to)->{
-          Toast.makeText(getContext(), from  + " to "+ to, Toast.LENGTH_LONG).show();
+        vm.setItemClickListener((from, to, color, view)->{
+          //Toast.makeText(getContext(), from  + " to "+ to, Toast.LENGTH_LONG).show();
+          goToDetail(from, to, color, view);
         });
         return vm;
       }
@@ -183,6 +192,40 @@ public class DashboardFragment extends Fragment {
   private Pair<List<Etd>, String> getEtd(Pair<Bart, String> bart) {
     originStation = bart.first.getRoot().getStation().get(0).getName();
     return new Pair<>(bart.first.getRoot().getStation().get(0).getEtd(), bart.second);
+  }
+
+  private void goToDetail(String from, String to, int color, View view) {
+    if (getActivity() != null) {
+
+
+
+      //RecyclerView view = binding.recylerView;
+      //ImageView imageView = view.findViewHolderForAdapterPosition(position).itemView.findViewById(R.id.dashboard_color_block_iv);
+      //TextView textView = view.findViewHolderForAdapterPosition(position).itemView.findViewById(R.id.destination);
+      ImageView imageView = view.findViewById(R.id.dashboard_color_block_iv);
+      TextView textView =view.findViewById(R.id.destination);
+
+      RouteDetailFragment fragment = new RouteDetailFragment();
+
+      fragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
+      fragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
+      fragment.setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
+
+      Bundle arg = new Bundle();
+      arg.putString(MainActivity.BUDDLE_ARG_FROM, from);
+      arg.putString(MainActivity.BUDDLE_ARG_TO, to);
+      arg.putInt("color", color);
+      arg.putString("transitionName",getString(R.string.goToDetailTransition) );
+      fragment.setArguments(arg);
+      getActivity().getSupportFragmentManager()
+          .beginTransaction()
+          .addToBackStack(null)
+          .replace(R.id.main_frame_layout, fragment)
+          .setReorderingAllowed(true)
+          .addSharedElement(imageView, getString(R.string.goToDetailTransition) )
+          .addSharedElement(textView, getString(R.string.textTransition))
+          .commit();
+    }
   }
 
   @Override public void onStop() {

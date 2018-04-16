@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:onClick="@{() -> obj.onItemClicked()}"
+        android:onClick="@{(view) -> obj.onItemClicked(view)}"
         app:cardBackgroundColor="@color/cardview_light_background"
         app:cardCornerRadius="2dp"
         app:cardElevation="4dp">
@@ -23,33 +23,34 @@
             android:id="@+id/relativeLayout"
             android:layout_width="match_parent"
             android:layout_height="120dp"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+            app:layout_constraintBottom_toBottomOf="@+id/boder_image_view"
+            app:layout_constraintTop_toBottomOf="@+id/boder_image_view">
 
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/destination"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@{obj.destination}"
                 android:textSize="20sp"
+                android:transitionName="@string/textTransition"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textView3"
                 bind:text="Daly City"
                 />
 
-            <FrameLayout
-                android:id="@+id/linearLayout"
+            <ImageView
+                android:id="@+id/boder_image_view"
                 android:layout_width="0dp"
                 android:layout_height="6dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:background="@{obj.routColor}"
-                app:layout_constraintEnd_toEndOf="@+id/textView"
+                app:layout_constraintEnd_toEndOf="@+id/destination"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView"
+                app:layout_constraintTop_toBottomOf="@+id/destination"
                 />
 
 
@@ -57,14 +58,11 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="12dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginTop="16dp"
                 android:maxLines="1"
                 android:text="@{obj.secondTrain}"
-                app:layout_constraintBottom_toTopOf="@+id/textView4"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/textView4"
                 app:layout_constraintTop_toBottomOf="@+id/textView3"
                 bind:text="17 minutes"
                 />
@@ -72,11 +70,12 @@
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginTop="16dp"
                 android:maxLines="1"
                 android:text="@{obj.firstTrain}"
-                app:layout_constraintEnd_toEndOf="@+id/textView2"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 bind:text="1 minutes"
                 />
@@ -84,13 +83,15 @@
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="8dp"
+                android:layout_marginTop="16dp"
                 android:maxLines="1"
                 android:text="@{obj.thirdTrain}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
                 bind:text="24 mintues"
                 />
 

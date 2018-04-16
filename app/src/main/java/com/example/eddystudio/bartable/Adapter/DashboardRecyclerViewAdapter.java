@@ -1,5 +1,6 @@
 package com.example.eddystudio.bartable.Adapter;
 
+import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.ViewModel.DashboardRecyclerViewItemModel;
 import java.util.List;
 
@@ -14,6 +15,14 @@ public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
     this.itemList = itemList;
     this.layoutId = layoutId;
     this.recyclerViewLayout = recyclerViewLayout;
+  }
+
+  @Override public void onBindViewHolder(ItemHolder holder, int position) {
+    super.onBindViewHolder(holder, position);
+    holder.itemView.findViewById(R.id.dashboard_color_block_iv)
+        .setTransitionName(application.getString(R.string.goToDetailTransition) + position);
+    holder.itemView.findViewById(R.id.destination)
+        .setTransitionName(application.getString(R.string.textTransition) + position);
   }
 
   public void setData(DashboardRecyclerViewItemModel item) {

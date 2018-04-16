@@ -13,83 +13,108 @@
     <import type="android.view.View"/>
   </data>
 
-  <android.support.design.widget.CoordinatorLayout
+  <android.support.v4.widget.SwipeRefreshLayout
+      android:id="@+id/swipeRefreshLy"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:orientation="vertical"
       >
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        >
-
-      <android.support.v7.widget.Toolbar
-          android:id="@+id/app_toolbar"
-          android:layout_width="match_parent"
-          android:layout_height="?attr/actionBarSize"
-          app:layout_collapseMode="pin"
-          />
-
-      <android.support.constraint.ConstraintLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          >
-
-        <Spinner
-            android:id="@+id/station_spinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:autofillHints="Choose station to start "
-            android:gravity="end"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textView17"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            />
-
-        <ProgressBar
-            android:id="@+id/progressBar3"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:visibility="@{vm.showSpinnerProgess? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            style="?android:attr/progressBarStyle"
-            />
-
-        <TextView
-            android:id="@+id/textView17"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="FROM:"
-            android:textAppearance="@android:style/TextAppearance.Material.Menu"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-      </android.support.constraint.ConstraintLayout>
-
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLy"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="106sp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/activity_main"
         >
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:orientation="vertical"
+          >
+
+        <!--<android.support.design.widget.AppBarLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:fitsSystemWindows="true"-->
+        <!--&gt;-->
+
+        <!--&lt;!&ndash;<android.support.v7.widget.Toolbar&ndash;&gt;-->
+        <!--&lt;!&ndash;android:id="@+id/app_toolbar"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_height="?attr/actionBarSize"&ndash;&gt;-->
+        <!--&lt;!&ndash;app:layout_collapseMode="pin"&ndash;&gt;-->
+        <!--&lt;!&ndash;/>&ndash;&gt;-->
+        <!--<android.support.design.widget.CollapsingToolbarLayout-->
+        <!--android:id="@+id/toolbar_layout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:fitsSystemWindows="true"-->
+        <!--app:contentScrim="?attr/colorPrimary"-->
+        <!--app:layout_scrollFlags="scroll|exitUntilCollapsed"-->
+        <!--app:toolbarId="@+id/toolbar"-->
+        <!--&gt;-->
+
+        <!--<android.support.v7.widget.Toolbar-->
+        <!--android:id="@+id/toolbar"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="?attr/actionBarSize"-->
+        <!--app:layout_collapseMode="pin"-->
+        <!--app:popupTheme="@style/AppTheme.PopupOverlay"-->
+        <!--/>-->
+
+        <!--</android.support.design.widget.CollapsingToolbarLayout>-->
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+          <Spinner
+              android:id="@+id/station_spinner"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_marginEnd="8dp"
+              android:layout_marginStart="8dp"
+              android:autofillHints="Choose station to start "
+              android:gravity="end"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toEndOf="@+id/textView17"
+              app:layout_constraintTop_toTopOf="parent"
+              app:layout_constraintVertical_bias="0.0"
+              />
+
+          <ProgressBar
+              android:id="@+id/progressBar3"
+              android:layout_width="wrap_content"
+              android:layout_height="0dp"
+              android:layout_marginBottom="8dp"
+              android:layout_marginEnd="24dp"
+              android:layout_marginTop="8dp"
+              android:layout_weight="1"
+              android:visibility="@{vm.showSpinnerProgess? View.VISIBLE : View.GONE}"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintTop_toTopOf="parent"
+              style="?android:attr/progressBarStyle"
+              />
+
+          <TextView
+              android:id="@+id/textView17"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="8dp"
+              android:layout_marginStart="8dp"
+              android:layout_marginTop="8dp"
+              android:text="FROM:"
+              android:textAppearance="@android:style/TextAppearance.Material.Menu"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent"
+              />
+        </android.support.constraint.ConstraintLayout>
+
+        <!--</android.support.design.widget.AppBarLayout>-->
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recylerView"
@@ -99,20 +124,20 @@
             />
 
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+        <RelativeLayout
+            android:id="@+id/onErrorRelaticeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            >
+          <ImageView
+              android:id="@+id/onErrorImageView"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              />
+        </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/onErrorRelaticeLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        >
-      <ImageView
-          android:id="@+id/onErrorImageView"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          />
-    </RelativeLayout>
-
-  </android.support.design.widget.CoordinatorLayout>
+      </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+  </android.support.v4.widget.SwipeRefreshLayout>
 </layout>
