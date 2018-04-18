@@ -25,6 +25,11 @@ public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
         .setTransitionName(application.getString(R.string.textTransition) + position);
   }
 
+  public void modifyData(DashboardRecyclerViewItemModel item, int position){
+    this.itemList.set(position, item);
+    this.notifyItemChanged(position);
+  }
+
   public void setData(DashboardRecyclerViewItemModel item) {
     this.itemList.add(item);
     this.notifyItemChanged(itemList.size());

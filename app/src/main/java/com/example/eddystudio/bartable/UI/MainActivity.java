@@ -1,18 +1,13 @@
-package com.example.eddystudio.bartable;
+package com.example.eddystudio.bartable.UI;
 
-import android.Manifest;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v7.widget.Toolbar;
-import com.example.eddystudio.bartable.UI.DashboardFragment;
-import com.example.eddystudio.bartable.UI.HomePageRecyclerViewFragment;
+import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.DI.Application;
 
 import java.util.HashSet;
@@ -20,11 +15,9 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import com.example.eddystudio.bartable.UI.NotificationFragment;
-
 public class MainActivity extends AppCompatActivity {
-  private final HomePageRecyclerViewFragment homePageRecyclerViewFragment =
-      new HomePageRecyclerViewFragment();
+  private final DiscoverFragment discoverFragment =
+      new DiscoverFragment();
   private final DashboardFragment dashboardFragment = new DashboardFragment();
   private final NotificationFragment notificationFragment = new NotificationFragment();
   @Inject
@@ -39,13 +32,19 @@ public class MainActivity extends AppCompatActivity {
       = item -> {
     switch (item.getItemId()) {
       case R.id.navigation_home:
-        fragment = homePageRecyclerViewFragment;
+        fragment = discoverFragment;
+        getSupportActionBar().setTitle("Discover");
+
         break;
       case R.id.navigation_dashboard:
         fragment = dashboardFragment;
+        getSupportActionBar().setTitle("My Routes");
+
         break;
       case R.id.navigation_notifications:
         fragment = notificationFragment;
+        getSupportActionBar().setTitle("Notification");
+
         break;
     }
     commitToNewFragment(fragment);
@@ -66,26 +65,18 @@ public class MainActivity extends AppCompatActivity {
     Application.getAppComponet().inject(this);
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
-    AppBarLayout appBarLayout = findViewById(R.id.app_bar);
-    CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
-    collapsingToolbarLayout.setTitleEnabled(false);
-    appBarLayout.setExpanded(false,false);
+    //AppBarLayout appBarLayout = findViewById(R.id.app_bar);
+    //CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
+    //collapsingToolbarLayout.setTitle("");
+    //collapsingToolbarLayout.setTitleEnabled(true);
+    //appBarLayout.setExpanded(false,false);
     navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-    //getSupportFragmentManager().beginTransaction()
-    //    .replace(R.id.main_frame_layout, dashboardFragment).commit();
     navigation.setSelectedItemId(R.id.navigation_dashboard);
-    requestInternetPermission();
   }
 
   @Override
   protected void onStart() {
     super.onStart();
     dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
-  }
-
-  private void requestInternetPermission() {
-    ActivityCompat.requestPermissions(this,
-        new String[] { Manifest.permission.INTERNET },
-        1);
   }
 }

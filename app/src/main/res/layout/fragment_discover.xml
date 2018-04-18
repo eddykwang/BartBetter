@@ -7,7 +7,7 @@
 
     <variable
         name="vm"
-        type="com.example.eddystudio.bartable.ViewModel.HomePageViewModel"
+        type="com.example.eddystudio.bartable.ViewModel.DiscoverViewModel"
         />
 
     <import type="android.view.View"/>
@@ -19,12 +19,12 @@
       android:layout_height="match_parent"
       >
 
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:showIn="@layout/activity_main"
-        >
+    <!--<android.support.v4.widget.NestedScrollView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+        <!--tools:showIn="@layout/activity_main"-->
+        <!--&gt;-->
 
       <LinearLayout
           android:layout_width="match_parent"
@@ -138,6 +138,6 @@
         </RelativeLayout>
 
       </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    <!--</android.support.v4.widget.NestedScrollView>-->
   </android.support.v4.widget.SwipeRefreshLayout>
 </layout>

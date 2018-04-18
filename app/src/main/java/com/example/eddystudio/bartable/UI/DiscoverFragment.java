@@ -3,16 +3,12 @@ package com.example.eddystudio.bartable.UI;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.util.Pair;
@@ -24,12 +20,10 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
-import com.example.eddystudio.bartable.Adapter.HomePageRecyclerViewAdapter;
-import com.example.eddystudio.bartable.MainActivity;
+import com.example.eddystudio.bartable.Adapter.DiscoverRecyclerViewAdapter;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Model.Repository;
 import com.example.eddystudio.bartable.Model.Response.EstimateResponse.Bart;
@@ -39,9 +33,9 @@ import com.example.eddystudio.bartable.Adapter.CardSwipeController;
 import com.example.eddystudio.bartable.Adapter.SwipeControllerActions;
 import com.example.eddystudio.bartable.DI.Application;
 import com.example.eddystudio.bartable.ViewModel.HomePageRecyclerViewItemModel;
-import com.example.eddystudio.bartable.ViewModel.HomePageViewModel;
-import com.example.eddystudio.bartable.databinding.FragmentHomePageBinding;
+import com.example.eddystudio.bartable.ViewModel.DiscoverViewModel;
 
+import com.example.eddystudio.bartable.databinding.FragmentDiscoverBinding;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import java.util.ArrayList;
@@ -54,27 +48,27 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.example.eddystudio.bartable.MainActivity.DASHBOARDROUTS;
-import static com.example.eddystudio.bartable.MainActivity.dashboardRouts;
+import static com.example.eddystudio.bartable.UI.MainActivity.DASHBOARDROUTS;
+import static com.example.eddystudio.bartable.UI.MainActivity.dashboardRouts;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomePageRecyclerViewFragment extends Fragment {
+public class DiscoverFragment extends Fragment {
 
   //private final HomePageRecyclerViewItemModel viewModel = new HomePageRecyclerViewItemModel();
-  private FragmentHomePageBinding binding;
+  private FragmentDiscoverBinding binding;
   private static String selectedStation;
   private static int sinpperPos;
   private final ArrayList<String> stationList = new ArrayList<>();
   private final ArrayList<String> stationListSortcut = new ArrayList<>();
   private ArrayAdapter<String> spinnerAdapter;
-  private final HomePageViewModel homePageViewModel = new HomePageViewModel();
+  private final DiscoverViewModel discoverViewModel = new DiscoverViewModel();
   private final ArrayList<String> EtdStations = new ArrayList<>();
 
   private ArrayList<HomePageRecyclerViewItemModel> bartList = new ArrayList<>();
   private static boolean isInitOpen = true;
-  private HomePageRecyclerViewAdapter adapters;
+  private DiscoverRecyclerViewAdapter adapters;
   private static final String lastSelectedStation = "LAST_SELECTED_STATION";
   private static final String lastSelectedSinperPosition = "LAST_SELECTED_SINPER_POSITION";
   private final CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -84,7 +78,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
   @Inject
   public SharedPreferences preference;
 
-  public HomePageRecyclerViewFragment() {
+  public DiscoverFragment() {
     // Required empty public constructor
   }
 
@@ -96,11 +90,15 @@ public class HomePageRecyclerViewFragment extends Fragment {
 
     // Inflate the layout for this fragment
     repository = new Repository();
-    //binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_home_page);
-    binding = FragmentHomePageBinding.inflate(inflater, container, false);
+    //binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_discover);
+    binding = FragmentDiscoverBinding.inflate(inflater, container, false);
 
     //((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
-    binding.setVm(homePageViewModel);
+    binding.setVm(discoverViewModel);
+    getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
+    CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
+    collapsingToolbarLayout.setTitleEnabled(false);
+    collapsingToolbarLayout.setTitle("Discover");
 
     setupSinnper();
 
@@ -175,7 +173,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
         SharedPreferences.Editor editor = preference.edit();
         editor.putStringSet(DASHBOARDROUTS, dashboardRouts);
         editor.apply();
-        Snackbar.make(binding.recylerView, "Added " + rout + " to dashboard", Snackbar.LENGTH_LONG)
+        Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout), "Added " + rout + " to dashboard", Snackbar.LENGTH_LONG)
             .show();
       }
     });
@@ -216,7 +214,7 @@ public class HomePageRecyclerViewFragment extends Fragment {
     int resId = R.anim.layout_animation_fall_down;
     LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), resId);
     binding.recylerView.setLayoutAnimation(animation);
-    adapters = new HomePageRecyclerViewAdapter(bartList, binding.recylerView.getId(),
+    adapters = new DiscoverRecyclerViewAdapter(bartList, binding.recylerView.getId(),
         R.layout.home_page_single_recycler_view_item);
     binding.recylerView.setAdapter(adapters);
     binding.recylerView.setNestedScrollingEnabled(false);
@@ -228,13 +226,13 @@ public class HomePageRecyclerViewFragment extends Fragment {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .delay(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-        .doOnSubscribe(ignored -> homePageViewModel.showSpinnerProgess.set(true))
+        .doOnSubscribe(ignored -> discoverViewModel.showSpinnerProgess.set(true))
         .map(this::getAllStations)
         .concatMap(Observable::fromArray)
         .subscribe(stations -> {
           setupSinnper(stations);
           binding.stationSpinner.setSelection(sinpperPos);
-          homePageViewModel.showSpinnerProgess.set(false);
+          discoverViewModel.showSpinnerProgess.set(false);
         }, this::handleError);
     compositeDisposable.add(disposable);
   }
@@ -257,9 +255,9 @@ public class HomePageRecyclerViewFragment extends Fragment {
   private void handleError(Throwable throwable) {
     Log.e("error", "error on getting response", throwable);
     loadErrorIV();
-    Snackbar.make(binding.recylerView, "Error on loading", Snackbar.LENGTH_LONG).show();
+    Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout), "Error on loading", Snackbar.LENGTH_LONG).show();
     binding.swipeRefreshLy.setRefreshing(false);
-    homePageViewModel.showSpinnerProgess.set(false);
+    discoverViewModel.showSpinnerProgess.set(false);
   }
 
   private void loadErrorIV() {

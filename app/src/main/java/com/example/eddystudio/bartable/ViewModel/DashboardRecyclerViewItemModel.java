@@ -18,12 +18,14 @@ public class DashboardRecyclerViewItemModel {
     public final ObservableField<String> thirdTrain = new ObservableField<>("");
     public final ObservableInt routColor = new ObservableInt(1);
     private final Etd etd;
-    private final String origin;
+    private final String from;
+    private final String to;
     private ItemClickListener itemClickListener;
 
-    public DashboardRecyclerViewItemModel(Etd etd, String origin) {
+    public DashboardRecyclerViewItemModel(Etd etd, String from, String to) {
         this.etd = etd;
-        this.origin = origin;
+        this.from = from;
+        this.to = to;
         updateUi();
     }
 
@@ -33,30 +35,41 @@ public class DashboardRecyclerViewItemModel {
     }
 
     public void onItemClicked(View view){
-        itemClickListener.onItemClicked(origin, destination.get(), routColor.get(), view);
+        itemClickListener.onItemClicked(from, destination.get(), routColor.get(), view);
     }
 
     private void updateUi(){
-        String m = " minutes";
-        String first = "";
-        String second = "";
-        String third = "";
-        if (etd.getEstimate().size() == 1) {
-            first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving" :etd.getEstimate().get(0).getMinutes() + m;
-        } else if (etd.getEstimate().size() == 2) {
-            first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving" : etd.getEstimate().get(0).getMinutes() + m;
-            second = etd.getEstimate().get(1).getMinutes() + m;
-        } else {
-            first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving" : etd.getEstimate().get(0).getMinutes() + m;
-            second = etd.getEstimate().get(1).getMinutes() + m;
-            third = etd.getEstimate().get(2).getMinutes() + m;
+
+        fromStation.set(from);
+        destination.set(to);
+        routColor.set(Color.RED);
+
+        if (etd.getEstimate() != null) {
+            String m = " minutes";
+            String first = "";
+            String second = "";
+            String third = "";
+            if (etd.getEstimate().size() == 1) {
+                first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving"
+                    : etd.getEstimate().get(0).getMinutes() + m;
+            } else if (etd.getEstimate().size() == 2) {
+                first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving"
+                    : etd.getEstimate().get(0).getMinutes() + m;
+                second = etd.getEstimate().get(1).getMinutes() + m;
+            } else {
+                first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving"
+                    : etd.getEstimate().get(0).getMinutes() + m;
+                second = etd.getEstimate().get(1).getMinutes() + m;
+                third = etd.getEstimate().get(2).getMinutes() + m;
+            }
+
+            firstTrain.set(first);
+            secondTrain.set(second);
+            thirdTrain.set(third);
+            fromStation.set(from);
+            destination.set(to);
+            routColor.set(matchMaterialColor(etd.getEstimate().get(0).getColor()));
         }
-        fromStation.set(origin);
-        destination.set(etd.getDestination());
-        firstTrain.set(first);
-        secondTrain.set(second);
-        thirdTrain.set(third);
-        routColor.set(matchMaterialColor(etd.getEstimate().get(0).getColor()));
     }
 
     private int matchMaterialColor(String color){

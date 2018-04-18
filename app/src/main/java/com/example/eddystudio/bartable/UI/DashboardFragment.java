@@ -3,14 +3,12 @@ package com.example.eddystudio.bartable.UI;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.util.Pair;
@@ -22,9 +20,7 @@ import android.view.animation.LayoutAnimationController;
 
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.example.eddystudio.bartable.Adapter.DashboardRecyclerViewAdapter;
-import com.example.eddystudio.bartable.MainActivity;
 import com.example.eddystudio.bartable.ViewModel.DashboardRecyclerViewItemModel;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Model.Repository;
@@ -38,23 +34,22 @@ import com.example.eddystudio.bartable.databinding.FragmentDashboardBinding;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-import static com.example.eddystudio.bartable.MainActivity.DASHBOARDROUTS;
-import static com.example.eddystudio.bartable.MainActivity.dashboardRouts;
+import static com.example.eddystudio.bartable.UI.MainActivity.DASHBOARDROUTS;
+import static com.example.eddystudio.bartable.UI.MainActivity.dashboardRouts;
 
 public class DashboardFragment extends Fragment {
 
   private FragmentDashboardBinding binding;
   private String originStation;
-  private List<DashboardRecyclerViewItemModel> itemList = new ArrayList<>();
   private DashboardRecyclerViewAdapter adapter;
   private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -74,8 +69,10 @@ public class DashboardFragment extends Fragment {
     binding = FragmentDashboardBinding.inflate(inflater, container, false);
     //((AppCompatActivity) getActivity()).setSupportActionBar(container.findViewById(R.id.toolbar));
     //binding.appToolbar.setTitle("My Routes");
-
-
+    getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
+    CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
+    collapsingToolbarLayout.setTitleEnabled(false);
+    collapsingToolbarLayout.setTitle("My Routes");
 
     Application.getAppComponet().inject(this);
     setUpAdapter();
@@ -85,8 +82,8 @@ public class DashboardFragment extends Fragment {
   @Override
   public void onStart() {
     super.onStart();
-    loadFromPrerence();
-    binding.swipeRefreshLy.setOnRefreshListener(this::loadFromPrerence);
+    loadFromPreference();
+    binding.swipeRefreshLy.setOnRefreshListener(this::loadFromPreference);
     attachOnCardSwipe();
   }
 
@@ -101,7 +98,7 @@ public class DashboardFragment extends Fragment {
         SharedPreferences.Editor editor = preference.edit();
         editor.putStringSet(DASHBOARDROUTS, new HashSet<>(arrayList));
         editor.apply();
-        Snackbar.make(binding.recylerView, "Removed", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout), "Removed", Snackbar.LENGTH_LONG).show();
         adapter.deleteData(position);
       }
     });
@@ -115,7 +112,7 @@ public class DashboardFragment extends Fragment {
     });
   }
 
-  private void loadFromPrerence() {
+  private void loadFromPreference() {
 
     dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
     ArrayList<String> list = new ArrayList<>(dashboardRouts);
@@ -125,12 +122,13 @@ public class DashboardFragment extends Fragment {
     if (list.size() == 0) {
       binding.swipeRefreshLy.setRefreshing(false);
     } else {
-      adapter.clearList();
+      //adapter.clearList();
       List<Pair<String, String>> stationPairList = new ArrayList<>();
       for (int i = 0; i < list.size(); ++i) {
         String fromStation = list.get(i).split("-", 2)[0];
         String toStation = list.get(i).split("-", 2)[1];
         Log.d("dashboard", "From " + fromStation + " to " + toStation);
+        //adapter.setData(new DashboardRecyclerViewItemModel(new Etd(), fromStation, toStation));
         stationPairList.add(new Pair<>(fromStation, toStation));
       }
       init(stationPairList);
@@ -138,15 +136,16 @@ public class DashboardFragment extends Fragment {
   }
 
   private void init(List<Pair<String, String>> pairList) {
-
+    AtomicInteger counter = new AtomicInteger();
     Disposable disposable = repository.getEstimate(pairList)
         .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
         .observeOn(AndroidSchedulers.mainThread())
         .map(this::getEtd)
         .concatMap(Observable::fromArray)
         .map(etds -> convertToVM(etds.first, etds.second))
-        .subscribe(data ->
-                adapter.setData(data),
+        .subscribe(data ->{
+                adapter.modifyData(data, counter.get());
+                counter.getAndIncrement();},
             this::handleError,
             this::onComplete);
     compositeDisposable.add(disposable);
@@ -160,6 +159,19 @@ public class DashboardFragment extends Fragment {
     int resId = R.anim.layout_animation_fall_down;
     LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), resId);
     binding.recylerView.setLayoutAnimation(animation);
+    List<DashboardRecyclerViewItemModel> itemList = new ArrayList<>();
+
+    dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
+    ArrayList<String> list = new ArrayList<>(dashboardRouts);
+
+      for (int i = 0; i < list.size(); ++i) {
+        String fromStation = list.get(i).split("-", 2)[0];
+        String toStation = list.get(i).split("-", 2)[1];
+        Log.d("dashboard", "From " + fromStation + " to " + toStation);
+        itemList.add(new DashboardRecyclerViewItemModel(new Etd(), fromStation, toStation));
+      }
+
+
     adapter =
         new DashboardRecyclerViewAdapter(itemList, binding.recylerView.getId(),
             R.layout.dashboard_single_recycler_view_item);
@@ -171,13 +183,13 @@ public class DashboardFragment extends Fragment {
   private void handleError(Throwable throwable) {
     Log.e("error", "error on getting response", throwable);
     binding.swipeRefreshLy.setRefreshing(false);
-    Snackbar.make(binding.recylerView, "Error on loading", Snackbar.LENGTH_LONG).show();
+    Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout), "Error on loading", Snackbar.LENGTH_LONG).show();
   }
 
   private DashboardRecyclerViewItemModel convertToVM(List<Etd> etd, String toStation) {
     for (int i = 0; i < etd.size(); ++i) {
       if (etd.get(i).getAbbreviation().equals(toStation)) {
-        DashboardRecyclerViewItemModel vm = new DashboardRecyclerViewItemModel(etd.get(i), originStation);
+        DashboardRecyclerViewItemModel vm = new DashboardRecyclerViewItemModel(etd.get(i), originStation, toStation);
         vm.setItemClickListener((from, to, color, view)->{
           //Toast.makeText(getContext(), from  + " to "+ to, Toast.LENGTH_LONG).show();
           goToDetail(from, to, color, view);
@@ -196,12 +208,6 @@ public class DashboardFragment extends Fragment {
 
   private void goToDetail(String from, String to, int color, View view) {
     if (getActivity() != null) {
-
-
-
-      //RecyclerView view = binding.recylerView;
-      //ImageView imageView = view.findViewHolderForAdapterPosition(position).itemView.findViewById(R.id.dashboard_color_block_iv);
-      //TextView textView = view.findViewHolderForAdapterPosition(position).itemView.findViewById(R.id.destination);
       ImageView imageView = view.findViewById(R.id.dashboard_color_block_iv);
       TextView textView =view.findViewById(R.id.destination);
 
@@ -215,7 +221,6 @@ public class DashboardFragment extends Fragment {
       arg.putString(MainActivity.BUDDLE_ARG_FROM, from);
       arg.putString(MainActivity.BUDDLE_ARG_TO, to);
       arg.putInt("color", color);
-      arg.putString("transitionName",getString(R.string.goToDetailTransition) );
       fragment.setArguments(arg);
       getActivity().getSupportFragmentManager()
           .beginTransaction()

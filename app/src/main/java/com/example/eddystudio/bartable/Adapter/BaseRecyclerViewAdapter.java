@@ -19,7 +19,6 @@ import javax.inject.Inject;
 public abstract class BaseRecyclerViewAdapter
     extends RecyclerView.Adapter<BaseRecyclerViewAdapter.ItemHolder> {
 
-  private static int lastPosition = 0;
 
   @Inject
   Application application;
@@ -37,11 +36,11 @@ public abstract class BaseRecyclerViewAdapter
     Object obj = getObjectForPosition(position);
     holder.bind(obj);
 
-    Animation animation = AnimationUtils.loadAnimation(application,
-        (position > lastPosition) ? R.anim.up_from_bottom
-            : R.anim.down_from_top);
-    holder.itemView.startAnimation(animation);
-    lastPosition = position;
+    //Animation animation = AnimationUtils.loadAnimation(application,
+    //    (position > lastPosition) ? R.anim.up_from_bottom
+    //        : R.anim.down_from_top);
+    //holder.itemView.startAnimation(animation);
+    //lastPosition = position;
   }
 
   protected abstract Object getObjectForPosition(int position);

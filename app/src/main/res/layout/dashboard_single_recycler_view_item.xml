@@ -1,102 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:bind="http://schemas.android.com/tools">
+    xmlns:bind="http://schemas.android.com/tools"
+    >
 
-    <data>
+  <data>
 
-        <variable
-            name="obj"
-            type="com.example.eddystudio.bartable.ViewModel.DashboardRecyclerViewItemModel" />
-    </data>
+    <variable
+        name="obj"
+        type="com.example.eddystudio.bartable.ViewModel.DashboardRecyclerViewItemModel"
+        />
+  </data>
 
-    <android.support.v7.widget.CardView
+  <android.support.v7.widget.CardView
+      android:layout_width="match_parent"
+      android:layout_height="150dp"
+      android:layout_margin="8dp"
+      android:onClick="@{(view)-> obj.onItemClicked(view)}"
+      app:cardBackgroundColor="@color/cardview_light_background"
+      app:cardCornerRadius="2dp"
+      app:cardElevation="4dp"
+      >
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cardConstrainLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:onClick="@{(view)-> obj.onItemClicked(view)}"
-        app:cardBackgroundColor="@color/cardview_light_background"
-        app:cardCornerRadius="2dp"
-        app:cardElevation="4dp">
+        android:layout_height="match_parent"
+        >
+      <android.support.constraint.ConstraintLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="8dp"
+          android:layout_marginStart="8dp"
+          android:layout_marginTop="8dp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          >
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/dashboard_from_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@{obj.fromStation}"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            bind:text="Fremont"
+            />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
-                android:orientation="vertical"
-                >
+        <ImageView
+            android:id="@+id/dashboard_color_block_iv"
+            android:layout_width="0dp"
+            android:layout_height="6dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:background="@{obj.routColor}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dashboard_from_tv"
+            />
 
-                <TextView
-                    android:id="@+id/dashboard_from_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8sp"
-                    android:text="@{obj.fromStation}"
-                    android:textSize="20sp"
-                    bind:text="Fremont"
-                    />
+        <TextView
+            android:id="@+id/destination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@{obj.destination}"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/dashboard_from_tv"
+            app:layout_constraintTop_toBottomOf="@+id/dashboard_color_block_iv"
+            bind:text="Daly City"
+            />
 
-                <ImageView
-                    android:id="@+id/dashboard_color_block_iv"
-                    android:layout_width="match_parent"
-                    android:layout_height="5sp"
-                    android:layout_marginLeft="8sp"
-                    android:layout_marginRight="8sp"
-                    android:background="@{obj.routColor}"
-                    />
+      </android.support.constraint.ConstraintLayout>
+      <android.support.constraint.ConstraintLayout
+          android:id="@+id/timerConstrainLayout"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="8dp"
+          android:layout_marginEnd="8dp"
+          android:layout_marginTop="8dp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          >
 
-                <TextView
-                    android:id="@+id/destination"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8sp"
-                    android:text="@{obj.destination}"
-                    android:textSize="20sp"
-                    bind:text="Daly City"
-                    />
-            </LinearLayout>
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:maxLines="1"
+            android:text="@{obj.secondTrain}"
+            app:layout_constraintEnd_toEndOf="@+id/textView"
+            app:layout_constraintTop_toBottomOf="@+id/textView"
+            bind:text="2nd"
+            />
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="100sp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                android:layout_margin="8sp">
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:maxLines="1"
+            android:text="@{obj.firstTrain}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            bind:text="Leaving"
+            />
 
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:maxLines="1"
-                    android:text="@{obj.secondTrain}"
-                    bind:text="2nd" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:maxLines="1"
-                    android:text="@{obj.firstTrain}"
-                    bind:text="1st" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/textView2"
-                    android:layout_alignParentBottom="true"
-                    android:maxLines="1"
-                    android:text="@{obj.thirdTrain}"
-                    bind:text="3st" />
-            </RelativeLayout>
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
+        <TextView
+            android:id="@+id/textView19"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:maxLines="1"
+            android:text="@{obj.thirdTrain}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/textView2"
+            app:layout_constraintTop_toBottomOf="@+id/textView2"
+            bind:text="10 mintues"
+            />
+      </android.support.constraint.ConstraintLayout>
+    </android.support.constraint.ConstraintLayout>
+  </android.support.v7.widget.CardView>
 </layout>
