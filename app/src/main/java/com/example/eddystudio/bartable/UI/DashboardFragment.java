@@ -1,5 +1,7 @@
 package com.example.eddystudio.bartable.UI;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import android.view.animation.LayoutAnimationController;
 
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.example.eddystudio.bartable.Adapter.DashboardRecyclerViewAdapter;
 import com.example.eddystudio.bartable.ViewModel.DashboardRecyclerViewItemModel;
 import com.example.eddystudio.bartable.R;
@@ -168,7 +171,17 @@ public class DashboardFragment extends Fragment {
         String fromStation = list.get(i).split("-", 2)[0];
         String toStation = list.get(i).split("-", 2)[1];
         Log.d("dashboard", "From " + fromStation + " to " + toStation);
-        itemList.add(new DashboardRecyclerViewItemModel(new Etd(), fromStation, toStation));
+        DashboardRecyclerViewItemModel viewItemModel =  new DashboardRecyclerViewItemModel(new Etd(), fromStation, toStation);
+        viewItemModel.setItemClickListener((f, t, x, l)->{
+          AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+          alertDialogBuilder.setMessage(R.string.noInternetErrorMessage);
+              alertDialogBuilder.setPositiveButton("Retry",
+                  (arg0, arg1) -> loadFromPreference());
+
+          AlertDialog alertDialog = alertDialogBuilder.create();
+          alertDialog.show();
+        });
+        itemList.add(viewItemModel);
       }
 
 

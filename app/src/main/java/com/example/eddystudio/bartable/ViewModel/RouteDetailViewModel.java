@@ -2,6 +2,7 @@ package com.example.eddystudio.bartable.ViewModel;
 
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
+import com.example.eddystudio.bartable.Model.Uilt;
 
 public class RouteDetailViewModel {
   public ObservableField<String> from = new ObservableField<>("");
@@ -9,8 +10,8 @@ public class RouteDetailViewModel {
   public ObservableInt color = new ObservableInt();
 
   public RouteDetailViewModel(String from, String to, int color) {
-    this.from.set(from);
-    this.to.set(to);
+    this.from.set(Uilt.getFullStationName(from));
+    this.to.set(Uilt.getFullStationName(to));
     this.color.set(color);
   }
 }

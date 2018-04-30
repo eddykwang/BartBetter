@@ -4,9 +4,13 @@
     <color name="colorPrimaryDark">#00897B</color>
     <color name="colorAccent">#FF4081</color>
 
+    <!--<color name="colorPrimary">#424242</color>-->
+    <!--<color name="colorPrimaryDark">#212121</color>-->
+    <!--<color name="colorAccent">#FF4081</color>-->
+
     <color name="routColor_red">#D32F2F</color>
     <color name="routColor_blue">#1976D2</color>
     <color name="routColor_green">#388E3C</color>
     <color name="routColor_yellow">#FBC02D</color>
-    <color name="background_material_light">#ffffff</color>
+    <color name="white">#ffffff</color>
 </resources>
