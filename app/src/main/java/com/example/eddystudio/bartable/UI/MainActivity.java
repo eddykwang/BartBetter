@@ -16,8 +16,8 @@ import java.util.Set;
 import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity {
-  private final DiscoverFragment discoverFragment =
-      new DiscoverFragment();
+  private final QuickLookupFragment quickLookupFragment =
+      new QuickLookupFragment();
   private final DashboardFragment dashboardFragment = new DashboardFragment();
   private final NotificationFragment notificationFragment = new NotificationFragment();
   @Inject
@@ -31,19 +31,19 @@ public class MainActivity extends AppCompatActivity {
   private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
       = item -> {
     switch (item.getItemId()) {
-      case R.id.navigation_home:
-        fragment = discoverFragment;
-        getSupportActionBar().setTitle("Discover");
+      case R.id.navigation_quick_lookup:
+        fragment = quickLookupFragment;
+        getSupportActionBar().setTitle(R.string.title_quick_look_up);
 
         break;
-      case R.id.navigation_dashboard:
+      case R.id.navigation_my_routes:
         fragment = dashboardFragment;
-        getSupportActionBar().setTitle("My Routes");
+        getSupportActionBar().setTitle(R.string.title_my_routes);
 
         break;
       case R.id.navigation_notifications:
         fragment = notificationFragment;
-        getSupportActionBar().setTitle("Notification");
+        getSupportActionBar().setTitle(R.string.title_notifications);
 
         break;
     }
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     //collapsingToolbarLayout.setTitleEnabled(true);
     //appBarLayout.setExpanded(false,false);
     navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-    navigation.setSelectedItemId(R.id.navigation_dashboard);
+    navigation.setSelectedItemId(R.id.navigation_my_routes);
   }
 
   @Override

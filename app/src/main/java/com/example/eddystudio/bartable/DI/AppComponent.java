@@ -1,7 +1,7 @@
 package com.example.eddystudio.bartable.DI;
 
 import com.example.eddystudio.bartable.UI.DashboardFragment;
-import com.example.eddystudio.bartable.UI.DiscoverFragment;
+import com.example.eddystudio.bartable.UI.QuickLookupFragment;
 import com.example.eddystudio.bartable.UI.MainActivity;
 import com.example.eddystudio.bartable.UI.NotificationFragment;
 import com.example.eddystudio.bartable.Model.Repository;
@@ -16,7 +16,7 @@ import dagger.Component;
 @Singleton
 public interface AppComponent {
     void inject(MainActivity mainActivity);
-    void inject(DiscoverFragment discoverFragment);
+    void inject(QuickLookupFragment quickLookupFragment);
     void inject(DashboardFragment dashboardFragment);
     void inject(Repository repository);
     void inject(BaseRecyclerViewAdapter baseRecyclerViewAdapter);

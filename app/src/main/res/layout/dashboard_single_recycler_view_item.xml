@@ -17,6 +17,7 @@
       android:layout_height="120dp"
       android:layout_margin="8dp"
       android:onClick="@{(view)-> obj.onItemClicked(view)}"
+      android:foreground="?android:attr/selectableItemBackground"
       app:cardBackgroundColor="@color/cardview_light_background"
       app:cardCornerRadius="2dp"
       app:cardElevation="4dp"

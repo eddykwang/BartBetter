@@ -1,5 +1,6 @@
 package com.example.eddystudio.bartable.UI;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -23,7 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
-import com.example.eddystudio.bartable.Adapter.DiscoverRecyclerViewAdapter;
+import com.example.eddystudio.bartable.Adapter.QuickLookupRecyclerViewAdapter;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Model.Repository;
 import com.example.eddystudio.bartable.Model.Response.EstimateResponse.Bart;
@@ -33,9 +34,9 @@ import com.example.eddystudio.bartable.Adapter.CardSwipeController;
 import com.example.eddystudio.bartable.Adapter.SwipeControllerActions;
 import com.example.eddystudio.bartable.DI.Application;
 import com.example.eddystudio.bartable.ViewModel.HomePageRecyclerViewItemModel;
-import com.example.eddystudio.bartable.ViewModel.DiscoverViewModel;
+import com.example.eddystudio.bartable.ViewModel.QuickLookupViewModel;
 
-import com.example.eddystudio.bartable.databinding.FragmentDiscoverBinding;
+import com.example.eddystudio.bartable.databinding.FragmentQuickLookupBinding;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import java.util.ArrayList;
@@ -54,21 +55,20 @@ import static com.example.eddystudio.bartable.UI.MainActivity.dashboardRouts;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DiscoverFragment extends Fragment {
+public class QuickLookupFragment extends Fragment {
 
-  //private final HomePageRecyclerViewItemModel viewModel = new HomePageRecyclerViewItemModel();
-  private FragmentDiscoverBinding binding;
+  private FragmentQuickLookupBinding binding;
   private static String selectedStation;
   private static int sinpperPos;
   private final ArrayList<String> stationList = new ArrayList<>();
   private final ArrayList<String> stationListSortcut = new ArrayList<>();
   private ArrayAdapter<String> spinnerAdapter;
-  private final DiscoverViewModel discoverViewModel = new DiscoverViewModel();
+  private final QuickLookupViewModel quickLookupViewModel = new QuickLookupViewModel();
   private final ArrayList<String> EtdStations = new ArrayList<>();
 
   private ArrayList<HomePageRecyclerViewItemModel> bartList = new ArrayList<>();
   private static boolean isInitOpen = true;
-  private DiscoverRecyclerViewAdapter adapters;
+  private QuickLookupRecyclerViewAdapter adapters;
   private static final String lastSelectedStation = "LAST_SELECTED_STATION";
   private static final String lastSelectedSinperPosition = "LAST_SELECTED_SINPER_POSITION";
   private final CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -78,7 +78,7 @@ public class DiscoverFragment extends Fragment {
   @Inject
   public SharedPreferences preference;
 
-  public DiscoverFragment() {
+  public QuickLookupFragment() {
     // Required empty public constructor
   }
 
@@ -90,11 +90,11 @@ public class DiscoverFragment extends Fragment {
 
     // Inflate the layout for this fragment
     repository = new Repository();
-    //binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_discover);
-    binding = FragmentDiscoverBinding.inflate(inflater, container, false);
+    //binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_quick_lookup);
+    binding = FragmentQuickLookupBinding.inflate(inflater, container, false);
 
     //((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
-    binding.setVm(discoverViewModel);
+    binding.setVm(quickLookupViewModel);
     getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
     CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
     collapsingToolbarLayout.setTitleEnabled(false);
@@ -191,7 +191,6 @@ public class DiscoverFragment extends Fragment {
 
     List<Pair<String, String>> stations = new ArrayList<>();
     stations.add(new Pair<>(stationShort, ""));
-
     Disposable disposable = repository.getEstimate(stations)
         .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
         .observeOn(AndroidSchedulers.mainThread())
@@ -207,18 +206,26 @@ public class DiscoverFragment extends Fragment {
 
   private void onComplete() {
     adapters.setData(bartList);
+    runLayoutAnimation(binding.recylerView);
     binding.swipeRefreshLy.setRefreshing(false);
   }
 
   private void setUpAdapter() {
-    int resId = R.anim.layout_animation_fall_down;
-    LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), resId);
-    binding.recylerView.setLayoutAnimation(animation);
-    adapters = new DiscoverRecyclerViewAdapter(bartList, binding.recylerView.getId(),
+    adapters = new QuickLookupRecyclerViewAdapter(bartList, binding.recylerView.getId(),
         R.layout.home_page_single_recycler_view_item);
     binding.recylerView.setAdapter(adapters);
     binding.recylerView.setNestedScrollingEnabled(false);
     binding.recylerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+  }
+
+  private void runLayoutAnimation(final RecyclerView recyclerView) {
+    final Context context = recyclerView.getContext();
+    final LayoutAnimationController controller =
+        AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
+
+    recyclerView.setLayoutAnimation(controller);
+    recyclerView.getAdapter().notifyDataSetChanged();
+    recyclerView.scheduleLayoutAnimation();
   }
 
   private void getAllStations() {
@@ -226,13 +233,13 @@ public class DiscoverFragment extends Fragment {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .delay(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-        .doOnSubscribe(ignored -> discoverViewModel.showSpinnerProgess.set(true))
+        .doOnSubscribe(ignored -> quickLookupViewModel.showSpinnerProgess.set(true))
         .map(this::getAllStations)
         .concatMap(Observable::fromArray)
         .subscribe(stations -> {
           setupSinnper(stations);
           binding.stationSpinner.setSelection(sinpperPos);
-          discoverViewModel.showSpinnerProgess.set(false);
+          quickLookupViewModel.showSpinnerProgess.set(false);
         }, this::handleError);
     compositeDisposable.add(disposable);
   }
@@ -257,7 +264,7 @@ public class DiscoverFragment extends Fragment {
     loadErrorIV();
     Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout), "Error on loading", Snackbar.LENGTH_LONG).show();
     binding.swipeRefreshLy.setRefreshing(false);
-    discoverViewModel.showSpinnerProgess.set(false);
+    quickLookupViewModel.showSpinnerProgess.set(false);
   }
 
   private void loadErrorIV() {

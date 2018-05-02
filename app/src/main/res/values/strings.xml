@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Bartable</string>
-    <string name="title_home">Discover</string>
-    <string name="title_dashboard">My Routes</string>
+    <string name="title_quick_look_up">Quick Lookup</string>
+    <string name="title_my_routes">My Routes</string>
     <string name="title_notifications">Notifications</string>
 
     <!-- TODO: Remove or change this placeholder text -->

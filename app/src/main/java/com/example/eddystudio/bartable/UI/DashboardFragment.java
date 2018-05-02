@@ -159,9 +159,9 @@ public class DashboardFragment extends Fragment {
   }
 
   private void setUpAdapter() {
-    int resId = R.anim.layout_animation_fall_down;
-    LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), resId);
-    binding.recylerView.setLayoutAnimation(animation);
+    //int resId = R.anim.layout_animation_fall_down;
+    //LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), resId);
+    //binding.recylerView.setLayoutAnimation(animation);
     List<DashboardRecyclerViewItemModel> itemList = new ArrayList<>();
 
     dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());

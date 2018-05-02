@@ -5,10 +5,14 @@
 
   <data>
 
+    <!--<variable-->
+        <!--name="vm"-->
+        <!--type="com.example.eddystudio.bartable.ViewModel.QuickLookupViewModel"-->
+        <!--/>-->
+
     <variable
         name="vm"
-        type="com.example.eddystudio.bartable.ViewModel.DiscoverViewModel"
-        />
+        type="com.example.eddystudio.bartable.ViewModel.QuickLookupViewModel"/>
 
     <import type="android.view.View"/>
   </data>
@@ -19,16 +23,16 @@
       android:layout_height="match_parent"
       >
 
-    <!--<android.support.v4.widget.NestedScrollView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-        <!--tools:showIn="@layout/activity_main"-->
-        <!--&gt;-->
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/activity_main"
+        >
 
       <LinearLayout
           android:layout_width="match_parent"
-          android:layout_height="match_parent"
+          android:layout_height="wrap_content"
           android:orientation="vertical"
           >
 
@@ -68,7 +72,7 @@
             android:layout_height="wrap_content"
             >
 
-          <Spinner
+          <com.toptoche.searchablespinnerlibrary.SearchableSpinner
               android:id="@+id/station_spinner"
               android:layout_width="0dp"
               android:layout_height="wrap_content"
@@ -138,6 +142,6 @@
         </RelativeLayout>
 
       </LinearLayout>
-    <!--</android.support.v4.widget.NestedScrollView>-->
+    </android.support.v4.widget.NestedScrollView>
   </android.support.v4.widget.SwipeRefreshLayout>
 </layout>

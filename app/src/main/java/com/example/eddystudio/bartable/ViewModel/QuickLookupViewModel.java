@@ -7,6 +7,6 @@ import android.util.Log;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-public class DiscoverViewModel {
+public class QuickLookupViewModel {
     public final ObservableBoolean showSpinnerProgess = new ObservableBoolean(false);
 }
