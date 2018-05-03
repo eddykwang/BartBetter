@@ -6,71 +6,31 @@
 
     </data>
 
-    <!--<android.support.design.widget.CoordinatorLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="vertical">-->
-
-        <!--<android.support.design.widget.AppBarLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:fitsSystemWindows="true">-->
-
-            <!--<android.support.v7.widget.Toolbar-->
-                <!--android:id="@+id/app_toolbar"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="?attr/actionBarSize"-->
-                <!--app:layout_collapseMode="pin" />-->
-
-        <!--<android.support.design.widget.AppBarLayout-->
-            <!--android:id="@+id/app_bar"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="@dimen/app_bar_height"-->
-            <!--android:fitsSystemWindows="true"-->
-            <!--android:theme="@style/AppTheme.AppBarOverlay"-->
-            <!--&gt;-->
-
-            <!--<android.support.design.widget.CollapsingToolbarLayout-->
-                <!--android:id="@+id/toolbar_layout"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:fitsSystemWindows="true"-->
-                <!--app:contentScrim="?attr/colorPrimary"-->
-                <!--app:layout_scrollFlags="scroll|exitUntilCollapsed"-->
-                <!--app:toolbarId="@+id/toolbar"-->
-                <!--&gt;-->
-
-                <!--<android.support.v7.widget.Toolbar-->
-                    <!--android:id="@+id/toolbar"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="?attr/actionBarSize"-->
-                    <!--app:layout_collapseMode="pin"-->
-                    <!--app:popupTheme="@style/AppTheme.PopupOverlay"-->
-                    <!--/>-->
-
-            <!--</android.support.design.widget.CollapsingToolbarLayout>-->
-
-        <!--</android.support.design.widget.AppBarLayout>-->
-
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshLy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!--<android.support.v4.widget.NestedScrollView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-                <!--tools:showIn="@layout/activity_main"-->
-                <!--&gt;-->
-
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recylerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-            <!--</android.support.v4.widget.NestedScrollView>-->
+                android:layout_height="wrap_content" />
         </android.support.v4.widget.SwipeRefreshLayout>
 
-    <!--</android.support.design.widget.CoordinatorLayout>-->
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_gravity="bottom|right"
+            android:clickable="true"
+            app:layout_anchor="@id/swipeRefreshLy"
+            app:layout_behavior="com.example.eddystudio.bartable.UI.FabScrollViewBehavior"
+            app:layout_anchorGravity="bottom|right|end"
+            />
+    </android.support.design.widget.CoordinatorLayout>
 </layout>
