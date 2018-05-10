@@ -42,42 +42,69 @@
         <TextView
             android:id="@+id/dashboard_from_tv"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="28dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:text="@{obj.fromStation}"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            bind:text="Fremont"
-            />
+            bind:text="Fremont" />
 
-        <ImageView
-            android:id="@+id/dashboard_color_block_iv"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="0dp"
             android:layout_height="6dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:background="@{obj.routColor}"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dashboard_from_tv"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/dashboard_from_tv">
+
+          <ImageView
+              android:id="@+id/dashboard_color_block_iv"
+              android:layout_width="0dp"
+              android:layout_height="6dp"
+              android:background="@{obj.routeColor}"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toStartOf="@+id/guideline"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent" />
+
+          <ImageView
+              android:id="@+id/dashboard_color_block_iv2"
+              android:layout_width="0dp"
+              android:layout_height="6dp"
+              android:background="@{obj.routeColor2}"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="@+id/guideline"
+              app:layout_constraintTop_toTopOf="parent" />
+
+          <android.support.constraint.Guideline
+              android:id="@+id/guideline"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginEnd="36dp"
+              android:layout_marginStart="38dp"
+              android:orientation="vertical"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintGuide_percent="0.50666666"
+              app:layout_constraintStart_toStartOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
 
         <TextView
             android:id="@+id/destination"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:text="@{obj.destination}"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/dashboard_from_tv"
-            app:layout_constraintTop_toBottomOf="@+id/dashboard_color_block_iv"
-            bind:text="Daly City"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+            bind:text="Daly City" />
 
       </android.support.constraint.ConstraintLayout>
       <android.support.constraint.ConstraintLayout
@@ -101,23 +128,18 @@
             android:text="@{obj.secondTrain}"
             app:layout_constraintEnd_toEndOf="@+id/textView"
             app:layout_constraintTop_toBottomOf="@+id/textView"
-            bind:text="2nd"
-            />
+            bind:text="1 mintues" />
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             android:maxLines="1"
             android:text="@{obj.firstTrain}"
-            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            bind:text="Leaving"
-            />
+            bind:text="Leaving " />
 
         <TextView
             android:id="@+id/textView19"
@@ -133,6 +155,7 @@
             bind:text="10 mintues"
             />
       </android.support.constraint.ConstraintLayout>
+
     </android.support.constraint.ConstraintLayout>
   </android.support.v7.widget.CardView>
 </layout>

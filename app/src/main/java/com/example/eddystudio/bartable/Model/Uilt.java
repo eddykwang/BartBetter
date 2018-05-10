@@ -2,6 +2,12 @@ package com.example.eddystudio.bartable.Model;
 
 import android.graphics.Color;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 public class Uilt {
 
   public static String getFullStationName(String shortName){
@@ -71,4 +77,57 @@ public class Uilt {
     return mColor;
   }
 
+  public static int routeColorMatcher(String routId){
+    switch (routId){
+      case "ROUTE 1": return materialColorConverter("YELLOW");
+      case "ROUTE 2": return materialColorConverter("YELLOW");
+      case "ROUTE 3": return materialColorConverter("ORANGE");
+      case "ROUTE 4": return materialColorConverter("ORANGE");
+      case "ROUTE 5": return materialColorConverter("GREEN");
+      case "ROUTE 6": return materialColorConverter("GREEN");
+      case "ROUTE 7": return materialColorConverter("RED");
+      case "ROUTE 8": return materialColorConverter("RED");
+      case "ROUTE 11": return materialColorConverter("BLUE");
+      case "ROUTE 12": return materialColorConverter("BLUE");
+      default: return materialColorConverter("other");
+    }
+  }
+
+  public static String timeMinutesCalculator(String departTime){
+    Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.US);
+    String time = simpleDateFormat.format(calendar.getTime());
+    Date systemTime = new Date();
+    try {
+      systemTime = simpleDateFormat.parse(time);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    Date departDate = new Date();
+    try {
+      departDate = simpleDateFormat.parse(departTime);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    //milliseconds
+    long different = departDate.getTime() - systemTime.getTime();
+
+    long secondsInMilli = 1000;
+    long minutesInMilli = secondsInMilli * 60;
+    long hoursInMilli = minutesInMilli * 60;
+
+
+    long elapsedHours = different / hoursInMilli;
+    different = different % hoursInMilli;
+
+    long elapsedMinutes = different / minutesInMilli;
+    different = different % minutesInMilli;
+
+    long elapsedSeconds = different / secondsInMilli;
+
+    return elapsedMinutes!= 0 ? String.valueOf(elapsedMinutes) + " minutes" : "Leaving ";
+
+  }
 }

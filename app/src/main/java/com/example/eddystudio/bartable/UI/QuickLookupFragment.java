@@ -60,8 +60,6 @@ public class QuickLookupFragment extends Fragment {
   private FragmentQuickLookupBinding binding;
   private static String selectedStation;
   private static int sinpperPos;
-  private final ArrayList<String> stationList = new ArrayList<>();
-  private final ArrayList<String> stationListSortcut = new ArrayList<>();
   private ArrayAdapter<String> spinnerAdapter;
   private final QuickLookupViewModel quickLookupViewModel = new QuickLookupViewModel();
   private final ArrayList<String> EtdStations = new ArrayList<>();
@@ -103,7 +101,6 @@ public class QuickLookupFragment extends Fragment {
     setupSinnper();
 
     setUpAdapter();
-    getAllStations();
     attachOnCardSwipe();
 
     return binding.getRoot();
@@ -126,7 +123,7 @@ public class QuickLookupFragment extends Fragment {
 
   private void setupSinnper() {
     spinnerAdapter =
-        new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, stationList);
+        new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, MainActivity.stationList);
     spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     binding.stationSpinner.setAdapter(spinnerAdapter);
     binding.stationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -136,7 +133,7 @@ public class QuickLookupFragment extends Fragment {
           init(selectedStation);
           isInitOpen = false;
         } else {
-          selectedStation = stationListSortcut.get(i);
+          selectedStation = MainActivity.stationListSortcut.get(i);
           sinpperPos = i;
           SharedPreferences.Editor editor = preference.edit();
           editor.putString(lastSelectedStation, selectedStation);
@@ -194,7 +191,8 @@ public class QuickLookupFragment extends Fragment {
     Disposable disposable = repository.getEstimate(stations)
         .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
         .observeOn(AndroidSchedulers.mainThread())
-        .map(bart -> getEtd(bart.first))
+            .ofType(Repository.OnSuccess.class)
+        .map(bart -> getEtd(bart.getPair().first))
         .concatMap(Observable::fromArray)
         .map(this::convertToVM)
         .subscribe(data -> bartList = data,
@@ -226,32 +224,6 @@ public class QuickLookupFragment extends Fragment {
     recyclerView.setLayoutAnimation(controller);
     recyclerView.getAdapter().notifyDataSetChanged();
     recyclerView.scheduleLayoutAnimation();
-  }
-
-  private void getAllStations() {
-    Disposable disposable = repository.getStations()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .delay(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-        .doOnSubscribe(ignored -> quickLookupViewModel.showSpinnerProgess.set(true))
-        .map(this::getAllStations)
-        .concatMap(Observable::fromArray)
-        .subscribe(stations -> {
-          setupSinnper(stations);
-          binding.stationSpinner.setSelection(sinpperPos);
-          quickLookupViewModel.showSpinnerProgess.set(false);
-        }, this::handleError);
-    compositeDisposable.add(disposable);
-  }
-
-  private void setupSinnper(
-      List<com.example.eddystudio.bartable.Model.Response.Stations.Station> stations) {
-
-    for (int i = 0; i < stations.size(); ++i) {
-      stationList.add(stations.get(i).getName());
-      stationListSortcut.add(stations.get(i).getAbbr());
-    }
-    spinnerAdapter.notifyDataSetChanged();
   }
 
   private List<com.example.eddystudio.bartable.Model.Response.Stations.Station> getAllStations(

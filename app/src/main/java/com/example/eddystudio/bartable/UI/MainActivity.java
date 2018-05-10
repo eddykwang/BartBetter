@@ -7,13 +7,22 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v7.widget.Toolbar;
+
+import com.example.eddystudio.bartable.Model.Repository;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.DI.Application;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
   private final QuickLookupFragment quickLookupFragment =
@@ -22,10 +31,17 @@ public class MainActivity extends AppCompatActivity {
   private final NotificationFragment notificationFragment = new NotificationFragment();
   @Inject
   public SharedPreferences preference;
+
+  @Inject
+  public Repository repository;
+
   public static Set<String> dashboardRouts;
   public final static String DASHBOARDROUTS = "dashboardRouts";
   public static final String BUDDLE_ARG_FROM = "Buddle_Arg_From";
   public static final String BUDDLE_ARG_TO = "Buddle_Arg_To";
+
+  public static ArrayList<String> stationList = new ArrayList<>();
+  public static ArrayList<String> stationListSortcut = new ArrayList<>();
 
   private Fragment fragment;
   private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -78,5 +94,20 @@ public class MainActivity extends AppCompatActivity {
   protected void onStart() {
     super.onStart();
     dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
+    getAllStations();
+  }
+
+  private void getAllStations() {
+    Disposable disposable = repository.getStations()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map(station ->station.getRoot().getStations().getStation())
+            .concatMap(Observable::fromArray)
+            .subscribe(stations -> {
+              for (int i = 0; i < stations.size(); ++i) {
+                stationList.add(stations.get(i).getName());
+                stationListSortcut.add(stations.get(i).getAbbr());
+              }
+            });
   }
 }

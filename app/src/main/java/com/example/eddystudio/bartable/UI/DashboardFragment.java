@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -20,10 +21,18 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.eddystudio.bartable.Adapter.DashboardRecyclerViewAdapter;
+import com.example.eddystudio.bartable.Model.Response.Schedule.Leg;
+import com.example.eddystudio.bartable.Model.Response.Schedule.ScheduleFromAToB;
+import com.example.eddystudio.bartable.Model.Response.Schedule.Trip;
 import com.example.eddystudio.bartable.ViewModel.DashboardRecyclerViewItemModel;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.Model.Repository;
@@ -70,8 +79,6 @@ public class DashboardFragment extends Fragment {
       Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     binding = FragmentDashboardBinding.inflate(inflater, container, false);
-    //((AppCompatActivity) getActivity()).setSupportActionBar(container.findViewById(R.id.toolbar));
-    //binding.appToolbar.setTitle("My Routes");
     getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
     CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
     collapsingToolbarLayout.setTitleEnabled(false);
@@ -79,6 +86,7 @@ public class DashboardFragment extends Fragment {
 
     Application.getAppComponet().inject(this);
     setUpAdapter();
+    setupFab();
     return binding.getRoot();
   }
 
@@ -134,24 +142,33 @@ public class DashboardFragment extends Fragment {
         //adapter.setData(new DashboardRecyclerViewItemModel(new Etd(), fromStation, toStation));
         stationPairList.add(new Pair<>(fromStation, toStation));
       }
-      init(stationPairList);
+      getRoutesEstimateTime(stationPairList);
     }
   }
 
-  private void init(List<Pair<String, String>> pairList) {
+  private void getRoutesEstimateTime(List<Pair<String, String>> routes){
     AtomicInteger counter = new AtomicInteger();
-    Disposable disposable = repository.getEstimate(pairList)
-        .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
-        .observeOn(AndroidSchedulers.mainThread())
-        .map(this::getEtd)
-        .concatMap(Observable::fromArray)
-        .map(etds -> convertToVM(etds.first, etds.second))
-        .subscribe(data ->{
-                adapter.modifyData(data, counter.get());
-                counter.getAndIncrement();},
-            this::handleError,
-            this::onComplete);
-    compositeDisposable.add(disposable);
+    compositeDisposable.add(
+            repository.getRouteSchedules(routes)
+            .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
+            .observeOn(AndroidSchedulers.mainThread())
+            .map(this::getRoutesInfoToVm)
+            .subscribe(data->{
+              adapter.modifyData(data, counter.get());
+              counter.getAndIncrement();
+            }, this::handleError, this::onComplete)
+    );
+  }
+
+  private DashboardRecyclerViewItemModel getRoutesInfoToVm(ScheduleFromAToB scheduleFromAToB) {
+    List<Trip> trips = scheduleFromAToB.getRoot().getSchedule().getRequest().getTrip();
+
+    DashboardRecyclerViewItemModel vm = new DashboardRecyclerViewItemModel(trips,scheduleFromAToB.getRoot().getOrigin(),
+            scheduleFromAToB.getRoot().getDestination());
+    vm.setItemClickListener((from, to, color, view)->{
+      goToDetail(from, to, color, view);
+    });
+    return vm;
   }
 
   private void onComplete() {
@@ -159,9 +176,6 @@ public class DashboardFragment extends Fragment {
   }
 
   private void setUpAdapter() {
-    //int resId = R.anim.layout_animation_fall_down;
-    //LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getActivity(), resId);
-    //binding.recylerView.setLayoutAnimation(animation);
     List<DashboardRecyclerViewItemModel> itemList = new ArrayList<>();
 
     dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
@@ -191,32 +205,78 @@ public class DashboardFragment extends Fragment {
     binding.recylerView.setAdapter(adapter);
     binding.recylerView.setNestedScrollingEnabled(false);
     binding.recylerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+
+  }
+
+  private void setupFab(){
+    binding.recylerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+      @Override
+      public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        super.onScrolled(recyclerView, dx, dy);
+        if (dy > 0 && binding.fabAdd.getVisibility() == View.VISIBLE) {
+          binding.fabAdd.hide();
+        } else if (dy < 0 && binding.fabAdd.getVisibility() != View.VISIBLE) {
+          binding.fabAdd.show();
+        }
+      }
+    });
+
+    binding.fabAdd.setOnClickListener(view ->{
+      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+      View mView = getLayoutInflater().inflate(R.layout.add_route_dialog_layout, null);
+      builder.setView(mView);
+      Spinner fromSpinner = mView.findViewById(R.id.dialog_from_spinner);
+      Spinner toSpinner = mView.findViewById(R.id.dialog_to_spinner);
+      ConstraintLayout warnningLayout = mView.findViewById(R.id.dialog_error_layout);
+      CheckBox returnRouteCheckbox = mView.findViewById((R.id.dialog_return_route_checkbox));
+
+      warnningLayout.setVisibility(View.GONE);
+      ArrayAdapter<String> spinnerAdapter =
+              new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, MainActivity.stationList);
+      spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+      fromSpinner.setAdapter(spinnerAdapter);
+      toSpinner.setAdapter(spinnerAdapter);
+
+      builder.setPositiveButton("Add", null);
+
+      builder.setNegativeButton("Cancel",null);
+
+      AlertDialog alertDialog = builder.create();
+      alertDialog.setTitle("Add A Route");
+
+      alertDialog.setOnShowListener(dialogInterface -> {
+        Button b = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        b.setOnClickListener(view1 -> {
+          String origin = MainActivity.stationListSortcut.get(fromSpinner.getSelectedItemPosition());
+          String destination = MainActivity.stationListSortcut.get(toSpinner.getSelectedItemPosition());
+
+          if (!origin.equals(destination)) {
+            dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
+            ArrayList<String> arrayList = new ArrayList<>(dashboardRouts);
+            arrayList.add(origin + "-" + destination);
+            if (returnRouteCheckbox.isChecked()) {
+              arrayList.add(destination + "-" + origin);
+            }
+
+            SharedPreferences.Editor editor = preference.edit();
+            editor.putStringSet(DASHBOARDROUTS, new HashSet<>(arrayList));
+            editor.apply();
+            dialogInterface.dismiss();
+            setUpAdapter();
+            loadFromPreference();
+          }else {
+            warnningLayout.setVisibility(View.VISIBLE);
+          }
+        });
+      });
+      alertDialog.show();
+    });
   }
 
   private void handleError(Throwable throwable) {
     Log.e("error", "error on getting response", throwable);
     binding.swipeRefreshLy.setRefreshing(false);
     Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout), "Error on loading", Snackbar.LENGTH_LONG).show();
-  }
-
-  private DashboardRecyclerViewItemModel convertToVM(List<Etd> etd, String toStation) {
-    for (int i = 0; i < etd.size(); ++i) {
-      if (etd.get(i).getAbbreviation().equals(toStation)) {
-        DashboardRecyclerViewItemModel vm = new DashboardRecyclerViewItemModel(etd.get(i), originStation, toStation);
-        vm.setItemClickListener((from, to, color, view)->{
-          //Toast.makeText(getContext(), from  + " to "+ to, Toast.LENGTH_LONG).show();
-          goToDetail(from, to, color, view);
-        });
-        return vm;
-      }
-    }
-
-    return null;
-  }
-
-  private Pair<List<Etd>, String> getEtd(Pair<Bart, String> bart) {
-    originStation = bart.first.getRoot().getStation().get(0).getName();
-    return new Pair<>(bart.first.getRoot().getStation().get(0).getEtd(), bart.second);
   }
 
   private void goToDetail(String from, String to, int color, View view) {

@@ -9,5 +9,6 @@
     <string name="goToDetailTransition">goToDetailTransition</string>
     <string name="textTransition">textTransition</string>
     <string name="noInternetErrorMessage">Can\'t get Data from Internet. Please make sure you have network connection.</string>
+    <string name="dialog_warnning">Sorry, origin and destination cannot be the same.</string>
 
 </resources>
