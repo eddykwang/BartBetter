@@ -6,6 +6,7 @@ import com.example.eddystudio.bartable.UI.MainActivity;
 import com.example.eddystudio.bartable.UI.NotificationFragment;
 import com.example.eddystudio.bartable.Model.Repository;
 import com.example.eddystudio.bartable.Adapter.BaseRecyclerViewAdapter;
+import com.example.eddystudio.bartable.UI.RouteDetailFragment;
 
 import javax.inject.Singleton;
 
@@ -21,4 +22,5 @@ public interface AppComponent {
     void inject(Repository repository);
     void inject(BaseRecyclerViewAdapter baseRecyclerViewAdapter);
     void inject(NotificationFragment notificationFragment);
+    void inject(RouteDetailFragment routeDetailFragment);
 }

@@ -185,7 +185,7 @@ public class DashboardFragment extends Fragment {
         String fromStation = list.get(i).split("-", 2)[0];
         String toStation = list.get(i).split("-", 2)[1];
         Log.d("dashboard", "From " + fromStation + " to " + toStation);
-        DashboardRecyclerViewItemModel viewItemModel =  new DashboardRecyclerViewItemModel(new Etd(), fromStation, toStation);
+        DashboardRecyclerViewItemModel viewItemModel =  new DashboardRecyclerViewItemModel(new ArrayList<>(), fromStation, toStation);
         viewItemModel.setItemClickListener((f, t, x, l)->{
           AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
           alertDialogBuilder.setMessage(R.string.noInternetErrorMessage);

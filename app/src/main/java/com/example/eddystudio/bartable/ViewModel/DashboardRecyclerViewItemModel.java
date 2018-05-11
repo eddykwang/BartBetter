@@ -27,17 +27,9 @@ public class DashboardRecyclerViewItemModel {
     public final ObservableField<String> thirdTrain = new ObservableField<>("");
     public final ObservableInt routeColor = new ObservableInt(Color.GRAY);
     public final ObservableInt routeColor2 = new ObservableInt(Color.GRAY);
-    private Etd etd;
     private String from = "";
     private String to = "";
     private ItemClickListener itemClickListener;
-
-    public DashboardRecyclerViewItemModel(Etd etd, String from, String to) {
-        this.etd = etd;
-        this.from = from;
-        this.to = to;
-        updateUi();
-    }
 
     public DashboardRecyclerViewItemModel(List<Trip> trips, String from, String to) {
         this.from = from;
@@ -55,63 +47,29 @@ public class DashboardRecyclerViewItemModel {
     }
 
     public void onItemClicked(View view) {
-        itemClickListener.onItemClicked(from, destination.get(), routeColor.get(), view);
+        itemClickListener.onItemClicked(from, to, routeColor.get(), view);
     }
 
     private void updateUi(List<Trip> trips, String origin, String dest) throws ParseException {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.US);
+        if (trips.size() > 0) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.US);
 
-        fromStation.set(Uilt.getFullStationName(origin));
-        destination.set(Uilt.getFullStationName(dest));
-        routeColor.set(Uilt.routeColorMatcher(trips.get(0).getLeg().get(0).getLine()));
-        if (trips.get(0).getLeg().size() > 1){
-            routeColor2.set(Uilt.routeColorMatcher(trips.get(0).getLeg().get(1).getLine()));
-        }else {
-            routeColor2.set(routeColor.get());
-        }
-
-        firstTrain.set(Uilt.timeMinutesCalculator(trips.get(0).getLeg().get(0).getOrigTimeMin()));
-        if (trips.get(1) != null){
-            secondTrain.set(Uilt.timeMinutesCalculator(trips.get(1).getLeg().get(0).getOrigTimeMin()));
-            if (trips.get(2) != null){
-                thirdTrain.set(Uilt.timeMinutesCalculator(trips.get(2).getLeg().get(0).getOrigTimeMin()));
-            }
-        }
-    }
-
-    private void updateUi() {
-
-        fromStation.set(Uilt.getFullStationName(from));
-        destination.set(Uilt.getFullStationName(to));
-        routeColor.set(Color.GRAY);
-        routeColor2.set(Color.GRAY);
-
-        if (etd.getEstimate() != null) {
-            String m = " minutes";
-            String first = "";
-            String second = "";
-            String third = "";
-            if (etd.getEstimate().size() == 1) {
-                first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving"
-                        : etd.getEstimate().get(0).getMinutes() + m;
-            } else if (etd.getEstimate().size() == 2) {
-                first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving"
-                        : etd.getEstimate().get(0).getMinutes() + m;
-                second = etd.getEstimate().get(1).getMinutes() + m;
+            fromStation.set(Uilt.getFullStationName(origin));
+            destination.set(Uilt.getFullStationName(dest));
+            routeColor.set(Uilt.routeColorMatcher(trips.get(0).getLeg().get(0).getLine()));
+            if (trips.get(0).getLeg().size() > 1) {
+                routeColor2.set(Uilt.routeColorMatcher(trips.get(0).getLeg().get(1).getLine()));
             } else {
-                first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving"
-                        : etd.getEstimate().get(0).getMinutes() + m;
-                second = etd.getEstimate().get(1).getMinutes() + m;
-                third = etd.getEstimate().get(2).getMinutes() + m;
+                routeColor2.set(routeColor.get());
             }
 
-            firstTrain.set(first);
-            secondTrain.set(second);
-            thirdTrain.set(third);
-            fromStation.set(Uilt.getFullStationName(from));
-            destination.set(Uilt.getFullStationName(to));
-            routeColor.set(Uilt.materialColorConverter(etd.getEstimate().get(0).getColor()));
-            routeColor2.set(Uilt.materialColorConverter(etd.getEstimate().get(0).getColor()));
+            firstTrain.set(Uilt.timeMinutesCalculator(trips.get(0).getLeg().get(0).getOrigTimeMin()));
+            if (trips.get(1) != null) {
+                secondTrain.set(Uilt.timeMinutesCalculator(trips.get(1).getLeg().get(0).getOrigTimeMin()));
+                if (trips.get(2) != null) {
+                    thirdTrain.set(Uilt.timeMinutesCalculator(trips.get(2).getLeg().get(0).getOrigTimeMin()));
+                }
+            }
         }
     }
 }

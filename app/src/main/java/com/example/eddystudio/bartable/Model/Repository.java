@@ -71,7 +71,7 @@ public class Repository {
                 .subscribeOn(Schedulers.io());
     }
 
-    //https://api.bart.gov/api/sched.aspx? cmd=depart  &orig=DALY&  dest=FRMT&  date=now&  key=MW9S-E7SL-26DU-VV8V&  b=0  &a=3  &l=1&  json=y
+    //https://api.bart.gov/api/sched.aspx? cmd=depart  &orig=DALY&  dest=FRMT&  date=now&  key=MW9S-E7SL-26DU-VV8V&  b=0  &a=4  &l=1&  json=y
     public Observable<ScheduleFromAToB> getRouteSchedules(List<Pair<String, String>> routes) {
         return Observable
                 .fromIterable(routes)
