@@ -2,11 +2,14 @@ package com.example.eddystudio.bartable.Model;
 
 import android.graphics.Color;
 
+import com.example.eddystudio.bartable.R;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Uilt {
 
@@ -95,7 +98,7 @@ public class Uilt {
 
   public static String timeMinutesCalculator(String departTime){
     Calendar calendar = Calendar.getInstance();
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.US);
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm/dd/yyyy hh:mm a", Locale.US);
     String time = simpleDateFormat.format(calendar.getTime());
     Date systemTime = new Date();
     try {
@@ -129,5 +132,22 @@ public class Uilt {
 
     return elapsedMinutes!= 0 ? String.valueOf(elapsedMinutes) + " minutes" : "Leaving ";
 
+  }
+
+  public static int randomCityBgGenerator(){
+    int randomNum = ThreadLocalRandom.current().nextInt(1, 12 + 1);
+    switch (randomNum){
+      case 1 : return R.drawable.city_bg1;
+      case 2 : return R.drawable.city_bg2;
+      case 3 : return R.drawable.city_bg3;
+      case 4 : return R.drawable.city_bg4;
+      case 5 : return R.drawable.city_bg5;
+      case 6 : return R.drawable.city_bg6;
+      case 7 : return R.drawable.city_bg7;
+      case 8 : return R.drawable.city_bg8;
+      case 9 : return R.drawable.city_bg9;
+      case 11 : return R.drawable.city_bg11;
+      default: return R.drawable.city_bg12;
+    }
   }
 }

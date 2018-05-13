@@ -10,7 +10,7 @@ public class RouteDetailViewModel {
   public ObservableInt color = new ObservableInt();
 
   public RouteDetailViewModel(String from, String to, int color) {
-    this.from.set(Uilt.getFullStationName(from));
+    this.from.set(Uilt.getFullStationName(from) + " To ");
     this.to.set(Uilt.getFullStationName(to));
     this.color.set(color);
   }

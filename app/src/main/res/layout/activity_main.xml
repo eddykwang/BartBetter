@@ -7,7 +7,7 @@
 
   <RelativeLayout
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="wrap_content"
       >
 
     <android.support.design.widget.CoordinatorLayout
@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         android:layout_above="@id/navigation"
         android:fitsSystemWindows="true"
-        android:orientation="vertical"
+        app:statusBarBackground="@android:color/transparent"
         tools:context="com.example.eddystudio.bartable.UI.MainActivity"
         >
 
@@ -41,9 +41,12 @@
           <ImageView
               android:id="@+id/toolbar_imageView"
               android:layout_width="match_parent"
-              android:layout_height="200sp"
+              android:layout_height="match_parent"
               android:visibility="gone"
-              />
+              android:scaleType="fitXY"
+              android:fitsSystemWindows="true"
+
+              app:layout_collapseMode="parallax" />
 
           <android.support.v7.widget.Toolbar
               android:id="@+id/toolbar"
@@ -59,7 +62,7 @@
       <FrameLayout
           android:id="@+id/main_frame_layout"
           android:layout_width="match_parent"
-          android:layout_height="match_parent"
+          android:layout_height="wrap_content"
           app:layout_behavior="@string/appbar_scrolling_view_behavior"
           >
       </FrameLayout>

@@ -75,7 +75,7 @@ public class RouteDetailRecyclerViewModel {
             Leg firstRouteInfo = legs.get(0);
             firstRouteOriginStation.set(Uilt.getFullStationName(firstRouteInfo.getOrigin()));
             firstRouteOriginDepartingTime.set(firstRouteInfo.getOrigTimeMin());
-            firstRouteDestinationTrain.set(Uilt.getFullStationName(firstRouteInfo.getTrainHeadStation()));
+            firstRouteDestinationTrain.set(Uilt.getFullStationName(firstRouteInfo.getTrainHeadStation()) + " Train");
             firstRouteDestinationStation.set(Uilt.getFullStationName(firstRouteInfo.getDestination()));
             firstRouteArravingTime.set(firstRouteInfo.getDestTimeMin());
             firstRouteColor.set(Uilt.routeColorMatcher(firstRouteInfo.getLine()));
@@ -85,7 +85,7 @@ public class RouteDetailRecyclerViewModel {
                 Leg secondRouteInfo = legs.get(1);
                 secondRouteOriginStation.set(Uilt.getFullStationName(secondRouteInfo.getOrigin()));
                 secondRouteOriginDepartingTime.set(secondRouteInfo.getOrigTimeMin());
-                secondRouteDestinationTrain.set(Uilt.getFullStationName(secondRouteInfo.getTrainHeadStation()));
+                secondRouteDestinationTrain.set(Uilt.getFullStationName(secondRouteInfo.getTrainHeadStation()) + " Train");
                 secondRouteDestinationStation.set(Uilt.getFullStationName(secondRouteInfo.getDestination()));
                 secondRouteArrayingTime.set(secondRouteInfo.getDestTimeMin());
                 secondRouteColor.set(Uilt.routeColorMatcher(secondRouteInfo.getLine()));

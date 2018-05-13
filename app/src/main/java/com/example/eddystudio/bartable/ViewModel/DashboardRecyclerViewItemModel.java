@@ -51,11 +51,9 @@ public class DashboardRecyclerViewItemModel {
     }
 
     private void updateUi(List<Trip> trips, String origin, String dest) throws ParseException {
+        fromStation.set(Uilt.getFullStationName(origin));
+        destination.set(Uilt.getFullStationName(dest));
         if (trips.size() > 0) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.US);
-
-            fromStation.set(Uilt.getFullStationName(origin));
-            destination.set(Uilt.getFullStationName(dest));
             routeColor.set(Uilt.routeColorMatcher(trips.get(0).getLeg().get(0).getLine()));
             if (trips.get(0).getLeg().size() > 1) {
                 routeColor2.set(Uilt.routeColorMatcher(trips.get(0).getLeg().get(1).getLine()));
@@ -63,11 +61,14 @@ public class DashboardRecyclerViewItemModel {
                 routeColor2.set(routeColor.get());
             }
 
-            firstTrain.set(Uilt.timeMinutesCalculator(trips.get(0).getLeg().get(0).getOrigTimeMin()));
+            firstTrain.set(Uilt.timeMinutesCalculator(trips.get(0).getLeg().get(0).getOrigTimeDate() + " " +
+                    trips.get(0).getLeg().get(0).getOrigTimeMin()));
             if (trips.get(1) != null) {
-                secondTrain.set(Uilt.timeMinutesCalculator(trips.get(1).getLeg().get(0).getOrigTimeMin()));
+                secondTrain.set(Uilt.timeMinutesCalculator(trips.get(1).getLeg().get(0).getOrigTimeDate() + " " +
+                        trips.get(1).getLeg().get(0).getOrigTimeMin()));
                 if (trips.get(2) != null) {
-                    thirdTrain.set(Uilt.timeMinutesCalculator(trips.get(2).getLeg().get(0).getOrigTimeMin()));
+                    thirdTrain.set(Uilt.timeMinutesCalculator(trips.get(2).getLeg().get(0).getOrigTimeDate() + " " +
+                            trips.get(2).getLeg().get(0).getOrigTimeMin()));
                 }
             }
         }

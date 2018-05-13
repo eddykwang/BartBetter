@@ -34,7 +34,7 @@ public class HomePageRecyclerViewItemModel {
     public void onItemClicked(View view){
         String to = "";
         if (destination != null){
-            to = destination.get();
+            to = etd.getAbbreviation();
         }
         itemClickListener.onItemClicked(from, to, routColor.get(), view);
     }

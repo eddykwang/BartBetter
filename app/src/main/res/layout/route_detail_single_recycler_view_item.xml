@@ -13,6 +13,31 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/textView22"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Schedlues"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView15"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView22"
+            app:srcCompat="@android:color/darker_gray" />
+
         <android.support.constraint.ConstraintLayout
             android:id="@+id/first_route_constrian_layout"
             android:layout_width="0dp"
@@ -21,16 +46,18 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/imageView15">
 
             <TextView
                 android:id="@+id/first_route_origin_station"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:textStyle="bold"
                 android:text="@{obj.firstRouteOriginStation}"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView6"
                 app:layout_constraintStart_toEndOf="@+id/imageView6"
                 app:layout_constraintTop_toTopOf="@+id/imageView6"
@@ -40,7 +67,7 @@
                 android:id="@+id/imageView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -50,10 +77,11 @@
                 android:id="@+id/first_route_origin_depart_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@{obj.firstRouteOriginDepartingTime}"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/first_route_origin_station"
-                app:layout_constraintStart_toEndOf="@+id/first_route_origin_station"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/first_route_origin_station"
                 tools:text="10 : 21 AM" />
 
@@ -65,13 +93,14 @@
                 android:background="@{obj.firstRouteColor}"
                 app:layout_constraintEnd_toEndOf="@+id/imageView6"
                 app:layout_constraintStart_toStartOf="@+id/imageView6"
-                app:layout_constraintTop_toBottomOf="@+id/imageView6"/>
+                app:layout_constraintTop_toBottomOf="@+id/imageView6" />
 
             <ImageView
                 android:id="@+id/imageView8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:tint="@{obj.firstRouteColor}"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView7"
                 app:layout_constraintStart_toEndOf="@+id/imageView7"
                 app:layout_constraintTop_toTopOf="@+id/imageView7"
@@ -82,8 +111,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:textColor="@{obj.firstRouteColor}"
                 android:text="@{obj.firstRouteDestinationTrain}"
+                android:textColor="@{obj.firstRouteColor}"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView8"
                 app:layout_constraintStart_toEndOf="@+id/imageView8"
                 app:layout_constraintTop_toTopOf="@+id/imageView8"
@@ -106,8 +136,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:textStyle="bold"
                 android:text="@{obj.firstRouteDestinationStation}"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView9"
                 app:layout_constraintStart_toEndOf="@+id/imageView9"
                 app:layout_constraintTop_toTopOf="@+id/imageView9"
@@ -117,10 +148,11 @@
                 android:id="@+id/first_route_arriving_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@{obj.firstRouteArravingTime}"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/first_route_destination_station"
-                app:layout_constraintStart_toEndOf="@+id/first_route_destination_station"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/first_route_destination_station"
                 tools:text="10 : 34 AM" />
 
@@ -142,7 +174,7 @@
                 android:id="@+id/imageView10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -153,8 +185,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:textStyle="bold"
                 android:text="@{obj.secondRouteOriginStation}"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView10"
                 app:layout_constraintStart_toEndOf="@+id/imageView10"
                 app:layout_constraintTop_toTopOf="@+id/imageView10"
@@ -164,10 +197,11 @@
                 android:id="@+id/second_train_departing_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@{obj.secondRouteOriginDepartingTime}"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/second_train_original_station"
-                app:layout_constraintStart_toEndOf="@+id/second_train_original_station"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/second_train_original_station"
                 tools:text="10 : 50 AM" />
 
@@ -186,6 +220,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:tint="@{obj.secondRouteColor}"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView11"
                 app:layout_constraintStart_toEndOf="@+id/imageView11"
                 app:layout_constraintTop_toTopOf="@+id/imageView11"
@@ -198,6 +233,7 @@
                 android:layout_marginStart="8dp"
                 android:text="@{obj.secondRouteDestinationTrain}"
                 android:textColor="@{obj.secondRouteColor}"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView12"
                 app:layout_constraintStart_toEndOf="@+id/imageView12"
                 app:layout_constraintTop_toTopOf="@+id/imageView12"
@@ -221,6 +257,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="@{obj.secondRouteDestinationStation}"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView13"
                 app:layout_constraintStart_toEndOf="@+id/imageView13"
@@ -231,10 +268,11 @@
                 android:id="@+id/second_route_arriving_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@{obj.secondRouteArrayingTime}"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/second_route_destination_station"
-                app:layout_constraintStart_toEndOf="@+id/second_route_destination_station"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/second_route_destination_station"
                 tools:text="11 : 26 AM" />
 
@@ -245,7 +283,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/transfer_route_constrain_layout">
@@ -257,6 +295,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="Fares"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -280,6 +319,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="Clipper"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/textView32"
                 app:layout_constraintTop_toBottomOf="@+id/imageView14" />
 
@@ -289,6 +329,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="BART Blue Ticket"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/textView33"
                 app:layout_constraintTop_toBottomOf="@+id/textView33" />
 
@@ -298,6 +339,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Senior/Disabled Clipper"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/textView34"
                 app:layout_constraintTop_toBottomOf="@+id/textView34" />
 
@@ -308,6 +350,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
                 android:text="Youth Clipper"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/textView35"
                 app:layout_constraintTop_toBottomOf="@+id/textView35" />
@@ -319,6 +362,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginTop="8dp"
                 android:text="@{obj.clipperPrice}"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="@+id/imageView14"
                 app:layout_constraintTop_toBottomOf="@+id/imageView14"
                 tools:text="$ 3.95" />
@@ -329,6 +373,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@{obj.cashPrice}"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="@+id/clipper_price"
                 app:layout_constraintTop_toBottomOf="@+id/clipper_price"
                 tools:text="$ 4.45" />
@@ -339,6 +384,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@{obj.seniorPrice}"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="@+id/cash_price"
                 app:layout_constraintTop_toBottomOf="@+id/cash_price"
                 tools:text="$ 1.45" />
@@ -349,6 +395,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@{obj.youthPrice}"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="@+id/senior_price"
                 app:layout_constraintTop_toBottomOf="@+id/senior_price"
                 tools:text="$ 1.95" />

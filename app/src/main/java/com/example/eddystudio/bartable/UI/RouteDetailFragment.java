@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
@@ -20,6 +21,7 @@ import com.example.eddystudio.bartable.Adapter.RouteDetailRecyclerViewAdapter;
 import com.example.eddystudio.bartable.Model.Repository;
 import com.example.eddystudio.bartable.Model.Response.Schedule.ScheduleFromAToB;
 import com.example.eddystudio.bartable.Model.Response.Schedule.Trip;
+import com.example.eddystudio.bartable.Model.Uilt;
 import com.example.eddystudio.bartable.R;
 import com.example.eddystudio.bartable.ViewModel.RouteDetailRecyclerViewModel;
 import com.example.eddystudio.bartable.ViewModel.RouteDetailViewModel;
@@ -40,6 +42,7 @@ public class RouteDetailFragment extends Fragment {
     private RouteDetailRecyclerViewAdapter adapter;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     public Repository repository = new Repository();
+    private AppBarLayout appBarLayout;
 
     public RouteDetailFragment() {
     }
@@ -52,8 +55,8 @@ public class RouteDetailFragment extends Fragment {
 
         ImageView imageView = getActivity().findViewById(R.id.toolbar_imageView);
         CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
-        AppBarLayout appBarLayout = getActivity().findViewById(R.id.app_bar);
-
+        appBarLayout = getActivity().findViewById(R.id.app_bar);
+        appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, 800));
         Bundle arg = getArguments();
         if (arg != null) {
             from = arg.getString(MainActivity.BUDDLE_ARG_FROM);
@@ -71,10 +74,11 @@ public class RouteDetailFragment extends Fragment {
 
 
         imageView.setVisibility(View.VISIBLE);
+        imageView.setImageResource(Uilt.randomCityBgGenerator());
         imageView.setBackgroundColor(color);
         collapsingToolbarLayout.setTitleEnabled(true);
         appBarLayout.setExpanded(true, true);
-        collapsingToolbarLayout.setTitle(from + " -> " + to);
+        collapsingToolbarLayout.setTitle(Uilt.getFullStationName(to));
         collapsingToolbarLayout.setPadding(0, 0, 0, 0);
 
 
@@ -138,6 +142,7 @@ public class RouteDetailFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+        appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, CoordinatorLayout.LayoutParams.WRAP_CONTENT));
         compositeDisposable.clear();
     }
 }
