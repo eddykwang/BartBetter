@@ -56,7 +56,6 @@ public class RouteDetailFragment extends Fragment {
         ImageView imageView = getActivity().findViewById(R.id.toolbar_imageView);
         CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
         appBarLayout = getActivity().findViewById(R.id.app_bar);
-        appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, 800));
         Bundle arg = getArguments();
         if (arg != null) {
             from = arg.getString(MainActivity.BUDDLE_ARG_FROM);
@@ -90,6 +89,7 @@ public class RouteDetailFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, 800));
         getRoutesInfo();
         binding.swipeRefreshLy.setOnRefreshListener(this::getRoutesInfo);
 
