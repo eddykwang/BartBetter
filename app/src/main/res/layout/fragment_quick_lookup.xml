@@ -7,12 +7,12 @@
 
     <!--<variable-->
         <!--name="vm"-->
-        <!--type="com.example.eddystudio.bartable.ViewModel.QuickLookupViewModel"-->
+        <!--type="com.eddystudio.bartable.ViewModel.QuickLookupViewModel"-->
         <!--/>-->
 
     <variable
         name="vm"
-        type="com.example.eddystudio.bartable.ViewModel.QuickLookupViewModel"/>
+        type="com.eddystudio.bartbetter.ViewModel.QuickLookupViewModel"/>
 
     <import type="android.view.View"/>
   </data>

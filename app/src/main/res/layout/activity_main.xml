@@ -17,7 +17,7 @@
         android:layout_above="@id/navigation"
         android:fitsSystemWindows="true"
         app:statusBarBackground="@android:color/transparent"
-        tools:context="com.example.eddystudio.bartable.UI.MainActivity"
+        tools:context="com.eddystudio.bartbetter.UI.MainActivity"
         >
 
       <android.support.design.widget.AppBarLayout

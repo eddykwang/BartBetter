@@ -5,7 +5,7 @@
     <data>
         <variable
             name="obj"
-            type="com.example.eddystudio.bartable.ViewModel.RouteDetailRecyclerViewModel"/>
+            type="com.eddystudio.bartbetter.ViewModel.RouteDetailRecyclerViewModel"/>
         <import type="android.view.View"/>
     </data>
 

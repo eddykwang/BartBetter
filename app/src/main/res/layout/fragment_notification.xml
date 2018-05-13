@@ -2,14 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/tools"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.eddystudio.bartable.UI.NotificationFragment"
+    tools:context="com.eddystudio.bartbetter.UI.NotificationFragment"
     >
 
   <data>
 
     <variable
         name="vm"
-        type="com.example.eddystudio.bartable.ViewModel.NotificationViewModel"
+        type="com.eddystudio.bartbetter.ViewModel.NotificationViewModel"
         />
 
     <import type="android.view.View"/>
