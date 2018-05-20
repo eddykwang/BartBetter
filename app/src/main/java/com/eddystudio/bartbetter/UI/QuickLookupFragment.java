@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -40,7 +41,6 @@ import com.eddystudio.bartbetter.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -49,13 +49,11 @@ import io.reactivex.disposables.Disposable;
 
 import com.eddystudio.bartbetter.databinding.FragmentQuickLookupBinding;
 
-import static com.eddystudio.bartbetter.UI.MainActivity.DASHBOARDROUTS;
-import static com.eddystudio.bartbetter.UI.MainActivity.dashboardRouts;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class QuickLookupFragment extends Fragment {
+public class QuickLookupFragment extends BaseFragment {
 
   private FragmentQuickLookupBinding binding;
   private static String selectedStation;
@@ -71,11 +69,6 @@ public class QuickLookupFragment extends Fragment {
   private static final String lastSelectedSinperPosition = "LAST_SELECTED_SINPER_POSITION";
   private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-  @Inject
-  public Repository repository;
-  @Inject
-  public SharedPreferences preference;
-
   public QuickLookupFragment() {
     // Required empty public constructor
   }
@@ -86,8 +79,6 @@ public class QuickLookupFragment extends Fragment {
 
     Application.getAppComponet().inject(this);
 
-    // Inflate the layout for this fragment
-    repository = new Repository();
     //binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_quick_lookup);
     binding = FragmentQuickLookupBinding.inflate(inflater, container, false);
 
@@ -97,7 +88,9 @@ public class QuickLookupFragment extends Fragment {
     CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
     collapsingToolbarLayout.setTitleEnabled(false);
     collapsingToolbarLayout.setTitle("Discover");
-
+    if (getActivity() instanceof AppCompatActivity) {
+      ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+    }
     setupSinnper();
 
     setUpAdapter();
@@ -138,7 +131,7 @@ public class QuickLookupFragment extends Fragment {
           SharedPreferences.Editor editor = preference.edit();
           editor.putString(lastSelectedStation, selectedStation);
           editor.putInt(lastSelectedSinperPosition, sinpperPos);
-          editor.apply();
+          editor.commit();
           init(selectedStation);
         }
       }
@@ -166,10 +159,7 @@ public class QuickLookupFragment extends Fragment {
       public void onRightClicked(int position) {
         super.onRightClicked(position);
         String rout = selectedStation + "-" + EtdStations.get(position);
-        dashboardRouts.add(rout);
-        SharedPreferences.Editor editor = preference.edit();
-        editor.putStringSet(DASHBOARDROUTS, dashboardRouts);
-        editor.apply();
+        addPreferencesData(rout);
         Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout), "Added " + rout + " to dashboard", Snackbar.LENGTH_LONG)
             .show();
       }

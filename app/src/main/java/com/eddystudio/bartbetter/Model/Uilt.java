@@ -21,6 +21,7 @@ public class Uilt {
       case "19TH": fullName = "19th St. Oakland"; break;
       case "24TH": fullName = "24th St. Mission"; break;
       case "ASHB": fullName = "Ashby"; break;
+      case "ANTC": fullName = "Antioch"; break;
       case "BALB": fullName = "Balboa Park"; break;
       case "BAYF": fullName = "Bay Fair"; break;
       case "CAST": fullName = "Castro Valley"; break;
@@ -129,6 +130,9 @@ public class Uilt {
     different = different % minutesInMilli;
 
     long elapsedSeconds = different / secondsInMilli;
+    if (elapsedMinutes < 0 ){
+      return "Unavailable";
+    }
 
     return elapsedMinutes!= 0 ? String.valueOf(elapsedMinutes) + " minutes" : "Leaving ";
 

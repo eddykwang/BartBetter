@@ -1,7 +1,9 @@
 package com.eddystudio.bartbetter.UI;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -44,19 +46,27 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-      Bundle savedInstanceState) {
+  public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                           Bundle savedInstanceState) {
     binding = FragmentNotificationBinding.inflate(inflater, container, false);
     //((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) binding.toolbar);
     getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
     Application.getAppComponet().inject(this);
     //binding.appToolbar.setTitle("Notifications");
     getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
-
+    if (getActivity() instanceof AppCompatActivity) {
+      ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+    }
     CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
     collapsingToolbarLayout.setTitleEnabled(false);
     ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Notifications");
 
+    viewModel.setItemClickListener(type -> {
+      switch (type){
+        case MAP: onMapClicked(); break;
+        case ABOUT: onAboutClicked(); break;
+      }
+    });
     binding.setVm(viewModel);
     binding.swipeRefreshLy.setOnRefreshListener(this::init);
     return binding.getRoot();
@@ -140,4 +150,15 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
     viewModel.isNotDelay.set(delayStation.equals(""));
     return null;
   }
+
+  private void onAboutClicked(){
+      Intent intent = new Intent(getActivity(), AboutActivity.class);
+      startActivity(intent);
+  }
+
+  private void onMapClicked(){
+    Intent intent = new Intent(getActivity(), MapActivity.class);
+    startActivity(intent);
+  }
+
 }

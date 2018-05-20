@@ -7,6 +7,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.SnapHelper;
@@ -56,35 +57,29 @@ public class RouteDetailFragment extends Fragment {
         ImageView imageView = getActivity().findViewById(R.id.toolbar_imageView);
         CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
         appBarLayout = getActivity().findViewById(R.id.app_bar);
+        if (getActivity() instanceof AppCompatActivity) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         Bundle arg = getArguments();
         if (arg != null) {
             from = arg.getString(MainActivity.BUDDLE_ARG_FROM);
             to = arg.getString(MainActivity.BUDDLE_ARG_TO);
             color = arg.getInt("color");
         }
-        imageView.setTransitionName(getString(R.string.goToDetailTransition));
-
         setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
-        //binding.linearLayout.setTransitionName(transName);
-        binding.textView18.setTransitionName(getString(R.string.textTransition));
-        //if (binding.appToolbar !=null)
-        //binding.appToolbar.setBackgroundColor(color);
         binding.setVm(new RouteDetailViewModel(from, to, color));
 
 
         imageView.setVisibility(View.VISIBLE);
         imageView.setImageResource(Uilt.randomCityBgGenerator());
-        imageView.setBackgroundColor(color);
         collapsingToolbarLayout.setTitleEnabled(true);
         appBarLayout.setExpanded(true, true);
         collapsingToolbarLayout.setTitle(Uilt.getFullStationName(to));
         collapsingToolbarLayout.setPadding(0, 0, 0, 0);
-
-
         setupAdapter();
         return binding.getRoot();
     }
-
 
     @Override
     public void onStart() {
@@ -109,7 +104,7 @@ public class RouteDetailFragment extends Fragment {
     }
 
     private void addToAdapter(List<Trip> trips) {
-        for (Trip trip : trips){
+        for (Trip trip : trips) {
             RouteDetailRecyclerViewModel vm = new RouteDetailRecyclerViewModel(trip);
             adapter.addData(vm);
         }

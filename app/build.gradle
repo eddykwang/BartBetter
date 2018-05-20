@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId 'com.example.bartable'
+        applicationId 'com.eddystudio.bartbetter'
         minSdkVersion 23
         targetSdkVersion 27
         versionCode 1
@@ -54,4 +54,5 @@ dependencies {
 
     implementation 'com.toptoche.searchablespinner:searchablespinnerlibrary:1.3.1'
     implementation 'com.ryanjeffreybrooks:indefinitepagerindicator:1.0.8'
+    implementation 'com.github.chrisbanes:PhotoView:2.1.3'
 }

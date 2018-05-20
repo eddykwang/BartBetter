@@ -1,13 +1,12 @@
 package com.eddystudio.bartbetter.UI;
 
 import android.app.AlertDialog;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -20,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -28,7 +26,6 @@ import com.eddystudio.bartbetter.Adapter.CardSwipeController;
 import com.eddystudio.bartbetter.Adapter.DashboardRecyclerViewAdapter;
 import com.eddystudio.bartbetter.Adapter.SwipeControllerActions;
 import com.eddystudio.bartbetter.DI.Application;
-import com.eddystudio.bartbetter.Model.Repository;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemModel;
@@ -36,29 +33,18 @@ import com.eddystudio.bartbetter.R;
 import com.eddystudio.bartbetter.databinding.FragmentDashboardBinding;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
-import static com.eddystudio.bartbetter.UI.MainActivity.DASHBOARDROUTS;
-import static com.eddystudio.bartbetter.UI.MainActivity.dashboardRouts;
-
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends BaseFragment {
 
   private FragmentDashboardBinding binding;
   private String originStation;
   private DashboardRecyclerViewAdapter adapter;
   private final CompositeDisposable compositeDisposable = new CompositeDisposable();
-
-  @Inject
-  public Repository repository;
-  @Inject
-  public SharedPreferences preference;
 
   public DashboardFragment() {
     // Required empty public constructor
@@ -73,7 +59,9 @@ public class DashboardFragment extends Fragment {
     CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
     collapsingToolbarLayout.setTitleEnabled(false);
     collapsingToolbarLayout.setTitle("My Routes");
-
+    if (getActivity() instanceof AppCompatActivity) {
+      ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+    }
     Application.getAppComponet().inject(this);
     setUpAdapter();
     setupFab();
@@ -93,12 +81,7 @@ public class DashboardFragment extends Fragment {
       @Override
       public void onRightClicked(int position) {
         super.onRightClicked(position);
-        dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
-        ArrayList<String> arrayList = new ArrayList<>(dashboardRouts);
-        arrayList.remove(position);
-        SharedPreferences.Editor editor = preference.edit();
-        editor.putStringSet(DASHBOARDROUTS, new HashSet<>(arrayList));
-        editor.apply();
+        deletePreferencesData(position);
         Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout), "Removed", Snackbar.LENGTH_LONG).show();
         adapter.deleteData(position);
       }
@@ -115,8 +98,7 @@ public class DashboardFragment extends Fragment {
 
   private void loadFromPreference() {
 
-    dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
-    ArrayList<String> list = new ArrayList<>(dashboardRouts);
+    List<String> list = getSharedPreferencesData();
     Log.d("dashboard", list.toString());
     //dashboardVmList.clear();
 
@@ -168,8 +150,7 @@ public class DashboardFragment extends Fragment {
   private void setUpAdapter() {
     List<DashboardRecyclerViewItemModel> itemList = new ArrayList<>();
 
-    dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
-    ArrayList<String> list = new ArrayList<>(dashboardRouts);
+    List<String> list = getSharedPreferencesData();
 
       for (int i = 0; i < list.size(); ++i) {
         String fromStation = list.get(i).split("-", 2)[0];
@@ -241,16 +222,16 @@ public class DashboardFragment extends Fragment {
           String destination = MainActivity.stationListSortcut.get(toSpinner.getSelectedItemPosition());
 
           if (!origin.equals(destination)) {
-            dashboardRouts = preference.getStringSet(DASHBOARDROUTS, new HashSet<>());
-            ArrayList<String> arrayList = new ArrayList<>(dashboardRouts);
-            arrayList.add(origin + "-" + destination);
+//            ArrayList<String> arrayList = new ArrayList<>(dashboardRouts);
+//            arrayList.add(origin + "-" + destination);
+              addPreferencesData(origin + "-" + destination);
             if (returnRouteCheckbox.isChecked()) {
-              arrayList.add(destination + "-" + origin);
+              addPreferencesData(destination + "-" + origin);
             }
 
-            SharedPreferences.Editor editor = preference.edit();
-            editor.putStringSet(DASHBOARDROUTS, new HashSet<>(arrayList));
-            editor.apply();
+//            SharedPreferences.Editor editor = preference.edit();
+//            editor.putStringSet(DASHBOARDROUTS, new HashSet<>(arrayList));
+//            editor.apply();
             dialogInterface.dismiss();
             setUpAdapter();
             loadFromPreference();
@@ -271,14 +252,14 @@ public class DashboardFragment extends Fragment {
 
   private void goToDetail(String from, String to, int color, View view) {
     if (getActivity() != null) {
-      ImageView imageView = view.findViewById(R.id.dashboard_color_block_iv);
-      TextView textView =view.findViewById(R.id.destination);
+      TextView textViewTo =view.findViewById(R.id.destination);
+      TextView textViewFrom = view.findViewById(R.id.textView18);
 
       RouteDetailFragment fragment = new RouteDetailFragment();
 
-      fragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
+//      fragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
       fragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
-      fragment.setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
+//      fragment.setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
 
       Bundle arg = new Bundle();
       arg.putString(MainActivity.BUDDLE_ARG_FROM, from);
@@ -290,8 +271,7 @@ public class DashboardFragment extends Fragment {
           .addToBackStack(null)
           .replace(R.id.main_frame_layout, fragment)
           .setReorderingAllowed(true)
-          .addSharedElement(imageView, getString(R.string.goToDetailTransition) )
-          .addSharedElement(textView, getString(R.string.textTransition))
+          .addSharedElement(textViewTo, getString(R.string.textTransition))
           .commit();
     }
   }

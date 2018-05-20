@@ -20,10 +20,10 @@ public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
 
   @Override public void onBindViewHolder(ItemHolder holder, int position) {
     super.onBindViewHolder(holder, position);
-    holder.itemView.findViewById(R.id.dashboard_color_block_iv)
-        .setTransitionName(application.getString(R.string.goToDetailTransition) + position);
     holder.itemView.findViewById(R.id.destination)
-        .setTransitionName(application.getString(R.string.textTransition) + position);
+            .setTransitionName(application.getString(R.string.textTransition) + position);
+    holder.itemView.findViewById(R.id.dashboard_from_tv)
+            .setTransitionName(application.getString(R.string.textTransition) + position);
   }
 
   public void modifyData(DashboardRecyclerViewItemModel item, int position){
