@@ -91,7 +91,9 @@ public class MainActivity extends AppCompatActivity {
         //appBarLayout.setExpanded(false,false);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_my_routes);
-        getAllStations();
+        if (stationList.isEmpty() || stationListSortcut.isEmpty()) {
+            getAllStations();
+        }
     }
 
     @Override
