@@ -15,18 +15,17 @@
     <import type="android.view.View"/>
   </data>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLy"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+  <android.support.v4.widget.SwipeRefreshLayout
+      android:id="@+id/swipeRefreshLy"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
 
-        >
-      <!--<android.support.v4.widget.NestedScrollView-->
-          <!--android:layout_width="match_parent"-->
-          <!--android:layout_height="wrap_content"-->
-          <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-          <!--tools:showIn="@layout/activity_main"-->
-          <!--&gt;-->
+      >
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
       <android.support.constraint.ConstraintLayout
           android:id="@+id/status_maps_page_main_constrain_layout"
           android:layout_width="match_parent"
@@ -341,11 +340,13 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             app:cardCornerRadius="2dp"
             app:cardElevation="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardView2">
@@ -444,8 +445,8 @@
         </android.support.v7.widget.CardView>
 
       </android.support.constraint.ConstraintLayout>
-      <!--</android.support.v4.widget.NestedScrollView>-->
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </android.support.v4.widget.NestedScrollView>
+  </android.support.v4.widget.SwipeRefreshLayout>
     <!--</android.support.constraint.ConstraintLayout>-->
   <!--</android.support.design.widget.CoordinatorLayout>-->
 </layout>

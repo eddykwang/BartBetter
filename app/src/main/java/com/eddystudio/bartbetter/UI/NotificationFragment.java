@@ -59,7 +59,7 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
     }
     CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
     collapsingToolbarLayout.setTitleEnabled(false);
-    ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Notifications");
+    ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("General");
 
     viewModel.setItemClickListener(type -> {
       switch (type){

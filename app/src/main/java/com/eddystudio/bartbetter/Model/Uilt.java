@@ -16,7 +16,7 @@ public class Uilt {
   public static String getFullStationName(String shortName){
     String fullName;
     switch (shortName){
-      case "12TH": fullName = "12th St. Oakland City Center"; break;
+      case "12TH": fullName = "12th St. Oakland"; break;
       case "16TH": fullName = "16th St. Mission"; break;
       case "19TH": fullName = "19th St. Oakland"; break;
       case "24TH": fullName = "24th St. Mission"; break;
@@ -46,22 +46,22 @@ public class Uilt {
       case "MONT": fullName = "Montgomery St."; break;
       case "NBRK": fullName = "North Berkeley"; break;
       case "NCON": fullName = "North Concord/Martinez"; break;
-      case "OAKL": fullName = "Oakland International Airport"; break;
+      case "OAKL": fullName = "Oakland Intl. Airport"; break;
       case "ORIN": fullName = "Orinda"; break;
       case "PITT": fullName = "Pittsburg/Bay Point"; break;
-      case "PHIL": fullName = "Pleasant Hill/Contra Costa Centre"; break;
+      case "PHIL": fullName = "Pleasant Hill"; break;
       case "POWL": fullName = "Powell St."; break;
       case "RICH": fullName = "Richmond"; break;
       case "ROCK": fullName = "Rockridge"; break;
       case "SBRN": fullName = "San Bruno"; break;
-      case "SFIA": fullName = "San Francisco International Airport"; break;
+      case "SFIA": fullName = "San Francisco Intl. Airport"; break;
       case "SANL": fullName = "San Leandro"; break;
       case "SHAY": fullName = "South Hayward"; break;
       case "SSAN": fullName = "South San Francisco"; break;
       case "UCTY": fullName = "Union City"; break;
       case "WCRK": fullName = "Walnut Creek"; break;
-      case "WARM": fullName = "Warm Springs/South Fremont"; break;
-      case "WDUB": fullName = "West Dublin/Pleasanton"; break;
+      case "WARM": fullName = "Warm Springs"; break;
+      case "WDUB": fullName = "West Dublin"; break;
       case "WOAK": fullName = "West Oakland"; break;
       default: fullName = shortName;
     }

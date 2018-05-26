@@ -156,6 +156,18 @@
                 app:layout_constraintTop_toTopOf="@+id/first_route_destination_station"
                 tools:text="10 : 34 AM" />
 
+            <TextView
+                android:id="@+id/textView23"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@{obj.firstRouteColor}"
+                android:text="@{obj.trainLength}"
+                app:layout_constraintBottom_toBottomOf="@+id/first_route_destination_train"
+                app:layout_constraintStart_toEndOf="@+id/first_route_destination_train"
+                app:layout_constraintTop_toTopOf="@+id/first_route_destination_train"
+                tools:text="(10 Car)" />
+
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout

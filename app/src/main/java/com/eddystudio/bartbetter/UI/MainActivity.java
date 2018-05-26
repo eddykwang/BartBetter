@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<String> stationListSortcut = new ArrayList<>();
 
     private Fragment fragment;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
         switch (item.getItemId()) {
@@ -89,12 +91,12 @@ public class MainActivity extends AppCompatActivity {
         //appBarLayout.setExpanded(false,false);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_my_routes);
+        getAllStations();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        getAllStations();
     }
 
     @Override
@@ -107,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getAllStations() {
-        Disposable disposable = repository.getStations()
+        compositeDisposable.add(repository.getStations()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(station -> station.getRoot().getStations().getStation())
@@ -117,6 +119,12 @@ public class MainActivity extends AppCompatActivity {
                         stationList.add(stations.get(i).getName());
                         stationListSortcut.add(stations.get(i).getAbbr());
                     }
-                });
+                }));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        compositeDisposable.clear();
     }
 }

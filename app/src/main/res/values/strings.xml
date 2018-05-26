@@ -2,7 +2,7 @@
     <string name="app_name">BART Better</string>
     <string name="title_quick_look_up">Quick Lookup</string>
     <string name="title_my_routes">My Routes</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_notifications">General</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -11,5 +11,7 @@
     <string name="textTransition2">textTransition2</string>
     <string name="noInternetErrorMessage">Can\'t get Data from Internet. Please make sure you have network connection.</string>
     <string name="dialog_warnning">Sorry, origin and destination cannot be the same.</string>
+
+    <string name="aboutpage_description">Bart Better is an Ad-free and open-source real-time BART tracking APP for BART community, which Made with Love and passion!</string>
 
 </resources>

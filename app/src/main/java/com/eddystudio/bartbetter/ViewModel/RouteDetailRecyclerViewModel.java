@@ -5,6 +5,7 @@ import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
 import android.graphics.Color;
 
+import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Fare;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Leg;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
@@ -30,11 +31,14 @@ public class RouteDetailRecyclerViewModel {
     public ObservableField<String> seniorPrice = new ObservableField<>("");
     public ObservableField<String> youthPrice = new ObservableField<>("");
     public ObservableBoolean haveSecondRoute = new ObservableBoolean(false);
+    public ObservableField<String> trainLength = new ObservableField<>("");
 
     private final Trip trip;
+    private final List<Etd> etds;
 
-    public RouteDetailRecyclerViewModel(Trip trip){
+    public RouteDetailRecyclerViewModel(Trip trip, List<Etd> etds){
         this.trip = trip;
+        this.etds = etds;
         updateUi();
     }
 
@@ -77,6 +81,12 @@ public class RouteDetailRecyclerViewModel {
             firstRouteDestinationStation.set(Uilt.getFullStationName(firstRouteInfo.getDestination()));
             firstRouteArravingTime.set(firstRouteInfo.getDestTimeMin());
             firstRouteColor.set(Uilt.routeColorMatcher(firstRouteInfo.getLine()));
+
+            for (int i = 0; i < etds.size(); ++i){
+                if (etds.get(i).getAbbreviation().equals(firstRouteInfo.getTrainHeadStation())){
+                    trainLength.set("( " + etds.get(i).getEstimate().get(0).getLength() + " Car )");
+                }
+            }
 
             if (legs.size() > 1) {
                 haveSecondRoute.set(true);

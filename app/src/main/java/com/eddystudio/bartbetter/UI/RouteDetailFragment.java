@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.SnapHelper;
 import android.transition.TransitionInflater;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,8 @@ import android.widget.ImageView;
 
 import com.eddystudio.bartbetter.Adapter.RouteDetailRecyclerViewAdapter;
 import com.eddystudio.bartbetter.Model.Repository;
+import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Bart;
+import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Uilt;
@@ -32,6 +35,7 @@ import java.util.List;
 
 import com.eddystudio.bartbetter.databinding.FragmentRoutDetailBinding;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -99,13 +103,31 @@ public class RouteDetailFragment extends Fragment {
                         .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
                         .observeOn(AndroidSchedulers.mainThread())
                         .map(this::getTrips)
-                        .subscribe(this::addToAdapter, this::handleError, this::onComplete)
+                        .subscribe(this::getTrainLength, this::handleError)
         );
     }
 
-    private void addToAdapter(List<Trip> trips) {
-        for (Trip trip : trips) {
-            RouteDetailRecyclerViewModel vm = new RouteDetailRecyclerViewModel(trip);
+    private void getTrainLength(List<Trip> trips) {
+        List<Pair<String, String>> list = new ArrayList<>();
+        list.add(new Pair<>(from, to));
+        compositeDisposable.add(
+                repository.getEstimate(list)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .ofType(Repository.OnSuccess.class)
+                        .map(bart -> getEtd(bart.getPair().first))
+                        .concatMap(Observable::fromArray)
+                        .subscribe(len->addToAdapter(trips, len), this::handleError, this::onComplete)
+        );
+    }
+
+    private List<Etd> getEtd(Bart bart) {
+        Log.d("destination", bart.toString());
+        return bart.getRoot().getStation().get(0).getEtd();
+    }
+
+    private void addToAdapter(List<Trip> trips, List<Etd> etds) {
+        for (int i =0; i < trips.size(); ++i ) {
+            RouteDetailRecyclerViewModel vm = new RouteDetailRecyclerViewModel(trips.get(i), etds);
             adapter.addData(vm);
         }
     }
