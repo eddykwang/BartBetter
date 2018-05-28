@@ -84,11 +84,6 @@ public class MainActivity extends AppCompatActivity {
         Application.getAppComponet().inject(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //AppBarLayout appBarLayout = findViewById(R.id.app_bar);
-        //CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
-        //collapsingToolbarLayout.setTitle("");
-        //collapsingToolbarLayout.setTitleEnabled(true);
-        //appBarLayout.setExpanded(false,false);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_my_routes);
         if (stationList.isEmpty() || stationListSortcut.isEmpty()) {

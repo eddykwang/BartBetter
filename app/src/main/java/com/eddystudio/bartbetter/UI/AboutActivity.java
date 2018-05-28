@@ -1,5 +1,7 @@
 package com.eddystudio.bartbetter.UI;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -20,27 +22,43 @@ public class AboutActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("About");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-//        Element adsElement = new Element();
-//        adsElement.setTitle("Advertise with us");
-
         View aboutPage = new AboutPage(this)
                 .setDescription(getString(R.string.aboutpage_description))
                 .isRTL(false)
-                .setImage(R.mipmap.ic_launcher_round)
+                .setImage(R.mipmap.about_icon)
                 .addItem(new Element().setTitle("Version 1.0.1b"))
-//                .addItem(adsElement)
-                .addGroup("Connect with us")
+                .addItem(new Element().setTitle("Privacy Policy").setIconDrawable(R.drawable.about_icon_link).setOnClickListener((view -> {
+                    openUrl("https://eddykwang.github.io/eddystudio/ppbartbetter.html");
+                })))
+                .addGroup("Connect With Us")
                 .addEmail("eddy.studio.dev@gmail.com")
-                .addWebsite("https://github.com/eddykwang/BartBetter")
-//                .addFacebook("the.medy")
-//                .addTwitter("medyo80")
-//                .addYoutube("UCdPQtdWIsg7_pi4mrRu46vA")
                 .addPlayStore("com.eddystudio.bartbetter")
-//                .addInstagram("medyo80")
+                .addWebsite("https://github.com/eddykwang/BartBetter")
                 .addGitHub("/eddykwang/BartBetter")
+                .addGroup("Credit To")
+                .addItem(new Element().setTitle("RxJava & RxAndroid").setIconDrawable(R.drawable.about_icon_github).setOnClickListener((view -> {
+                    openUrl("https://github.com/ReactiveX/RxJava");
+                })))
+                .addItem(new Element().setTitle("Retrofit").setIconDrawable(R.drawable.about_icon_github).setOnClickListener((view -> {
+                    openUrl("https://github.com/square/retrofit");
+                })))
+                .addItem(new Element().setTitle("Dagger2").setIconDrawable(R.drawable.about_icon_github).setOnClickListener((view -> {
+                    openUrl("https://github.com/google/dagger");
+                })))
+                .addItem(new Element().setTitle("PhotoView").setIconDrawable(R.drawable.about_icon_github).setOnClickListener((view -> {
+                    openUrl("https://github.com/chrisbanes/PhotoView");
+                })))
+                .addItem(new Element().setTitle("Android About Page").setIconDrawable(R.drawable.about_icon_github).setOnClickListener((view -> {
+                    openUrl("https://github.com/medyo/android-about-page");
+                })))
                 .create();
 
         setContentView(aboutPage);
+    }
+
+    private void openUrl(String url){
+        Intent intent= new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(intent);
     }
 
     @Override

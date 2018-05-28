@@ -222,16 +222,10 @@ public class DashboardFragment extends BaseFragment {
           String destination = MainActivity.stationListSortcut.get(toSpinner.getSelectedItemPosition());
 
           if (!origin.equals(destination)) {
-//            ArrayList<String> arrayList = new ArrayList<>(dashboardRouts);
-//            arrayList.add(origin + "-" + destination);
               addPreferencesData(origin + "-" + destination);
             if (returnRouteCheckbox.isChecked()) {
               addPreferencesData(destination + "-" + origin);
             }
-
-//            SharedPreferences.Editor editor = preference.edit();
-//            editor.putStringSet(DASHBOARDROUTS, new HashSet<>(arrayList));
-//            editor.apply();
             dialogInterface.dismiss();
             setUpAdapter();
             loadFromPreference();
@@ -257,9 +251,7 @@ public class DashboardFragment extends BaseFragment {
 
       RouteDetailFragment fragment = new RouteDetailFragment();
 
-//      fragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
       fragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
-//      fragment.setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
 
       Bundle arg = new Bundle();
       arg.putString(MainActivity.BUDDLE_ARG_FROM, from);
