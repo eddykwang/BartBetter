@@ -45,6 +45,12 @@ public class AboutActivity extends AppCompatActivity {
                 .addItem(new Element().setTitle("Dagger2").setIconDrawable(R.drawable.about_icon_github).setOnClickListener((view -> {
                     openUrl("https://github.com/google/dagger");
                 })))
+                .addItem(new Element().setTitle("Android Indefinite Pager Indicator").setIconDrawable(R.drawable.about_icon_github).setOnClickListener((view -> {
+                    openUrl("https://github.com/rbro112/Android-Indefinite-Pager-Indicator");
+                })))
+                .addItem(new Element().setTitle("Searchable Spinner").setIconDrawable(R.drawable.about_icon_github).setOnClickListener((view -> {
+                    openUrl("https://github.com/miteshpithadiya/SearchableSpinner");
+                })))
                 .addItem(new Element().setTitle("PhotoView").setIconDrawable(R.drawable.about_icon_github).setOnClickListener((view -> {
                     openUrl("https://github.com/chrisbanes/PhotoView");
                 })))

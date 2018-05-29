@@ -75,11 +75,7 @@ public class QuickLookupFragment extends BaseFragment {
                              Bundle savedInstanceState) {
 
         Application.getAppComponet().inject(this);
-
-        //binding = DataBindingUtil.setContentView(getActivity(), R.layout.fragment_quick_lookup);
         binding = FragmentQuickLookupBinding.inflate(inflater, container, false);
-
-        //((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) binding.appToolbar);
         binding.setVm(quickLookupViewModel);
         getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
         CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);

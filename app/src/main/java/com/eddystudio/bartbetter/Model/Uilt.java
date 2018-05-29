@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Uilt {
@@ -98,7 +99,7 @@ public class Uilt {
   }
 
   public static String timeMinutesCalculator(String departTime){
-    Calendar calendar = Calendar.getInstance();
+    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"));
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm/dd/yyyy hh:mm a", Locale.US);
     String time = simpleDateFormat.format(calendar.getTime());
     Date systemTime = new Date();
