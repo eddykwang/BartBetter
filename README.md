@@ -5,6 +5,8 @@ Android App for real time Bart Tracking
 <img src="https://github.com/eddywang1991/bartable/blob/master/screenshots/get_it_on_googleplay.png" data-canonical-src="https://github.com/eddywang1991/bartable/blob/master/screenshots/get_it_on_googleplay.png" width="300"/>
 </a>
 
+</br>
+
 <a href="https://play.google.com/store/apps/details?id=com.eddystudio.bartbetter">
 <img src="https://github.com/eddywang1991/bartable/blob/master/screenshots/Screenshot_1.png" data-canonical-src="https://github.com/eddywang1991/bartable/blob/master/screenshots/Screenshot_1.png" width="300" height="600" />
 </a>
