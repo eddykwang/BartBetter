@@ -13,6 +13,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+
 import static com.eddystudio.bartbetter.UI.MainActivity.DASHBOARDROUTS;
 
 
@@ -21,6 +24,22 @@ public class BaseFragment extends Fragment {
     public Repository repository;
     @Inject
     public SharedPreferences preference;
+    private CompositeDisposable compositeDisposable;
+
+    @Override
+    public void onDestroy() {
+        if (compositeDisposable != null && compositeDisposable.isDisposed()){
+            compositeDisposable.clear();
+        }
+        super.onDestroy();
+    }
+
+    protected void addDisposable(Disposable disposable){
+        if (compositeDisposable == null){
+            compositeDisposable = new CompositeDisposable();
+        }
+        compositeDisposable.add(disposable);
+    }
 
     protected List<String> getSharedPreferencesData(){
         Type type = new TypeToken<List<String>>(){}.getType();

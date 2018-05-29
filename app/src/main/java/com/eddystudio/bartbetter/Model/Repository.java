@@ -42,11 +42,13 @@ public class Repository {
                                                 .execute())
 //                .map(Response::body)
                                         .map(bartResponse -> {
-                                            if (bartResponse != null)
+                                            if (bartResponse != null) {
 //                      return bartResponse.body();
                                                 return new OnSuccess(new Pair<>(bartResponse.body(), pair.second));
-                                            else
+                                            }
+                                            else {
                                                 return new OnFail();
+                                            }
                                         })
 //                .map(bart -> new Pair<>(bart, pair.second))
                 )
@@ -77,9 +79,15 @@ public class Repository {
                 .fromIterable(routes)
                 .flatMap(pair ->
                         Observable.fromCallable(
-                                () -> bartService.routeSchedules("depart", pair.first, pair.second, "now", KEY, "0", "3", "1", "y")
+                                () -> bartService.routeSchedules("depart", pair.first, pair.second, "now", KEY, "0", "4", "0", "y")
                                         .execute())
-                                .map(Response::body)
+                                .map(response -> {
+                                    if (response != null){
+                                        return  response.body();
+                                    }else {
+                                        return null;
+                                    }
+                                })
                 )
 
                 .subscribeOn(Schedulers.io());

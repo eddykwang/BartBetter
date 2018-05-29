@@ -28,13 +28,12 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import com.eddystudio.bartbetter.databinding.FragmentNotificationBinding;
 
-public class NotificationFragment extends android.support.v4.app.Fragment {
+public class NotificationFragment extends BaseFragment {
 
   private FragmentNotificationBinding binding;
   private final NotificationViewModel viewModel = new NotificationViewModel();
   private static final String savedViewMorePreference = "VIEW_MORE_PREFERENCE";
   private static boolean isErrorShowed;
-  private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
   @Inject
   public Repository repository;
@@ -85,12 +84,11 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
     SharedPreferences.Editor editor = sharedPreferences.edit();
     editor.putBoolean(savedViewMorePreference, viewModel.isViewDetailChecked.get());
     editor.apply();
-    compositeDisposable.clear();
   }
 
   private void init() {
     isErrorShowed = false;
-    Disposable delayDisposable = repository.getDelayReport()
+    addDisposable(repository.getDelayReport()
         .doOnSubscribe(ignored -> {
           binding.swipeRefreshLy.setRefreshing(true);
           viewModel.isDelayReportProgressVisible.set(true);
@@ -101,10 +99,9 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
           convertToVM(delayReport);
           binding.swipeRefreshLy.setRefreshing(false);
           viewModel.isDelayReportProgressVisible.set(false);
-        }, this::onError);
-    compositeDisposable.add(delayDisposable);
+        }, this::onError));
 
-    Disposable statusDisposable = repository.getElevatorStatus()
+    addDisposable(repository.getElevatorStatus()
         .doOnSubscribe(ignored -> {
           binding.swipeRefreshLy.setRefreshing(true);
           viewModel.isElevatorProgressVisible.set(true);
@@ -115,8 +112,7 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
           convertToVM(elevatorStatus);
           binding.swipeRefreshLy.setRefreshing(false);
           viewModel.isElevatorProgressVisible.set(false);
-        }, this::onError);
-    compositeDisposable.add(statusDisposable);
+        }, this::onError));
   }
 
   private void onError(Throwable throwable) {
@@ -124,7 +120,7 @@ public class NotificationFragment extends android.support.v4.app.Fragment {
     binding.swipeRefreshLy.setRefreshing(false);
     viewModel.isElevatorProgressVisible.set(false);
     viewModel.isDelayReportProgressVisible.set(false);
-    if (!isErrorShowed) {
+    if (!isErrorShowed && getActivity() != null) {
       Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout), "Error on loading", Snackbar.LENGTH_LONG)
           .setAction("Retry", view-> init())
           .show();
