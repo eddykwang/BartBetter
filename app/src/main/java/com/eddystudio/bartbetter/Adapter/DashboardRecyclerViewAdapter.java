@@ -1,17 +1,17 @@
 package com.eddystudio.bartbetter.Adapter;
 
-import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemModel;
+import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemVM;
 import com.eddystudio.bartbetter.R;
 
 import java.util.List;
 
 public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
 
-  private List<DashboardRecyclerViewItemModel> itemList;
+  private List<DashboardRecyclerViewItemVM> itemList;
   private final int layoutId;
   private final int recyclerViewLayout;
 
-  public DashboardRecyclerViewAdapter(List<DashboardRecyclerViewItemModel> itemList,
+  public DashboardRecyclerViewAdapter(List<DashboardRecyclerViewItemVM> itemList,
       int layoutId, int recyclerViewLayout) {
     this.itemList = itemList;
     this.layoutId = layoutId;
@@ -26,12 +26,12 @@ public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
             .setTransitionName(application.getString(R.string.textTransition) + position);
   }
 
-  public void modifyData(DashboardRecyclerViewItemModel item, int position){
+  public void modifyData(DashboardRecyclerViewItemVM item, int position){
     this.itemList.set(position, item);
     this.notifyItemChanged(position);
   }
 
-  public void setData(DashboardRecyclerViewItemModel item) {
+  public void setData(DashboardRecyclerViewItemVM item) {
     this.itemList.add(item);
     this.notifyItemChanged(itemList.size());
   }

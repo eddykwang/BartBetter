@@ -31,12 +31,6 @@ public abstract class BaseRecyclerViewAdapter
   public void onBindViewHolder(ItemHolder holder, int position) {
     Object obj = getObjectForPosition(position);
     holder.bind(obj);
-
-    //Animation animation = AnimationUtils.loadAnimation(application,
-    //    (position > lastPosition) ? R.anim.up_from_bottom
-    //        : R.anim.down_from_top);
-    //holder.itemView.startAnimation(animation);
-    //lastPosition = position;
   }
 
   protected abstract Object getObjectForPosition(int position);

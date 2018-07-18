@@ -30,7 +30,7 @@ import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Uilt;
-import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemModel;
+import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemVM;
 import com.eddystudio.bartbetter.R;
 import com.eddystudio.bartbetter.databinding.FragmentDashboardBinding;
 
@@ -40,7 +40,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 
 public class DashboardFragment extends BaseFragment {
 
@@ -132,10 +131,10 @@ public class DashboardFragment extends BaseFragment {
         );
     }
 
-    private DashboardRecyclerViewItemModel getRoutesInfoToVm(ScheduleFromAToB scheduleFromAToB) {
+    private DashboardRecyclerViewItemVM getRoutesInfoToVm(ScheduleFromAToB scheduleFromAToB) {
         List<Trip> trips = scheduleFromAToB.getRoot().getSchedule().getRequest().getTrip();
 
-        DashboardRecyclerViewItemModel vm = new DashboardRecyclerViewItemModel(trips, scheduleFromAToB.getRoot().getOrigin(),
+        DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(trips, scheduleFromAToB.getRoot().getOrigin(),
                 scheduleFromAToB.getRoot().getDestination());
         vm.setItemClickListener(this::goToDetail);
         return vm;
@@ -146,7 +145,7 @@ public class DashboardFragment extends BaseFragment {
     }
 
     private void setUpAdapter() {
-        List<DashboardRecyclerViewItemModel> itemList = new ArrayList<>();
+        List<DashboardRecyclerViewItemVM> itemList = new ArrayList<>();
 
         List<String> list = getSharedPreferencesData();
 
@@ -154,7 +153,7 @@ public class DashboardFragment extends BaseFragment {
             String fromStation = list.get(i).split("-", 2)[0];
             String toStation = list.get(i).split("-", 2)[1];
             Log.d("dashboard", "From " + fromStation + " to " + toStation);
-            DashboardRecyclerViewItemModel viewItemModel = new DashboardRecyclerViewItemModel(new ArrayList<>(), fromStation, toStation);
+            DashboardRecyclerViewItemVM viewItemModel = new DashboardRecyclerViewItemVM(new ArrayList<>(), fromStation, toStation);
             viewItemModel.setItemClickListener((f, t, x, l) -> {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
                 alertDialogBuilder

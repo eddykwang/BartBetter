@@ -1,6 +1,9 @@
 package com.eddystudio.bartbetter.ViewModel;
 
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.ViewModel;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
 import android.view.View;
@@ -8,18 +11,19 @@ import android.view.View;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 import com.eddystudio.bartbetter.Model.Uilt;
 
-public class HomePageRecyclerViewItemModel {
+public class QuickLookupRecyclerViewItemVM extends ViewModel {
     public String from = "";
-    public final ObservableField<String> destination = new ObservableField<>("");
-    public final ObservableField<String> firstTrain = new ObservableField<>("");
-    public final ObservableField<String> secondTrain = new ObservableField<>("");
-    public final ObservableField<String> thirdTrain = new ObservableField<>("");
-    public final ObservableInt routColor = new ObservableInt(1);
+
+    public final MutableLiveData<String> destination = new MutableLiveData<>();
+    public final MutableLiveData<String> firstTrain = new MutableLiveData<>();
+    public final MutableLiveData<String> secondTrain = new MutableLiveData<>();
+    public final MutableLiveData<String> thirdTrain = new MutableLiveData<>();
+    public final MutableLiveData<Integer> routColor = new MutableLiveData<>();
     private final Etd etd;
 
     private ItemClickListener itemClickListener;
 
-    public HomePageRecyclerViewItemModel(String from, Etd etd) {
+    public QuickLookupRecyclerViewItemVM(String from, Etd etd) {
         this.from = from;
         this.etd = etd;
         updateUi();
@@ -34,7 +38,7 @@ public class HomePageRecyclerViewItemModel {
         if (destination != null){
             to = etd.getAbbreviation();
         }
-        itemClickListener.onItemClicked(from, to, routColor.get(), view);
+        itemClickListener.onItemClicked(from, to, routColor.getValue(), view);
     }
 
     private void updateUi(){
@@ -52,11 +56,12 @@ public class HomePageRecyclerViewItemModel {
             second = etd.getEstimate().get(1).getMinutes() + m;
             third = etd.getEstimate().get(2).getMinutes() + m;
         }
-        this.destination.set(etd.getDestination());
-        this.firstTrain.set(first);
-        this.secondTrain.set(second);
-        this.thirdTrain.set(third);
-        this.routColor.set(Uilt.materialColorConverter(etd.getEstimate().get(0).getColor()));
+
+        this.destination.setValue(etd.getDestination());
+        this.firstTrain.setValue(first);
+        this.secondTrain.setValue(second);
+        this.thirdTrain.setValue(third);
+        this.routColor.setValue(Uilt.materialColorConverter(etd.getEstimate().get(0).getColor()));
     }
 
 }

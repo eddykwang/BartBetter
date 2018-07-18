@@ -12,7 +12,7 @@ import com.eddystudio.bartbetter.Model.Uilt;
 import java.text.ParseException;
 import java.util.List;
 
-public class DashboardRecyclerViewItemModel {
+public class DashboardRecyclerViewItemVM {
     public final ObservableField<String> destination = new ObservableField<>("");
     public final ObservableField<String> fromStation = new ObservableField<>("");
     public final ObservableField<String> firstTrain = new ObservableField<>("");
@@ -24,7 +24,7 @@ public class DashboardRecyclerViewItemModel {
     private String to = "";
     private ItemClickListener itemClickListener;
 
-    public DashboardRecyclerViewItemModel(List<Trip> trips, String from, String to) {
+    public DashboardRecyclerViewItemVM(List<Trip> trips, String from, String to) {
         this.from = from;
         this.to = to;
         try {

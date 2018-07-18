@@ -8,7 +8,7 @@
 
     <variable
         name="obj"
-        type="com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemModel"
+        type="com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemVM"
         />
   </data>
 
