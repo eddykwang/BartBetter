@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModel;
 import android.databinding.ObservableBoolean;
 import android.util.Log;
 import android.util.Pair;
-import android.view.View;
 
 import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Repository;
@@ -48,7 +47,7 @@ public class QuickLookupViewModel extends ViewModel {
     List<Pair<String, String>> stations = new ArrayList<>();
     stations.add(new Pair<>(stationShort, ""));
     disposable.add(repository.getEstimate(stations)
-        .doOnSubscribe(ignored -> eventsSubject.onNext(new LoadingEvent(true)))
+        .doOnSubscribe(ignored -> eventsSubject.onNext(new Events.LoadingEvent(true)))
         .observeOn(AndroidSchedulers.mainThread())
         .ofType(Repository.OnSuccess.class)
         .map(bart -> getEtd(bart.getPair().first))
@@ -71,11 +70,11 @@ public class QuickLookupViewModel extends ViewModel {
   }
 
   private void handleError(Throwable throwable) {
-    eventsSubject.onNext(new ErrorEvent(throwable));
+    eventsSubject.onNext(new Events.ErrorEvent(throwable));
   }
 
   private void onComplete() {
-    eventsSubject.onNext(new CompleteEvent(bartList));
+    eventsSubject.onNext(new Events.CompleteEvent(bartList));
   }
 
   private ArrayList<QuickLookupRecyclerViewItemVM> convertToVM(List<Etd> stations) {
@@ -85,83 +84,11 @@ public class QuickLookupViewModel extends ViewModel {
     for(int i = 0; i < stations.size(); ++i) {
       QuickLookupRecyclerViewItemVM vm =
           new QuickLookupRecyclerViewItemVM(selectedStation, stations.get(i));
-      vm.setItemClickListener((f, t, r, v) -> eventsSubject.onNext(new GoToDetailEvent(f, t, r, v)));
+      vm.setItemClickListener((f, t, r, v) -> eventsSubject.onNext(new Events.GoToDetailEvent(f, t, r, v)));
       vmList.add(vm);
       etdStations.add(stations.get(i).getAbbreviation());
     }
-    eventsSubject.onNext(new GetEtdEvent(etdStations));
+    eventsSubject.onNext(new Events.GetEtdEvent(etdStations));
     return vmList;
-  }
-
-  public interface Events {}
-
-  public class LoadingEvent implements Events {
-    private final boolean load;
-
-    public LoadingEvent(boolean load) {this.load = load;}
-
-    public boolean isLoad() {
-      return load;
-    }
-  }
-
-  public class ErrorEvent implements Events {
-    private final Throwable error;
-
-    public ErrorEvent(Throwable error) {this.error = error;}
-
-    public Throwable getError() {
-      return error;
-    }
-  }
-
-  public class CompleteEvent implements Events {
-    private final ArrayList<QuickLookupRecyclerViewItemVM> bartList;
-
-    public CompleteEvent(ArrayList<QuickLookupRecyclerViewItemVM> bartList) {this.bartList = bartList;}
-
-    public ArrayList<QuickLookupRecyclerViewItemVM> getBartList() {
-      return bartList;
-    }
-  }
-
-  public class GoToDetailEvent implements Events {
-    private final String from;
-    private final String to;
-    private final int routeColor;
-    private final View view;
-
-    public GoToDetailEvent(String from, String to, int routeColor, View view) {
-      this.from = from;
-      this.to = to;
-      this.routeColor = routeColor;
-      this.view = view;
-    }
-
-    public String getFrom() {
-      return from;
-    }
-
-    public String getTo() {
-      return to;
-    }
-
-    public int getRouteColor() {
-      return routeColor;
-    }
-
-    public View getView() {
-      return view;
-    }
-  }
-
-  public class GetEtdEvent implements Events {
-    private final ArrayList<String> etdStations;
-
-    public GetEtdEvent(ArrayList<String> etdStations) {this.etdStations = etdStations;}
-
-    public ArrayList<String> getEtdStations() {
-      return etdStations;
-    }
   }
 }

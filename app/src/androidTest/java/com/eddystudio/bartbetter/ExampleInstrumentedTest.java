@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.m712658.wtwltd", appContext.getPackageName());
+        assertEquals("com.eddystudio.bartbetter", appContext.getPackageName());
     }
 }

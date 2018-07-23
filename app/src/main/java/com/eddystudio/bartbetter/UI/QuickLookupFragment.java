@@ -30,6 +30,7 @@ import com.eddystudio.bartbetter.Adapter.QuickLookupRecyclerViewAdapter;
 import com.eddystudio.bartbetter.Adapter.SwipeControllerActions;
 import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Uilt;
+import com.eddystudio.bartbetter.ViewModel.Events;
 import com.eddystudio.bartbetter.ViewModel.QuickLookupRecyclerViewItemVM;
 import com.eddystudio.bartbetter.ViewModel.QuickLookupViewModel;
 import com.eddystudio.bartbetter.R;
@@ -102,11 +103,11 @@ public class QuickLookupFragment extends BaseFragment {
   private void init() {
     quickLookupViewModel.getEventsSubject()
         .compose(event -> Observable.mergeArray(
-            event.ofType(QuickLookupViewModel.LoadingEvent.class).doOnNext(data -> binding.swipeRefreshLy.setRefreshing(data.isLoad())),
-            event.ofType(QuickLookupViewModel.CompleteEvent.class).doOnNext(data -> onComplete(data.getBartList())),
-            event.ofType(QuickLookupViewModel.ErrorEvent.class).doOnNext(error -> handleError(error.getError())),
-            event.ofType(QuickLookupViewModel.GoToDetailEvent.class).doOnNext(data -> goToDetail(data.getFrom(), data.getTo(), data.getRouteColor(), data.getView())),
-            event.ofType(QuickLookupViewModel.GetEtdEvent.class).doOnNext(data -> etdStations = data.getEtdStations())
+            event.ofType(Events.LoadingEvent.class).doOnNext(data -> binding.swipeRefreshLy.setRefreshing(data.isLoad())),
+            event.ofType(Events.CompleteEvent.class).doOnNext(data -> onComplete(data.getBartList())),
+            event.ofType(Events.ErrorEvent.class).doOnNext(error -> handleError(error.getError())),
+            event.ofType(Events.GoToDetailEvent.class).doOnNext(data -> goToDetail(data.getFrom(), data.getTo(), data.getRouteColor(), data.getView())),
+            event.ofType(Events.GetEtdEvent.class).doOnNext(data -> etdStations = (ArrayList<String>) data.getEtdStations())
         ))
         .subscribe();
   }
