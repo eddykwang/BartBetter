@@ -28,27 +28,24 @@ import com.eddystudio.bartbetter.Adapter.CardSwipeController;
 import com.eddystudio.bartbetter.Adapter.DashboardRecyclerViewAdapter;
 import com.eddystudio.bartbetter.Adapter.SwipeControllerActions;
 import com.eddystudio.bartbetter.DI.Application;
-import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
-import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Uilt;
 import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemVM;
 import com.eddystudio.bartbetter.R;
+import com.eddystudio.bartbetter.ViewModel.DashboardViewModel;
 import com.eddystudio.bartbetter.ViewModel.Events;
 import com.eddystudio.bartbetter.databinding.FragmentDashboardBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class DashboardFragment extends BaseFragment {
 
   private FragmentDashboardBinding binding;
   private DashboardRecyclerViewAdapter adapter;
-  private DashboardRecyclerViewItemVM vm;
+  private DashboardViewModel vm;
   List<Pair<String, String>> stationPairList = new ArrayList<>();
 
   public DashboardFragment() {
@@ -69,7 +66,7 @@ public class DashboardFragment extends BaseFragment {
     if(getActivity() instanceof AppCompatActivity) {
       ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
-    vm = ViewModelProviders.of(this).get(DashboardRecyclerViewItemVM.class);
+    vm = ViewModelProviders.of(this).get(DashboardViewModel.class);
     Application.getAppComponet().inject(this);
     setUpAdapter();
     init();

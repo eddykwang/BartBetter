@@ -8,6 +8,7 @@ import com.eddystudio.bartbetter.UI.NotificationFragment;
 import com.eddystudio.bartbetter.UI.QuickLookupFragment;
 import com.eddystudio.bartbetter.UI.RouteDetailFragment;
 import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemVM;
+import com.eddystudio.bartbetter.ViewModel.DashboardViewModel;
 import com.eddystudio.bartbetter.ViewModel.QuickLookupViewModel;
 
 import javax.inject.Singleton;
@@ -34,5 +35,6 @@ public interface AppComponent {
 
   void inject(QuickLookupViewModel quickLookupViewModel);
 
-  void inject(DashboardRecyclerViewItemVM dashboardRecyclerViewItemVM);
+  void inject(DashboardViewModel dashboardViewModel);
+
 }
