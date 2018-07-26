@@ -40,126 +40,127 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
 public class RouteDetailFragment extends Fragment {
-    private FragmentRoutDetailBinding binding;
-    private String from;
-    private String to;
-    private int color;
-    private RouteDetailRecyclerViewAdapter adapter;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
-    public Repository repository = new Repository();
-    private AppBarLayout appBarLayout;
+  private FragmentRoutDetailBinding binding;
+  private String from;
+  private String to;
+  private int color;
+  private RouteDetailRecyclerViewAdapter adapter;
+  private CompositeDisposable compositeDisposable = new CompositeDisposable();
+  public Repository repository = new Repository();
+  private AppBarLayout appBarLayout;
 
-    public RouteDetailFragment() {
+  public RouteDetailFragment() {
+  }
+
+  @Nullable
+  @Override
+  public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                           Bundle savedInstanceState) {
+    binding = FragmentRoutDetailBinding.inflate(inflater, container, false);
+
+    ImageView imageView = getActivity().findViewById(R.id.toolbar_imageView);
+    CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
+    appBarLayout = getActivity().findViewById(R.id.app_bar);
+    if(getActivity() instanceof AppCompatActivity) {
+      ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentRoutDetailBinding.inflate(inflater, container, false);
-
-        ImageView imageView = getActivity().findViewById(R.id.toolbar_imageView);
-        CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
-        appBarLayout = getActivity().findViewById(R.id.app_bar);
-        if (getActivity() instanceof AppCompatActivity) {
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
-        Bundle arg = getArguments();
-        if (arg != null) {
-            from = arg.getString(MainActivity.BUDDLE_ARG_FROM);
-            to = arg.getString(MainActivity.BUDDLE_ARG_TO);
-            color = arg.getInt("color");
-        }
-        setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
-        binding.setVm(new RouteDetailViewModel(from, to, color));
-
-
-        imageView.setVisibility(View.VISIBLE);
-        imageView.setImageResource(Uilt.randomCityBgGenerator());
-        collapsingToolbarLayout.setTitleEnabled(true);
-        appBarLayout.setExpanded(true, true);
-        collapsingToolbarLayout.setTitle(Uilt.getFullStationName(to));
-        collapsingToolbarLayout.setPadding(0, 0, 0, 0);
-        setupAdapter();
-        return binding.getRoot();
+    Bundle arg = getArguments();
+    if(arg != null) {
+      from = arg.getString(MainActivity.BUDDLE_ARG_FROM);
+      to = arg.getString(MainActivity.BUDDLE_ARG_TO);
+      color = arg.getInt("color");
     }
+    setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
+    binding.setVm(new RouteDetailViewModel(from, to, color));
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, 800));
-        getRoutesInfo();
-        binding.swipeRefreshLy.setOnRefreshListener(this::getRoutesInfo);
+    collapsingToolbarLayout.findViewById(R.id.auto_refresh_switch).setVisibility(View.GONE);
 
+    imageView.setVisibility(View.VISIBLE);
+    imageView.setImageResource(Uilt.randomCityBgGenerator());
+    collapsingToolbarLayout.setTitleEnabled(true);
+    appBarLayout.setExpanded(true, true);
+    collapsingToolbarLayout.setTitle(Uilt.getFullStationName(to));
+    collapsingToolbarLayout.setPadding(0, 0, 0, 0);
+    setupAdapter();
+    return binding.getRoot();
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, 800));
+    getRoutesInfo();
+    binding.swipeRefreshLy.setOnRefreshListener(this::getRoutesInfo);
+
+  }
+
+  private void getRoutesInfo() {
+    List<Pair<String, String>> routes = new ArrayList<>();
+    routes.add(new Pair<>(from, to));
+    adapter.clearAllData();
+    compositeDisposable.add(
+        repository.getRouteSchedules(routes)
+            .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
+            .observeOn(AndroidSchedulers.mainThread())
+            .map(this::getTrips)
+            .subscribe(this::getTrainLength, this::handleError)
+    );
+  }
+
+  private void getTrainLength(List<Trip> trips) {
+    List<Pair<String, String>> list = new ArrayList<>();
+    list.add(new Pair<>(from, to));
+    compositeDisposable.add(
+        repository.getListEstimate(list)
+            .observeOn(AndroidSchedulers.mainThread())
+            .ofType(Repository.OnSuccess.class)
+            .map(bart -> getEtd(bart.getPair().first))
+            .concatMap(Observable::fromArray)
+            .subscribe(len -> addToAdapter(trips, len), this::handleError, this::onComplete)
+    );
+  }
+
+  private List<Etd> getEtd(Bart bart) {
+    Log.d("destination", bart.toString());
+    return bart.getRoot().getStation().get(0).getEtd();
+  }
+
+  private void addToAdapter(List<Trip> trips, List<Etd> etds) {
+    for(int i = 0; i < trips.size(); ++i) {
+      RouteDetailRecyclerViewModel vm = new RouteDetailRecyclerViewModel(trips.get(i), etds);
+      adapter.addData(vm);
     }
+  }
 
-    private void getRoutesInfo() {
-        List<Pair<String, String>> routes = new ArrayList<>();
-        routes.add(new Pair<>(from, to));
-        adapter.clearAllData();
-        compositeDisposable.add(
-                repository.getRouteSchedules(routes)
-                        .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .map(this::getTrips)
-                        .subscribe(this::getTrainLength, this::handleError)
-        );
-    }
+  private List<Trip> getTrips(ScheduleFromAToB schedule) {
+    return schedule.getRoot().getSchedule().getRequest().getTrip();
+  }
 
-    private void getTrainLength(List<Trip> trips) {
-        List<Pair<String, String>> list = new ArrayList<>();
-        list.add(new Pair<>(from, to));
-        compositeDisposable.add(
-                repository.getEstimate(list)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .ofType(Repository.OnSuccess.class)
-                        .map(bart -> getEtd(bart.getPair().first))
-                        .concatMap(Observable::fromArray)
-                        .subscribe(len->addToAdapter(trips, len), this::handleError, this::onComplete)
-        );
-    }
+  private void handleError(Throwable throwable) {
+  }
 
-    private List<Etd> getEtd(Bart bart) {
-        Log.d("destination", bart.toString());
-        return bart.getRoot().getStation().get(0).getEtd();
-    }
+  private void onComplete() {
+    binding.swipeRefreshLy.setRefreshing(false);
+  }
 
-    private void addToAdapter(List<Trip> trips, List<Etd> etds) {
-        for (int i =0; i < trips.size(); ++i ) {
-            RouteDetailRecyclerViewModel vm = new RouteDetailRecyclerViewModel(trips.get(i), etds);
-            adapter.addData(vm);
-        }
-    }
+  private void setupAdapter() {
+    ArrayList<RouteDetailRecyclerViewModel> routeInfoList = new ArrayList<>();
+    adapter = new RouteDetailRecyclerViewAdapter(routeInfoList, binding.routeDetailRecyclerview.getId(),
+        R.layout.route_detail_single_recycler_view_item);
+    binding.routeDetailRecyclerview.setAdapter(adapter);
+    binding.routeDetailRecyclerview.setNestedScrollingEnabled(false);
+    LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+    binding.routeDetailRecyclerview.setLayoutManager(manager);
+    binding.pageIndicator.attachToRecyclerView(binding.routeDetailRecyclerview);
+    SnapHelper snapHelper = new PagerSnapHelper();
+    snapHelper.attachToRecyclerView(binding.routeDetailRecyclerview);
+  }
 
-    private List<Trip> getTrips(ScheduleFromAToB schedule) {
-        return schedule.getRoot().getSchedule().getRequest().getTrip();
-    }
-
-    private void handleError(Throwable throwable) {
-    }
-
-    private void onComplete() {
-        binding.swipeRefreshLy.setRefreshing(false);
-    }
-
-    private void setupAdapter() {
-        ArrayList<RouteDetailRecyclerViewModel> routeInfoList = new ArrayList<>();
-        adapter = new RouteDetailRecyclerViewAdapter(routeInfoList, binding.routeDetailRecyclerview.getId(),
-                R.layout.route_detail_single_recycler_view_item);
-        binding.routeDetailRecyclerview.setAdapter(adapter);
-        binding.routeDetailRecyclerview.setNestedScrollingEnabled(false);
-        LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-        binding.routeDetailRecyclerview.setLayoutManager(manager);
-        binding.pageIndicator.attachToRecyclerView(binding.routeDetailRecyclerview);
-        SnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(binding.routeDetailRecyclerview);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, CoordinatorLayout.LayoutParams.WRAP_CONTENT));
-        compositeDisposable.clear();
-    }
+  @Override
+  public void onStop() {
+    super.onStop();
+    appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, CoordinatorLayout.LayoutParams.WRAP_CONTENT));
+    compositeDisposable.clear();
+  }
 }

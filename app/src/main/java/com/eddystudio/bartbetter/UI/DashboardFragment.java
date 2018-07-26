@@ -2,6 +2,7 @@ package com.eddystudio.bartbetter.UI;
 
 import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.TransitionInflater;
 import android.util.Log;
@@ -41,11 +43,14 @@ import java.util.Objects;
 
 import io.reactivex.Observable;
 
+import static com.eddystudio.bartbetter.UI.MainActivity.AUTO_REFRESH_ENABLED;
+
 public class DashboardFragment extends BaseFragment {
 
   private FragmentDashboardBinding binding;
   private DashboardRecyclerViewAdapter adapter;
   private DashboardViewModel vm;
+  private CollapsingToolbarLayout collapsingToolbarLayout;
   List<Pair<String, String>> stationPairList = new ArrayList<>();
 
   public DashboardFragment() {
@@ -60,7 +65,7 @@ public class DashboardFragment extends BaseFragment {
     if(getActivity() != null) {
       getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
     }
-    CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
+    collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
     collapsingToolbarLayout.setTitleEnabled(false);
     collapsingToolbarLayout.setTitle("My Routes");
     if(getActivity() instanceof AppCompatActivity) {
@@ -74,9 +79,38 @@ public class DashboardFragment extends BaseFragment {
     return binding.getRoot();
   }
 
+  private void setupSwitch() {
+    SwitchCompat switchCompat = collapsingToolbarLayout.findViewById(R.id.auto_refresh_switch);
+    switchCompat.setVisibility(View.VISIBLE);
+    boolean auto = preference.getBoolean(AUTO_REFRESH_ENABLED, false);
+    switchCompat.setChecked(auto);
+    vm.setAutoRefreshEnabled(auto);
+    switchCompat.setOnCheckedChangeListener((buttonView, isChecked) -> {
+      vm.setAutoRefreshEnabled(isChecked);
+      SharedPreferences.Editor prefsEditor = preference.edit();
+      prefsEditor.putBoolean(AUTO_REFRESH_ENABLED, isChecked);
+      prefsEditor.apply();
+      if(isChecked) {
+        snackbarMessage("Auto refresh every 20 seconds.");
+        loadFromPreference();
+      } else {
+        snackbarMessage("Auto refresh turned off.");
+      }
+    });
+  }
+
+  private void snackbarMessage(String messeage) {
+    if(getActivity() != null) {
+      Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout),
+          messeage,
+          Snackbar.LENGTH_LONG).show();
+    }
+  }
+
   @Override
   public void onStart() {
     super.onStart();
+    setupSwitch();
     loadFromPreference();
     binding.swipeRefreshLy.setOnRefreshListener(this::loadFromPreference);
     attachOnCardSwipe();
@@ -88,11 +122,7 @@ public class DashboardFragment extends BaseFragment {
       public void onRightClicked(int position) {
         super.onRightClicked(position);
         deletePreferencesData(position);
-        if(getActivity() != null) {
-          Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout),
-              Uilt.getFullStationName(stationPairList.get(position).first) + " -> " + Uilt.getFullStationName(stationPairList.get(position).second) + " removed",
-              Snackbar.LENGTH_LONG).show();
-        }
+        snackbarMessage(Uilt.getFullStationName(stationPairList.get(position).first) + " -> " + Uilt.getFullStationName(stationPairList.get(position).second) + " removed");
         adapter.deleteData(position);
       }
     });
@@ -118,6 +148,8 @@ public class DashboardFragment extends BaseFragment {
         stationPairList.add(new Pair<>(fromStation, toStation));
       }
       vm.getRoutesEstimateTime(stationPairList);
+      vm.autoRefreshGetData(stationPairList);
+//      vm.getAccurateEstTime(stationPairList);
     }
   }
 

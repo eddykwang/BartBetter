@@ -59,6 +59,7 @@ public class NotificationFragment extends BaseFragment {
     CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
     collapsingToolbarLayout.setTitleEnabled(false);
     ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("General");
+    collapsingToolbarLayout.findViewById(R.id.auto_refresh_switch).setVisibility(View.GONE);
 
     viewModel.setItemClickListener(type -> {
       switch (type){

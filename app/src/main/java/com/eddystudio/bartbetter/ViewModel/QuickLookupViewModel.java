@@ -46,7 +46,7 @@ public class QuickLookupViewModel extends ViewModel {
     selectedStation = stationShort;
     List<Pair<String, String>> stations = new ArrayList<>();
     stations.add(new Pair<>(stationShort, ""));
-    disposable.add(repository.getEstimate(stations)
+    disposable.add(repository.getListEstimate(stations)
         .doOnSubscribe(ignored -> eventsSubject.onNext(new Events.LoadingEvent(true)))
         .observeOn(AndroidSchedulers.mainThread())
         .ofType(Repository.OnSuccess.class)
