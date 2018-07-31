@@ -22,7 +22,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-public class QuickLookupViewModel extends ViewModel {
+public class QuickLookupViewModel {
   public final ObservableBoolean showSpinnerProgess = new ObservableBoolean(false);
   private ArrayList<QuickLookupRecyclerViewItemVM> bartList = new ArrayList<>();
   private final CompositeDisposable disposable = new CompositeDisposable();
@@ -55,10 +55,8 @@ public class QuickLookupViewModel extends ViewModel {
             this::onComplete));
   }
 
-  @Override
-  protected void onCleared() {
+  public void onCleared() {
     disposable.clear();
-    super.onCleared();
   }
 
   private List<Etd> getEtd(Bart bart) {

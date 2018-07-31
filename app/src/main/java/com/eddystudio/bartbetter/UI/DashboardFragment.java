@@ -74,6 +74,7 @@ public class DashboardFragment extends BaseFragment {
       ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
     vm = new DashboardViewModel();
+//    vm = ViewModelProviders.of(this).get(DashboardViewModel.class);
     Application.getAppComponet().inject(this);
     setUpAdapter();
     init();
@@ -101,10 +102,10 @@ public class DashboardFragment extends BaseFragment {
     });
   }
 
-  private void snackbarMessage(String messeage) {
+  private void snackbarMessage(String message) {
     if(getActivity() != null) {
       Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout),
-          messeage,
+          message,
           Snackbar.LENGTH_LONG).show();
     }
   }
@@ -297,5 +298,6 @@ public class DashboardFragment extends BaseFragment {
   @Override
   public void onStop() {
     super.onStop();
+    vm.onCleared();
   }
 }

@@ -24,7 +24,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-public class DashboardViewModel extends ViewModel {
+public class DashboardViewModel {
   private Subject<Events> eventsSubject = PublishSubject.create();
   private final CompositeDisposable disposable = new CompositeDisposable();
   private boolean autoRefreshEnabled = false;
@@ -107,9 +107,7 @@ public class DashboardViewModel extends ViewModel {
     eventsSubject.onNext(new Events.ErrorEvent(throwable));
   }
 
-  @Override
-  protected void onCleared() {
+  public void onCleared() {
     disposable.clear();
-    super.onCleared();
   }
 }

@@ -248,4 +248,10 @@ public class QuickLookupFragment extends BaseFragment {
           .commit();
     }
   }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    quickLookupViewModel.onCleared();
+  }
 }
