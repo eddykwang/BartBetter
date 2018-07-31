@@ -73,7 +73,7 @@ public class DashboardFragment extends BaseFragment {
     if(getActivity() instanceof AppCompatActivity) {
       ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
-    vm = ViewModelProviders.of(this).get(DashboardViewModel.class);
+    vm = new DashboardViewModel();
     Application.getAppComponet().inject(this);
     setUpAdapter();
     init();

@@ -71,7 +71,7 @@ public class QuickLookupFragment extends BaseFragment {
                            Bundle savedInstanceState) {
 
     Application.getAppComponet().inject(this);
-    quickLookupViewModel = ViewModelProviders.of(this).get(QuickLookupViewModel.class);
+    quickLookupViewModel = new QuickLookupViewModel();
     binding = FragmentQuickLookupBinding.inflate(inflater, container, false);
     binding.setVm(quickLookupViewModel);
     getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
