@@ -178,7 +178,7 @@ public class Repository {
   }
 
 
-  interface Results {
+  public interface Results {
   }
 
   public class OnSuccess implements Results {

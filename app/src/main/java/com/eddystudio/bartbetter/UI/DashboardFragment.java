@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.Objects;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.eddystudio.bartbetter.UI.MainActivity.AUTO_REFRESH_ENABLED;
 
@@ -155,6 +157,8 @@ public class DashboardFragment extends BaseFragment {
 
   private void init() {
     vm.getEventsSubject()
+        .observeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
         .compose(event -> Observable.merge(
             event.ofType(Events.LoadingEvent.class).doOnNext(data -> binding.swipeRefreshLy.setRefreshing(data.isLoad())),
             event.ofType(Events.ErrorEvent.class).doOnNext(error -> handleError(error.getError())),
@@ -282,10 +286,10 @@ public class DashboardFragment extends BaseFragment {
       fragment.setArguments(arg);
       getActivity().getSupportFragmentManager()
           .beginTransaction()
-          .addToBackStack(null)
           .replace(R.id.main_frame_layout, fragment)
           .setReorderingAllowed(true)
           .addSharedElement(textViewTo, getString(R.string.textTransition))
+          .addToBackStack(null)
           .commit();
     }
   }

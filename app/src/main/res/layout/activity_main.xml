@@ -41,11 +41,11 @@
           <ImageView
             android:id="@+id/toolbar_imageView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="280dp"
             android:fitsSystemWindows="true"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             android:visibility="gone"
-
+            tools:visibility="visible"
             app:layout_collapseMode="parallax"/>
 
           <android.support.v7.widget.Toolbar

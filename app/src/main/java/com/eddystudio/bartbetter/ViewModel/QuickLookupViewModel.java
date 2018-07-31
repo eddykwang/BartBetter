@@ -44,13 +44,10 @@ public class QuickLookupViewModel extends ViewModel {
 
   public void getData(String stationShort) {
     selectedStation = stationShort;
-    List<Pair<String, String>> stations = new ArrayList<>();
-    stations.add(new Pair<>(stationShort, ""));
-    disposable.add(repository.getListEstimate(stations)
+    disposable.add(repository.getEstimate(stationShort)
         .doOnSubscribe(ignored -> eventsSubject.onNext(new Events.LoadingEvent(true)))
         .observeOn(AndroidSchedulers.mainThread())
-        .ofType(Repository.OnSuccess.class)
-        .map(bart -> getEtd(bart.getPair().first))
+        .map(this::getEtd)
         .concatMap(Observable::fromArray)
         .map(this::convertToVM)
         .subscribe(data -> bartList = data,
