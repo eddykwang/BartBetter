@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.TransitionInflater;
 import android.util.Log;
@@ -62,17 +63,11 @@ public class DashboardFragment extends BaseFragment {
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
-    // Inflate the layout for this fragment
     binding = FragmentDashboardBinding.inflate(inflater, container, false);
-    if(getActivity() != null) {
-      getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
-    }
-    collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
-    collapsingToolbarLayout.setTitleEnabled(false);
-    collapsingToolbarLayout.setTitle("My Routes");
-    if(getActivity() instanceof AppCompatActivity) {
-      ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-    }
+    Toolbar toolbar = binding.getRoot().findViewById(R.id.toolbar);
+    ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+    getActivity().setTitle("My Routes");
+
     vm = new DashboardViewModel();
 //    vm = ViewModelProviders.of(this).get(DashboardViewModel.class);
     Application.getAppComponet().inject(this);
@@ -83,7 +78,7 @@ public class DashboardFragment extends BaseFragment {
   }
 
   private void setupSwitch() {
-    SwitchCompat switchCompat = collapsingToolbarLayout.findViewById(R.id.auto_refresh_switch);
+    SwitchCompat switchCompat = binding.getRoot().findViewById(R.id.auto_refresh_switch);
     switchCompat.setVisibility(View.VISIBLE);
     boolean auto = preference.getBoolean(AUTO_REFRESH_ENABLED, false);
     switchCompat.setChecked(auto);
@@ -104,7 +99,7 @@ public class DashboardFragment extends BaseFragment {
 
   private void snackbarMessage(String message) {
     if(getActivity() != null) {
-      Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout),
+      Snackbar.make(binding.getRoot(),
           message,
           Snackbar.LENGTH_LONG).show();
     }
@@ -267,7 +262,7 @@ public class DashboardFragment extends BaseFragment {
   private void handleError(Throwable throwable) {
     binding.swipeRefreshLy.setRefreshing(false);
     if(getActivity() != null) {
-      Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout), "Error on loading", Snackbar.LENGTH_LONG).show();
+      Snackbar.make(binding.getRoot(), "Error on loading", Snackbar.LENGTH_LONG).show();
     }
   }
 

@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.SnapHelper;
+import android.support.v7.widget.Toolbar;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.util.Pair;
@@ -58,13 +59,6 @@ public class RouteDetailFragment extends Fragment {
                            Bundle savedInstanceState) {
     binding = FragmentRoutDetailBinding.inflate(inflater, container, false);
 
-    ImageView imageView = getActivity().findViewById(R.id.toolbar_imageView);
-    CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
-    appBarLayout = getActivity().findViewById(R.id.app_bar);
-    if(getActivity() instanceof AppCompatActivity) {
-      ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-
     Bundle arg = getArguments();
     if(arg != null) {
       from = arg.getString(MainActivity.BUDDLE_ARG_FROM);
@@ -74,14 +68,17 @@ public class RouteDetailFragment extends Fragment {
     setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
     binding.setVm(new RouteDetailViewModel(from, to, color));
 
-    collapsingToolbarLayout.findViewById(R.id.auto_refresh_switch).setVisibility(View.GONE);
+    ImageView imageView = binding.getRoot().findViewById(R.id.toolbar_imageView);
+    CollapsingToolbarLayout collapsingToolbarLayout = binding.getRoot().findViewById(R.id.toolbar_layout);
+    appBarLayout = getActivity().findViewById(R.id.app_bar);
 
-    imageView.setVisibility(View.VISIBLE);
+    Toolbar toolbar = binding.getRoot().findViewById(R.id.toolbar);
+    ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+    ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     imageView.setImageResource(Uilt.randomCityBgGenerator());
     collapsingToolbarLayout.setTitleEnabled(true);
-    appBarLayout.setExpanded(true, true);
+    collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.white));
     collapsingToolbarLayout.setTitle(Uilt.getFullStationName(to));
-    collapsingToolbarLayout.setPadding(0, 0, 0, 0);
     setupAdapter();
     return binding.getRoot();
   }
@@ -89,7 +86,6 @@ public class RouteDetailFragment extends Fragment {
   @Override
   public void onStart() {
     super.onStart();
-    appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, 800));
     getRoutesInfo();
     binding.swipeRefreshLy.setOnRefreshListener(this::getRoutesInfo);
 
@@ -160,7 +156,6 @@ public class RouteDetailFragment extends Fragment {
   @Override
   public void onStop() {
     super.onStop();
-    appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, CoordinatorLayout.LayoutParams.WRAP_CONTENT));
     compositeDisposable.clear();
   }
 }

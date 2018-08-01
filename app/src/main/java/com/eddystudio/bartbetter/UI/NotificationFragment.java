@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import javax.inject.Inject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+
 import com.eddystudio.bartbetter.databinding.FragmentNotificationBinding;
 
 public class NotificationFragment extends BaseFragment {
@@ -48,23 +50,19 @@ public class NotificationFragment extends BaseFragment {
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
     binding = FragmentNotificationBinding.inflate(inflater, container, false);
-    //((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) binding.toolbar);
-    getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
     Application.getAppComponet().inject(this);
-    //binding.appToolbar.setTitle("Notifications");
-    getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
-    if (getActivity() instanceof AppCompatActivity) {
-      ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-    }
-    CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
-    collapsingToolbarLayout.setTitleEnabled(false);
-    ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("General");
-    collapsingToolbarLayout.findViewById(R.id.auto_refresh_switch).setVisibility(View.GONE);
+    Toolbar toolbar = binding.getRoot().findViewById(R.id.bb_toolbar);
+    ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+    getActivity().setTitle("Notifications");
 
     viewModel.setItemClickListener(type -> {
-      switch (type){
-        case MAP: onMapClicked(); break;
-        case ABOUT: onAboutClicked(); break;
+      switch(type) {
+        case MAP:
+          onMapClicked();
+          break;
+        case ABOUT:
+          onAboutClicked();
+          break;
       }
     });
     binding.setVm(viewModel);
@@ -121,8 +119,8 @@ public class NotificationFragment extends BaseFragment {
     binding.swipeRefreshLy.setRefreshing(false);
     viewModel.isElevatorProgressVisible.set(false);
     viewModel.isDelayReportProgressVisible.set(false);
-    if (!isErrorShowed && getActivity() != null) {
-      Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout), "Error on loading", Snackbar.LENGTH_LONG)
+    if(!isErrorShowed && getActivity() != null) {
+      Snackbar.make(binding.getRoot(), "Error on loading", Snackbar.LENGTH_LONG)
           .setAction("Retry", view-> init())
           .show();
       isErrorShowed = true;
@@ -148,12 +146,12 @@ public class NotificationFragment extends BaseFragment {
     return null;
   }
 
-  private void onAboutClicked(){
-      Intent intent = new Intent(getActivity(), AboutActivity.class);
-      startActivity(intent);
+  private void onAboutClicked() {
+    Intent intent = new Intent(getActivity(), AboutActivity.class);
+    startActivity(intent);
   }
 
-  private void onMapClicked(){
+  private void onMapClicked() {
     Intent intent = new Intent(getActivity(), MapActivity.class);
     startActivity(intent);
   }

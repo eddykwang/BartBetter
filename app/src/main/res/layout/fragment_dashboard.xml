@@ -1,41 +1,71 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
+  <data>
 
-    </data>
+  </data>
 
-    <android.support.design.widget.CoordinatorLayout
+  <android.support.design.widget.CoordinatorLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
+
+      <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
+        android:background="@color/white">
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRefreshLy"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <android.support.v7.widget.Toolbar
+          android:id="@+id/toolbar"
+          style="@style/bb_toolbar_style"
+          app:layout_collapseMode="pin"
+          app:titleTextAppearance="@style/Toolbar.TitleText">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recylerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:clipToPadding="false"
-                android:scrollbars="vertical"
-                tools:listitem="@layout/dashboard_single_recycler_view_item" />
-        </android.support.v4.widget.SwipeRefreshLayout>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_add"
+          <android.support.v7.widget.SwitchCompat
+            android:id="@+id/auto_refresh_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:clickable="true"
-            android:tint="@android:color/white"
-            android:src="@drawable/ic_add_black_24dp"
-            app:layout_anchor="@id/swipeRefreshLy"
-            app:layout_anchorGravity="bottom|right|end" />
-    </android.support.design.widget.CoordinatorLayout>
+            android:layout_gravity="end"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="Auto Refresh"/>
+        </android.support.v7.widget.Toolbar>
+      </android.support.design.widget.AppBarLayout>
+
+      <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+          android:id="@+id/recylerView"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:clipToPadding="false"
+          android:scrollbars="none"
+          tools:listitem="@layout/dashboard_single_recycler_view_item"/>
+      </android.support.v4.widget.SwipeRefreshLayout>
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+      android:id="@+id/fab_add"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|end"
+      android:layout_margin="16dp"
+      android:clickable="true"
+      android:src="@drawable/ic_add_black_24dp"
+      android:tint="@android:color/white"
+      app:layout_anchor="@id/swipeRefreshLy"
+      app:layout_anchorGravity="bottom|right|end"/>
+  </android.support.design.widget.CoordinatorLayout>
 </layout>

@@ -1,17 +1,15 @@
 package com.eddystudio.bartbetter.UI;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.TransitionInflater;
 import android.util.Log;
@@ -74,14 +72,10 @@ public class QuickLookupFragment extends BaseFragment {
     quickLookupViewModel = new QuickLookupViewModel();
     binding = FragmentQuickLookupBinding.inflate(inflater, container, false);
     binding.setVm(quickLookupViewModel);
-    getActivity().findViewById(R.id.toolbar_imageView).setVisibility(View.GONE);
-    CollapsingToolbarLayout collapsingToolbarLayout = getActivity().findViewById(R.id.toolbar_layout);
-    collapsingToolbarLayout.setTitleEnabled(false);
-    collapsingToolbarLayout.setTitle("Discover");
-    if(getActivity() instanceof AppCompatActivity) {
-      ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-    }
-    collapsingToolbarLayout.findViewById(R.id.auto_refresh_switch).setVisibility(View.GONE);
+
+    Toolbar toolbar = binding.getRoot().findViewById(R.id.bb_toolbar);
+    ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+    getActivity().setTitle("Discover");
 
     init();
     setupSinner();
@@ -163,7 +157,7 @@ public class QuickLookupFragment extends BaseFragment {
           addPreferencesData(route);
         }
         if(getActivity() != null) {
-          Snackbar.make(getActivity().findViewById(R.id.main_activity_coordinator_layout),
+          Snackbar.make(binding.getRoot(),
               "Added " + Uilt.getFullStationName(selectedStation) + " -> " +
                   Uilt.getFullStationName(etdStations.get(position)) + " to My Routes",
               Snackbar.LENGTH_LONG)
@@ -209,7 +203,7 @@ public class QuickLookupFragment extends BaseFragment {
   private void handleError(Throwable throwable) {
     Log.e("error", "error on getting response", throwable);
     loadErrorIV();
-    Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(R.id.main_activity_coordinator_layout), "Error on loading", Snackbar.LENGTH_LONG).show();
+    Snackbar.make(binding.getRoot(), "Error on loading", Snackbar.LENGTH_LONG).show();
     binding.swipeRefreshLy.setRefreshing(false);
     quickLookupViewModel.showSpinnerProgess.set(false);
   }

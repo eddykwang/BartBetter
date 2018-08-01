@@ -56,17 +56,14 @@ public class MainActivity extends AppCompatActivity {
     switch(item.getItemId()) {
       case R.id.navigation_quick_lookup:
         fragment = quickLookupFragment;
-        getSupportActionBar().setTitle(R.string.title_quick_look_up);
 
         break;
       case R.id.navigation_my_routes:
         fragment = dashboardFragment;
-        getSupportActionBar().setTitle(R.string.title_my_routes);
 
         break;
       case R.id.navigation_notifications:
         fragment = notificationFragment;
-        getSupportActionBar().setTitle(R.string.title_notifications);
 
         break;
     }
@@ -88,8 +85,6 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView navigation = findViewById(R.id.navigation);
 
     Application.getAppComponet().inject(this);
-    Toolbar toolbar = findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
     navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     navigation.setSelectedItemId(R.id.navigation_my_routes);
     getAllStations();
