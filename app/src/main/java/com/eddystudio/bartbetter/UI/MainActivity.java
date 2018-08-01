@@ -1,6 +1,8 @@
 package com.eddystudio.bartbetter.UI;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,8 +13,14 @@ import android.view.MenuItem;
 import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Repository;
 import com.eddystudio.bartbetter.R;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -35,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
   public static final String BUDDLE_ARG_TO = "Buddle_Arg_To";
   public static final String AUTO_REFRESH_ENABLED = "auto_refresh_enabled";
 
+  public static final String STATION_LIST_SHORTCUT_MAPPER = "station_list_shortcut_mapper";
 
+  public static Map<String, String> stationShotcutMapper = new HashMap<>();
   public static ArrayList<String> stationList = new ArrayList<>();
   public static ArrayList<String> stationListSortcut = new ArrayList<>();
 
@@ -82,9 +92,7 @@ public class MainActivity extends AppCompatActivity {
     setSupportActionBar(toolbar);
     navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     navigation.setSelectedItemId(R.id.navigation_my_routes);
-    if(stationList.isEmpty() || stationListSortcut.isEmpty()) {
-      getAllStations();
-    }
+    getAllStations();
   }
 
   @Override
@@ -102,6 +110,22 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void getAllStations() {
+    Type type = new TypeToken<Map<String, String>>() {}.getType();
+    Gson gson = new Gson();
+    Map<String, String> empty = new HashMap<>();
+    String emptyList = gson.toJson(empty);
+    String mapper = PreferenceManager.getDefaultSharedPreferences(this).getString(STATION_LIST_SHORTCUT_MAPPER, emptyList);
+    stationShotcutMapper = gson.fromJson(mapper, type);
+
+    stationListSortcut.addAll(stationShotcutMapper.keySet());
+    stationList.addAll(stationShotcutMapper.values());
+
+    if(stationShotcutMapper.isEmpty()) {
+      getAllStationsFromApi();
+    }
+  }
+
+  private void getAllStationsFromApi() {
     compositeDisposable.add(repository.getStations()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
@@ -109,9 +133,17 @@ public class MainActivity extends AppCompatActivity {
         .concatMap(Observable::fromArray)
         .subscribe(stations -> {
           for(int i = 0; i < stations.size(); ++i) {
-            stationList.add(stations.get(i).getName());
-            stationListSortcut.add(stations.get(i).getAbbr());
+            stationShotcutMapper.put(stations.get(i).getAbbr(), stations.get(i).getName());
           }
+
+          stationListSortcut.addAll(stationShotcutMapper.keySet());
+          stationList.addAll(stationShotcutMapper.values());
+
+          SharedPreferences.Editor prefsEditor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+          Gson gson = new Gson();
+          String stationMapper = gson.toJson(stationShotcutMapper);
+          prefsEditor.putString(STATION_LIST_SHORTCUT_MAPPER, stationMapper);
+          prefsEditor.apply();
         }));
   }
 
