@@ -5,11 +5,14 @@ import android.databinding.ObservableInt;
 import android.graphics.Color;
 import android.view.View;
 
+import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Uilt;
 
 import java.text.ParseException;
 import java.util.List;
+
+import static com.eddystudio.bartbetter.Model.Uilt.materialColorConverter;
 
 public class DashboardRecyclerViewItemVM {
   public final ObservableField<String> destination = new ObservableField<>("");
@@ -34,6 +37,12 @@ public class DashboardRecyclerViewItemVM {
     } catch(ParseException e) {
       e.printStackTrace();
     }
+  }
+
+  public DashboardRecyclerViewItemVM(Etd etd, String from, String to) {
+    this.from = from;
+    this.to = to;
+    updateUi(etd, from, to);
   }
 
   public void setItemClickListener(
@@ -67,5 +76,13 @@ public class DashboardRecyclerViewItemVM {
         }
       }
     }
+  }
+
+
+  private void updateUi(Etd etd, String origin, String dest) {
+    fromStation.set(Uilt.getFullStationName(origin));
+    destination.set(Uilt.getFullStationName(dest));
+    firstTrain.set(etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "0" : etd.getEstimate().get(0).getMinutes());
+    routeColor.set(materialColorConverter(etd.getEstimate().get(0).getColor()));
   }
 }

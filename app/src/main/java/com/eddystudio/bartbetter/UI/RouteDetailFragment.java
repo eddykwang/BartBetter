@@ -110,8 +110,7 @@ public class RouteDetailFragment extends Fragment {
     compositeDisposable.add(
         repository.getListEstimate(list)
             .observeOn(AndroidSchedulers.mainThread())
-            .ofType(Repository.OnSuccess.class)
-            .map(bart -> getEtd(bart.getPair().first))
+            .map(bart -> getEtd(bart.first))
             .concatMap(Observable::fromArray)
             .subscribe(len -> addToAdapter(trips, len), this::handleError, this::onComplete)
     );

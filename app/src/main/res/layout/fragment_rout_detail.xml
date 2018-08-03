@@ -13,8 +13,9 @@
   <android.support.design.widget.CoordinatorLayout
     android:id="@+id/main_activity_coordinator_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     app:statusBarBackground="@android:color/transparent"
+    android:fitsSystemWindows="true"
     tools:context="com.eddystudio.bartbetter.UI.MainActivity"
     >
 
@@ -23,6 +24,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:fitsSystemWindows="true"
+      android:paddingBottom="0dp"
       android:background="@color/white"
       >
 
@@ -30,8 +32,8 @@
         android:id="@+id/toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         app:contentScrim="@color/white"
+        android:fitsSystemWindows="true"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
         app:toolbarId="@+id/toolbar">
 
@@ -57,12 +59,14 @@
     <android.support.v4.widget.SwipeRefreshLayout
       android:id="@+id/swipeRefreshLy"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="match_parent"
+      android:clipToPadding="true"
+      android:fitsSystemWindows="true"
       app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
       <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         tools:showIn="@layout/activity_main">
 
         <android.support.constraint.ConstraintLayout

@@ -45,47 +45,46 @@ public class DashboardViewModel {
     disposable.add(
         Observable
             .interval(20, TimeUnit.SECONDS)
-            .takeWhile(ignored-> autoRefreshEnabled)
+            .takeWhile(ignored -> autoRefreshEnabled)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(ignored -> getRoutesEstimateTime(routes)));
+            .subscribe(ignored -> getAccurateEstTime(routes)));
   }
 
-  public void getRoutesEstimateTime(List<Pair<String, String>> routes) {
-    AtomicInteger counter = new AtomicInteger();
-    disposable.add(
-        repository.getRouteSchedules(routes)
-            .doOnSubscribe(ignored -> eventsSubject.onNext(new Events.LoadingEvent(true)))
-            .observeOn(AndroidSchedulers.mainThread())
-            .map(this::getRoutesInfoToVm)
-            .subscribe(data -> {
-                  eventsSubject.onNext(new Events.GetEtdEvent(new Pair<>(data, counter.get())));
-                  counter.getAndIncrement();
-                },
-                this::handleError,
-                this::onComplete)
-    );
-  }
+//  public void getRoutesEstimateTime(List<Pair<String, String>> routes) {
+//    AtomicInteger counter = new AtomicInteger();
+//    disposable.add(
+//        repository.getRouteSchedules(routes)
+//            .doOnSubscribe(ignored -> eventsSubject.onNext(new Events.LoadingEvent(true)))
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .map(this::getRoutesInfoToVm)
+//            .subscribe(data -> {
+//                  eventsSubject.onNext(new Events.GetEtdEvent(new Pair<>(data, counter.get())));
+//                  counter.getAndIncrement();
+//                },
+//                this::handleError,
+//                this::onComplete)
+//    );
+//  }
 
   public void setAutoRefreshEnabled(boolean autoRefreshEnabled) {
     this.autoRefreshEnabled = autoRefreshEnabled;
   }
 
   public void getAccurateEstTime(List<Pair<String, String>> routes) {
+    AtomicInteger counter = new AtomicInteger();
     disposable.add(
         repository.getAccurateEtdTime(routes)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(etds -> {
-              String last = etds.get(0).getAbbreviation();
-              int j = 0;
-              for(int i = 0; i < etds.size(); ++i) {
-                if(i > 1 && etds.get(i).getAbbreviation().equals(last)) {
-                  j++;
-                  last = etds.get(i).getAbbreviation();
-                }
-                Log.d("accurate time", "\n" + etds.get(i).getAbbreviation() + " : " + etds.get(i).getEstimate().get(j).getMinutes());
-              }
-            })
+            .doOnSubscribe(ignored -> eventsSubject.onNext(new Events.LoadingEvent(true)))
+            .map(triple -> getRoutesInfoToVm(triple.component1(), triple.component2(), triple.component3()))
+            .subscribe(etd -> {
+                  eventsSubject.onNext(new Events.GetEtdEvent(new Pair<>(etd, counter.get())));
+                  counter.getAndIncrement();
+                },
+                this::handleError,
+                this::onComplete
+            )
     );
   }
 
@@ -98,6 +97,17 @@ public class DashboardViewModel {
 
     DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(trips, scheduleFromAToB.getRoot().getOrigin(),
         scheduleFromAToB.getRoot().getDestination());
+    vm.setItemClickListener((f, t, s, v) -> eventsSubject.onNext(new Events.GoToDetailEvent(f, t, s, v)));
+    return vm;
+  }
+
+  private DashboardRecyclerViewItemVM getRoutesInfoToVm(Etd etd, String origin, String dest) {
+
+    if(etd.getEstimate() != null) {
+      Log.d("accurate time", "\n" + origin + " to " + dest + " : " + etd.getEstimate().get(0).getMinutes());
+    }
+
+    DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(etd, origin, dest);
     vm.setItemClickListener((f, t, s, v) -> eventsSubject.onNext(new Events.GoToDetailEvent(f, t, s, v)));
     return vm;
   }

@@ -135,7 +135,7 @@ public class Uilt {
       return "Unavailable";
     }
 
-    return elapsedMinutes!= 0 ? String.valueOf(elapsedMinutes) + " minutes" : "Leaving ";
+    return elapsedMinutes!= 0 ? String.valueOf(elapsedMinutes) + "" : "Leaving ";
 
   }
 

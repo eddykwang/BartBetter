@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
+import kotlin.Triple;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
@@ -36,24 +37,16 @@ public class Repository {
   }
 
   //?cmd=etd&orig={fromStation}&key=MW9S-E7SL-26DU-VV8V&json=y"
-  public Observable<Results> getListEstimate(
+  public Observable<Pair<Bart, String>> getListEstimate(
       List<Pair<String, String>> fromStation) {
     return Observable
         .fromIterable(fromStation)
-        .flatMap(pair ->
-                Observable.fromCallable(
-                    () -> bartService.bartEstmate("etd", pair.first, KEY, "y")
-                        .execute())
-//                .map(Response::body)
-                    .map(bartResponse -> {
-                      if(bartResponse != null) {
-//                      return bartResponse.body();
-                        return new OnSuccess(new Pair<>(bartResponse.body(), pair.second));
-                      } else {
-                        return new OnFail();
-                      }
-                    })
-//                .map(bart -> new Pair<>(bart, pair.second))
+        .concatMap(pair ->
+            Observable.fromCallable(
+                () -> bartService.bartEstmate("etd", pair.first, KEY, "y")
+                    .execute())
+                .map(Response::body)
+                .map(bart -> new Pair<>(bart, pair.second))
         )
         .subscribeOn(Schedulers.io());
   }
@@ -90,17 +83,11 @@ public class Repository {
   public Observable<ScheduleFromAToB> getRouteSchedules(List<Pair<String, String>> routes) {
     return Observable
         .fromIterable(routes)
-        .flatMap(pair ->
+        .concatMap(pair ->
             Observable.fromCallable(
                 () -> bartService.routeSchedules("depart", pair.first, pair.second, "now", KEY, "0", "4", "0", "y")
                     .execute())
-                .map(response -> {
-                  if(response != null) {
-                    return response.body();
-                  } else {
-                    return null;
-                  }
-                })
+                .map(Response::body)
         )
 
         .subscribeOn(Schedulers.io());
@@ -111,13 +98,7 @@ public class Repository {
     return Observable.fromCallable(
         () -> bartService.routeSchedules("depart", route.first, route.second, "now", KEY, "0", "3", "0", "y")
             .execute())
-        .map(response -> {
-          if(response != null) {
-            return response.body();
-          } else {
-            return null;
-          }
-        })
+        .map(Response::body)
         .subscribeOn(Schedulers.io());
   }
 
@@ -148,53 +129,25 @@ public class Repository {
 //        .subscribeOn(Schedulers.io());
 //  }
 
-  public Observable<List<Etd>> getAccurateEtdTime(List<Pair<String, String>> routes) {
-    return Observable.fromIterable(routes)
-        .flatMap(route -> getOneRouteSchedules(route).flatMap(r -> {
+  public Observable<Triple<Etd, String,String>> getAccurateEtdTime(List<Pair<String, String>> routes) {
+    return getRouteSchedules(routes)
+        .concatMap(r -> {
+          Trip trip = r.getRoot().getSchedule().getRequest().getTrip().get(0);
 
-              List<Pair<String, String>> routPairList = new ArrayList<>();
-
-              for(Trip trip : r.getRoot().getSchedule().getRequest().getTrip()) {
-                routPairList.add(new Pair<>(trip.getLeg().get(0).getOrigin(), trip.getLeg().get(0).getTrainHeadStation()));
-              }
-
-              List<Etd> resultList = new ArrayList<>();
-              return getListEstimate(routPairList)
-                  .ofType(OnSuccess.class)
-                  .map(d -> {
-                        List<Etd> etds = d.getPair().first.getRoot().getStation().get(0).getEtd();
-                        for(Etd etd : etds) {
-                          if(etd.getAbbreviation().equals(d.getPair().second)) {
-                            resultList.add(etd);
-                            break;
-                          }
-                        }
-                        return resultList;
+          final Etd[] result = {new Etd()};
+          return getEstimate(trip.getLeg().get(0).getOrigin())
+              .map(d -> {
+                    List<Etd> etds = d.getRoot().getStation().get(0).getEtd();
+                    for(Etd etd : etds) {
+                      if(etd.getAbbreviation().equals(trip.getLeg().get(0).getTrainHeadStation())) {
+                        result[0] = etd;
+                        break;
                       }
-                  );
-            })
-        )
-        .subscribeOn(Schedulers.io());
-  }
-
-
-  public interface Results {
-  }
-
-  public class OnSuccess implements Results {
-    private final Pair<Bart, String> pair;
-
-    public OnSuccess(Pair<Bart, String> pair) {
-      this.pair = pair;
-    }
-
-    public Pair<Bart, String> getPair() {
-      return pair;
-    }
-  }
-
-  public class OnFail implements Results {
-
+                    }
+                    return new Triple<>(result[0], trip.getOrigin(), trip.getDestination());
+                  }
+              );
+        });
   }
 
 }

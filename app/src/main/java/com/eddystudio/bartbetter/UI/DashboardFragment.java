@@ -145,9 +145,9 @@ public class DashboardFragment extends BaseFragment {
         String toStation = list.get(i).split("-", 2)[1];
         stationPairList.add(new Pair<>(fromStation, toStation));
       }
-      vm.getRoutesEstimateTime(stationPairList);
+//      vm.getRoutesEstimateTime(stationPairList);
       vm.autoRefreshGetData(stationPairList);
-//      vm.getAccurateEstTime(stationPairList);
+      vm.getAccurateEstTime(stationPairList);
     }
   }
 

@@ -24,10 +24,10 @@
         </activity>
         <activity
             android:name=".UI.MapActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme.White.ActionBar" />
         <activity
             android:name=".UI.AboutActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme.White.ActionBar" />
     </application>
 
 </manifest>
