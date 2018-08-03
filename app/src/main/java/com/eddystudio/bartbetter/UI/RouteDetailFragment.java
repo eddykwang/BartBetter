@@ -77,7 +77,7 @@ public class RouteDetailFragment extends Fragment {
     ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     imageView.setImageResource(Uilt.randomCityBgGenerator());
     collapsingToolbarLayout.setTitleEnabled(true);
-    collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.white));
+    collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
     collapsingToolbarLayout.setTitle(Uilt.getFullStationName(to));
     setupAdapter();
     return binding.getRoot();

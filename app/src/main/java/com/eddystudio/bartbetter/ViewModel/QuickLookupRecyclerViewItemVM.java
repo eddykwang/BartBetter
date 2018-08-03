@@ -19,6 +19,7 @@ public class QuickLookupRecyclerViewItemVM extends ViewModel {
     public final MutableLiveData<String> secondTrain = new MutableLiveData<>();
     public final MutableLiveData<String> thirdTrain = new MutableLiveData<>();
     public final MutableLiveData<Integer> routColor = new MutableLiveData<>();
+    public final MutableLiveData<String> routeShortcut = new MutableLiveData<>();
     private final Etd etd;
 
     private ItemClickListener itemClickListener;
@@ -42,26 +43,26 @@ public class QuickLookupRecyclerViewItemVM extends ViewModel {
     }
 
     private void updateUi(){
-        String m = " minutes";
         String first = "";
         String second = "";
         String third = "";
         if (etd.getEstimate().size() == 1) {
-            first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving" :etd.getEstimate().get(0).getMinutes() + m;
+            first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "0" : etd.getEstimate().get(0).getMinutes();
         } else if (etd.getEstimate().size() == 2) {
-            first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving" : etd.getEstimate().get(0).getMinutes() + m;
-            second = etd.getEstimate().get(1).getMinutes() + m;
+            first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "0" : etd.getEstimate().get(0).getMinutes();
+            second = etd.getEstimate().get(1).getMinutes();
         } else {
-            first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "Leaving" : etd.getEstimate().get(0).getMinutes() + m;
-            second = etd.getEstimate().get(1).getMinutes() + m;
-            third = etd.getEstimate().get(2).getMinutes() + m;
+            first = etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "0" : etd.getEstimate().get(0).getMinutes();
+            second = etd.getEstimate().get(1).getMinutes();
+            third = etd.getEstimate().get(2).getMinutes();
         }
 
         this.destination.setValue(etd.getDestination());
         this.firstTrain.setValue(first);
-        this.secondTrain.setValue(second);
-        this.thirdTrain.setValue(third);
+        this.secondTrain.setValue(", " +second);
+        this.thirdTrain.setValue(", " +third);
         this.routColor.setValue(Uilt.materialColorConverter(etd.getEstimate().get(0).getColor()));
+        this.routeShortcut.setValue(etd.getAbbreviation());
     }
 
 }
