@@ -14,105 +14,229 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Uilt {
 
-  public static String getFullStationName(String shortName){
+  public static String getFullStationName(String shortName) {
     String fullName;
-    switch (shortName){
-      case "12TH": fullName = "12th St. Oakland"; break;
-      case "16TH": fullName = "16th St. Mission"; break;
-      case "19TH": fullName = "19th St. Oakland"; break;
-      case "24TH": fullName = "24th St. Mission"; break;
-      case "ASHB": fullName = "Ashby"; break;
-      case "ANTC": fullName = "Antioch"; break;
-      case "BALB": fullName = "Balboa Park"; break;
-      case "BAYF": fullName = "Bay Fair"; break;
-      case "CAST": fullName = "Castro Valley"; break;
-      case "CIVC": fullName = "Civic Center/UN Plaza"; break;
-      case "COLS": fullName = "Coliseum"; break;
-      case "COLM": fullName = "Colma"; break;
-      case "CONC": fullName = "Concord"; break;
-      case "DALY": fullName = "Daly City"; break;
-      case "DBRK": fullName = "Downtown Berkeley"; break;
-      case "DUBL": fullName = "Dublin/Pleasanton"; break;
-      case "DELN": fullName = "El Cerrito del Norte"; break;
-      case "PLZA": fullName = "El Cerrito Plaza"; break;
-      case "EMBR": fullName = "Embarcadero"; break;
-      case "FRMT": fullName = "Fremont"; break;
-      case "FTVL": fullName = "Fruitvale"; break;
-      case "GLEN": fullName = "Glen Park"; break;
-      case "HAYW": fullName = "Hayward"; break;
-      case "LAFY": fullName = "Lafayette"; break;
-      case "LAKE": fullName = "Lake Merritt"; break;
-      case "MCAR": fullName = "MacArthur"; break;
-      case "MLBR": fullName = "Millbrae"; break;
-      case "MONT": fullName = "Montgomery St."; break;
-      case "NBRK": fullName = "North Berkeley"; break;
-      case "NCON": fullName = "North Concord/Martinez"; break;
-      case "OAKL": fullName = "Oakland Intl. Airport"; break;
-      case "ORIN": fullName = "Orinda"; break;
-      case "PITT": fullName = "Pittsburg/Bay Point"; break;
-      case "PHIL": fullName = "Pleasant Hill"; break;
-      case "POWL": fullName = "Powell St."; break;
-      case "RICH": fullName = "Richmond"; break;
-      case "ROCK": fullName = "Rockridge"; break;
-      case "SBRN": fullName = "San Bruno"; break;
-      case "SFIA": fullName = "San Francisco Intl. Airport"; break;
-      case "SANL": fullName = "San Leandro"; break;
-      case "SHAY": fullName = "South Hayward"; break;
-      case "SSAN": fullName = "South San Francisco"; break;
-      case "UCTY": fullName = "Union City"; break;
-      case "WCRK": fullName = "Walnut Creek"; break;
-      case "WARM": fullName = "Warm Springs"; break;
-      case "WDUB": fullName = "West Dublin"; break;
-      case "WOAK": fullName = "West Oakland"; break;
-      default: fullName = shortName;
+    switch(shortName) {
+      case "12TH":
+        fullName = "12th St. Oakland";
+        break;
+      case "16TH":
+        fullName = "16th St. Mission";
+        break;
+      case "19TH":
+        fullName = "19th St. Oakland";
+        break;
+      case "24TH":
+        fullName = "24th St. Mission";
+        break;
+      case "ASHB":
+        fullName = "Ashby";
+        break;
+      case "ANTC":
+        fullName = "Antioch";
+        break;
+      case "BALB":
+        fullName = "Balboa Park";
+        break;
+      case "BAYF":
+        fullName = "Bay Fair";
+        break;
+      case "CAST":
+        fullName = "Castro Valley";
+        break;
+      case "CIVC":
+        fullName = "Civic Center/UN Plaza";
+        break;
+      case "COLS":
+        fullName = "Coliseum";
+        break;
+      case "COLM":
+        fullName = "Colma";
+        break;
+      case "CONC":
+        fullName = "Concord";
+        break;
+      case "DALY":
+        fullName = "Daly City";
+        break;
+      case "DBRK":
+        fullName = "Downtown Berkeley";
+        break;
+      case "DUBL":
+        fullName = "Dublin/Pleasanton";
+        break;
+      case "DELN":
+        fullName = "El Cerrito del Norte";
+        break;
+      case "PLZA":
+        fullName = "El Cerrito Plaza";
+        break;
+      case "EMBR":
+        fullName = "Embarcadero";
+        break;
+      case "FRMT":
+        fullName = "Fremont";
+        break;
+      case "FTVL":
+        fullName = "Fruitvale";
+        break;
+      case "GLEN":
+        fullName = "Glen Park";
+        break;
+      case "HAYW":
+        fullName = "Hayward";
+        break;
+      case "LAFY":
+        fullName = "Lafayette";
+        break;
+      case "LAKE":
+        fullName = "Lake Merritt";
+        break;
+      case "MCAR":
+        fullName = "MacArthur";
+        break;
+      case "MLBR":
+        fullName = "Millbrae";
+        break;
+      case "MONT":
+        fullName = "Montgomery St.";
+        break;
+      case "NBRK":
+        fullName = "North Berkeley";
+        break;
+      case "NCON":
+        fullName = "North Concord/Martinez";
+        break;
+      case "OAKL":
+        fullName = "Oakland Intl. Airport";
+        break;
+      case "ORIN":
+        fullName = "Orinda";
+        break;
+      case "PITT":
+        fullName = "Pittsburg/Bay Point";
+        break;
+      case "PHIL":
+        fullName = "Pleasant Hill";
+        break;
+      case "POWL":
+        fullName = "Powell St.";
+        break;
+      case "RICH":
+        fullName = "Richmond";
+        break;
+      case "ROCK":
+        fullName = "Rockridge";
+        break;
+      case "SBRN":
+        fullName = "San Bruno";
+        break;
+      case "SFIA":
+        fullName = "San Francisco Intl. Airport";
+        break;
+      case "SANL":
+        fullName = "San Leandro";
+        break;
+      case "SHAY":
+        fullName = "South Hayward";
+        break;
+      case "SSAN":
+        fullName = "South San Francisco";
+        break;
+      case "UCTY":
+        fullName = "Union City";
+        break;
+      case "WCRK":
+        fullName = "Walnut Creek";
+        break;
+      case "WARM":
+        fullName = "Warm Springs";
+        break;
+      case "WDUB":
+        fullName = "West Dublin";
+        break;
+      case "WOAK":
+        fullName = "West Oakland";
+        break;
+      default:
+        fullName = shortName;
     }
     return fullName;
   }
+//
+//    <color name="routColor_red">#b2102f</color>
+//    <color name="routColor_blue">#2979ff</color>
+//    <color name="routColor_green">#388e3c</color>
+//    <color name="routColor_yellow">#ffeb3b</color>
+//    <color name="routColor_orange">#ff9800</color>
+//    <color name="routeColor_other">#651fff</color>
 
-  public static int materialColorConverter(String color){
+  public static int materialColorConverter(String color) {
     int mColor = 1;
-    switch (color){
-      case "GREEN": mColor = Color.parseColor("#43A047"); break;
-      case "BLUE": mColor = Color.parseColor("#1E88E5") ;break;
-      case "RED": mColor = Color.parseColor("#E53935") ; break;
-      case "YELLOW": mColor = Color.parseColor("#FDD835") ; break;
-      case "ORANGE": mColor = Color.parseColor("#FB8C00") ; break;
-      default: mColor = Color.parseColor("#5D4037") ;
+    switch(color) {
+      case "GREEN":
+        mColor = Color.parseColor("#43A047");
+        break;
+      case "BLUE":
+        mColor = Color.parseColor("#1E88E5");
+        break;
+      case "RED":
+        mColor = Color.parseColor("#E53935");
+        break;
+      case "YELLOW":
+        mColor = Color.parseColor("#FDD835");
+        break;
+      case "ORANGE":
+        mColor = Color.parseColor("#FB8C00");
+        break;
+      default:
+        mColor = Color.parseColor("#5E35B1");
     }
     return mColor;
   }
 
-  public static int routeColorMatcher(String routId){
-    switch (routId){
-      case "ROUTE 1": return materialColorConverter("YELLOW");
-      case "ROUTE 2": return materialColorConverter("YELLOW");
-      case "ROUTE 3": return materialColorConverter("ORANGE");
-      case "ROUTE 4": return materialColorConverter("ORANGE");
-      case "ROUTE 5": return materialColorConverter("GREEN");
-      case "ROUTE 6": return materialColorConverter("GREEN");
-      case "ROUTE 7": return materialColorConverter("RED");
-      case "ROUTE 8": return materialColorConverter("RED");
-      case "ROUTE 11": return materialColorConverter("BLUE");
-      case "ROUTE 12": return materialColorConverter("BLUE");
-      default: return materialColorConverter("other");
+  public static int routeColorMatcher(String routId) {
+    switch(routId) {
+      case "ROUTE 1":
+        return materialColorConverter("YELLOW");
+      case "ROUTE 2":
+        return materialColorConverter("YELLOW");
+      case "ROUTE 3":
+        return materialColorConverter("ORANGE");
+      case "ROUTE 4":
+        return materialColorConverter("ORANGE");
+      case "ROUTE 5":
+        return materialColorConverter("GREEN");
+      case "ROUTE 6":
+        return materialColorConverter("GREEN");
+      case "ROUTE 7":
+        return materialColorConverter("RED");
+      case "ROUTE 8":
+        return materialColorConverter("RED");
+      case "ROUTE 11":
+        return materialColorConverter("BLUE");
+      case "ROUTE 12":
+        return materialColorConverter("BLUE");
+      default:
+        return materialColorConverter("other");
     }
   }
 
-  public static String timeMinutesCalculator(String departTime){
+  public static String timeMinutesCalculator(String departTime) {
     Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"));
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm/dd/yyyy hh:mm a", Locale.US);
     String time = simpleDateFormat.format(calendar.getTime());
     Date systemTime = new Date();
     try {
       systemTime = simpleDateFormat.parse(time);
-    } catch (ParseException e) {
+    } catch(ParseException e) {
       e.printStackTrace();
     }
 
     Date departDate = new Date();
     try {
       departDate = simpleDateFormat.parse(departTime);
-    } catch (ParseException e) {
+    } catch(ParseException e) {
       e.printStackTrace();
     }
 
@@ -131,28 +255,39 @@ public class Uilt {
     different = different % minutesInMilli;
 
     long elapsedSeconds = different / secondsInMilli;
-    if (elapsedMinutes < 0 ){
+    if(elapsedMinutes < 0) {
       return "Unavailable";
     }
 
-    return elapsedMinutes!= 0 ? String.valueOf(elapsedMinutes) + "" : "Leaving ";
+    return elapsedMinutes != 0 ? String.valueOf(elapsedMinutes) + "" : "Leaving ";
 
   }
 
-  public static int randomCityBgGenerator(){
+  public static int randomCityBgGenerator() {
     int randomNum = ThreadLocalRandom.current().nextInt(1, 12 + 1);
-    switch (randomNum){
-      case 1 : return R.drawable.city_bg1;
-      case 2 : return R.drawable.city_bg2;
-      case 3 : return R.drawable.city_bg3;
-      case 4 : return R.drawable.city_bg4;
-      case 5 : return R.drawable.city_bg5;
-      case 6 : return R.drawable.city_bg6;
-      case 7 : return R.drawable.city_bg7;
-      case 8 : return R.drawable.city_bg8;
-      case 9 : return R.drawable.city_bg9;
-      case 11 : return R.drawable.city_bg11;
-      default: return R.drawable.city_bg12;
+    switch(randomNum) {
+      case 1:
+        return R.drawable.city_bg1;
+      case 2:
+        return R.drawable.city_bg2;
+      case 3:
+        return R.drawable.city_bg3;
+      case 4:
+        return R.drawable.city_bg4;
+      case 5:
+        return R.drawable.city_bg5;
+      case 6:
+        return R.drawable.city_bg6;
+      case 7:
+        return R.drawable.city_bg7;
+      case 8:
+        return R.drawable.city_bg8;
+      case 9:
+        return R.drawable.city_bg9;
+      case 11:
+        return R.drawable.city_bg11;
+      default:
+        return R.drawable.city_bg12;
     }
   }
 }

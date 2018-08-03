@@ -19,7 +19,7 @@ public class QuickLookupRecyclerViewItemVM extends ViewModel {
     public final MutableLiveData<String> secondTrain = new MutableLiveData<>();
     public final MutableLiveData<String> thirdTrain = new MutableLiveData<>();
     public final MutableLiveData<Integer> routColor = new MutableLiveData<>();
-    public final MutableLiveData<String> routeShortcut = new MutableLiveData<>();
+    public final MutableLiveData<String> routeCarNumber = new MutableLiveData<>();
     private final Etd etd;
 
     private ItemClickListener itemClickListener;
@@ -62,7 +62,7 @@ public class QuickLookupRecyclerViewItemVM extends ViewModel {
         this.secondTrain.setValue(", " +second);
         this.thirdTrain.setValue(", " +third);
         this.routColor.setValue(Uilt.materialColorConverter(etd.getEstimate().get(0).getColor()));
-        this.routeShortcut.setValue(etd.getAbbreviation());
+        this.routeCarNumber.setValue(etd.getEstimate().get(0).getLength());
     }
 
 }

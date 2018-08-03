@@ -11,7 +11,9 @@ import com.eddystudio.bartbetter.Model.Uilt;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Observable;
 
+import static com.eddystudio.bartbetter.Model.Uilt.getFullStationName;
 import static com.eddystudio.bartbetter.Model.Uilt.materialColorConverter;
 
 public class DashboardRecyclerViewItemVM {
@@ -20,6 +22,7 @@ public class DashboardRecyclerViewItemVM {
   public final ObservableField<String> firstTrain = new ObservableField<>("");
   public final ObservableField<String> secondTrain = new ObservableField<>("");
   public final ObservableField<String> thirdTrain = new ObservableField<>("");
+  public final ObservableField<String> trainNameLength = new ObservableField<>("");
   public final ObservableInt routeColor = new ObservableInt(Color.GRAY);
   public final ObservableInt routeColor2 = new ObservableInt(Color.GRAY);
 
@@ -84,5 +87,6 @@ public class DashboardRecyclerViewItemVM {
     destination.set(Uilt.getFullStationName(dest));
     firstTrain.set(etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "0" : etd.getEstimate().get(0).getMinutes());
     routeColor.set(materialColorConverter(etd.getEstimate().get(0).getColor()));
+    trainNameLength.set(etd.getEstimate().get(0).getLength() + " car " + getFullStationName(etd.getDestination()) + " train");
   }
 }

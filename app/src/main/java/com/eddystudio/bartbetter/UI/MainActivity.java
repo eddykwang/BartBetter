@@ -133,8 +133,10 @@ public class MainActivity extends AppCompatActivity {
     String mapper = PreferenceManager.getDefaultSharedPreferences(this).getString(STATION_LIST_SHORTCUT_MAPPER, emptyList);
     stationShotcutMapper = gson.fromJson(mapper, type);
 
-    stationListSortcut.addAll(stationShotcutMapper.keySet());
-    stationList.addAll(stationShotcutMapper.values());
+    if(stationList.isEmpty() || stationListSortcut.isEmpty()) {
+      stationListSortcut.addAll(stationShotcutMapper.keySet());
+      stationList.addAll(stationShotcutMapper.values());
+    }
 
     if(stationShotcutMapper.isEmpty()) {
       getAllStationsFromApi();

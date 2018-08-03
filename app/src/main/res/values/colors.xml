@@ -11,10 +11,12 @@
     <!--<color name="colorPrimaryDark">#212121</color>-->
     <!--<color name="colorAccent">#FF4081</color>-->
 
-    <color name="routColor_red">#D32F2F</color>
-    <color name="routColor_blue">#1976D2</color>
+    <color name="routColor_red">#b2102f</color>
+    <color name="routColor_blue">#2979ff</color>
     <color name="routColor_green">#388e3c</color>
-    <color name="routColor_yellow">#FBC02D</color>
+    <color name="routColor_yellow">#ffeb3b</color>
+    <color name="routColor_orange">#ff9800</color>
+    <color name="routeColor_other">#651fff</color>
     <color name="white">#ffffff</color>
     <color name="card_color">#f5f5f5</color>
 </resources>

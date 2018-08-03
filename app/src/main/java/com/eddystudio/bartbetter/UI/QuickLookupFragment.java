@@ -20,7 +20,6 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -57,8 +56,8 @@ public class QuickLookupFragment extends BaseFragment {
 
   private static boolean isInitOpen = true;
   private QuickLookupRecyclerViewAdapter adapters;
-  private static final String lastSelectedStation = "LAST_SELECTED_STATION";
-  private static final String lastSelectedSinperPosition = "LAST_SELECTED_SINPER_POSITION";
+  private static final String LAST_SELECTED_STATION = "LAST_SELECTED_STATION";
+  private static final String LAST_SELECTED_SINPER_POSITION = "LAST_SELECTED_SINPER_POSITION";
 
   public QuickLookupFragment() {
     // Required empty public constructor
@@ -122,8 +121,8 @@ public class QuickLookupFragment extends BaseFragment {
           selectedStation = MainActivity.stationListSortcut.get(i);
           sinpperPos = i;
           SharedPreferences.Editor editor = preference.edit();
-          editor.putString(lastSelectedStation, selectedStation);
-          editor.putInt(lastSelectedSinperPosition, sinpperPos);
+          editor.putString(LAST_SELECTED_STATION, selectedStation);
+          editor.putInt(LAST_SELECTED_SINPER_POSITION, sinpperPos);
           editor.apply();
           quickLookupViewModel.getData(selectedStation);
         }
@@ -140,9 +139,9 @@ public class QuickLookupFragment extends BaseFragment {
   }
 
   private void setLastSelectedStation() {
-    selectedStation = preference.getString(lastSelectedStation, "12TH");
-    sinpperPos = preference.getInt(lastSelectedSinperPosition, 0);
-
+    selectedStation = preference.getString(LAST_SELECTED_STATION, "12TH");
+    sinpperPos = preference.getInt(LAST_SELECTED_SINPER_POSITION, 0);
+    binding.stationSpinner.setSelection(sinpperPos);
     Log.d("lastStation", selectedStation + " : " + sinpperPos);
   }
 
@@ -218,7 +217,6 @@ public class QuickLookupFragment extends BaseFragment {
 
   private void goToDetail(String from, String to, int color, View view) {
     if(getActivity() != null) {
-      ImageView imageView = view.findViewById(R.id.boder_image_view);
       TextView textView = view.findViewById(R.id.destination);
       RouteDetailFragment fragment = new RouteDetailFragment();
 
@@ -237,7 +235,6 @@ public class QuickLookupFragment extends BaseFragment {
           .addToBackStack(null)
           .replace(R.id.main_frame_layout, fragment)
           .setReorderingAllowed(true)
-          .addSharedElement(imageView, getString(R.string.goToDetailTransition))
           .addSharedElement(textView, getString(R.string.textTransition))
           .commit();
     }
