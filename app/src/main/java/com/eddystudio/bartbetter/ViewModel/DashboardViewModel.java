@@ -1,6 +1,5 @@
 package com.eddystudio.bartbetter.ViewModel;
 
-import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 import android.util.Pair;
 
@@ -9,7 +8,6 @@ import com.eddystudio.bartbetter.Model.Repository;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
-import com.eddystudio.bartbetter.UI.MainActivity;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -77,9 +75,18 @@ public class DashboardViewModel {
         repository.getAccurateEtdTime(routes)
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe(ignored -> eventsSubject.onNext(new Events.LoadingEvent(true)))
-            .map(triple -> getRoutesInfoToVm(triple.component1(), triple.component2(), triple.component3()))
+            .compose(result -> Observable.merge(
+                result.ofType(Repository.OnSuccess.class)
+                    .map(etdResult -> getRoutesInfoToVm(etdResult.getEtdResult().getEtd(), etdResult.getEtdResult().getOrigin(), etdResult.getEtdResult().getDestination()))
+                    .doOnNext(etd -> {
+                      eventsSubject.onNext(new Events.GetEtdEvent(new Pair<>(etd, counter.get())));
+                    }),
+                result.ofType(Repository.OnError.class).doOnNext(onError -> {
+                  DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(new Etd(), onError.getFrom(), onError.getTo());
+                  eventsSubject.onNext(new Events.GetEtdEvent(new Pair<>(vm, counter.get())));
+                })
+            ))
             .subscribe(etd -> {
-                  eventsSubject.onNext(new Events.GetEtdEvent(new Pair<>(etd, counter.get())));
                   counter.getAndIncrement();
                 },
                 this::handleError,

@@ -1,5 +1,9 @@
 package com.eddystudio.bartbetter.Adapter;
 
+import android.graphics.Typeface;
+import android.util.TypedValue;
+import android.widget.TextView;
+
 import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemVM;
 import com.eddystudio.bartbetter.R;
 
@@ -20,6 +24,14 @@ public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
 
   @Override public void onBindViewHolder(ItemHolder holder, int position) {
     super.onBindViewHolder(holder, position);
+    TextView textView = holder.itemView.findViewById(R.id.textView2);
+    if(textView.getText().equals("Unavailable")){
+      textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+      textView.setTypeface(Typeface.DEFAULT);
+    }else {
+      textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
+      textView.setTypeface(Typeface.DEFAULT_BOLD);
+    }
     holder.itemView.findViewById(R.id.destination)
             .setTransitionName(application.getString(R.string.textTransition) + position);
     holder.itemView.findViewById(R.id.dashboard_from_tv)

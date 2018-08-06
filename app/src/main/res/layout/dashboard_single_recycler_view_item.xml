@@ -158,7 +158,7 @@
           android:layout_marginBottom="8dp"
           android:text="minutes"
           android:textSize="12sp"
-          android:visibility="@{TextUtils.isEmpty(obj.firstTrain) ? View.GONE : View.VISIBLE}"
+          android:visibility="@{TextUtils.isEmpty(obj.firstTrain) || obj.firstTrain.equalsIgnoreCase(`Unavailable`) ? View.GONE : View.VISIBLE}"
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"

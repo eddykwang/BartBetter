@@ -54,7 +54,9 @@ public class DashboardRecyclerViewItemVM {
   }
 
   public void onItemClicked(View view) {
-    itemClickListener.onItemClicked(from, to, routeColor.get(), view);
+    if(itemClickListener != null) {
+      itemClickListener.onItemClicked(from, to, routeColor.get(), view);
+    }
   }
 
   private void updateUi(List<Trip> trips, String origin, String dest) throws ParseException {
@@ -85,8 +87,12 @@ public class DashboardRecyclerViewItemVM {
   private void updateUi(Etd etd, String origin, String dest) {
     fromStation.set(Uilt.getFullStationName(origin));
     destination.set(Uilt.getFullStationName(dest));
-    firstTrain.set(etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "0" : etd.getEstimate().get(0).getMinutes());
-    routeColor.set(materialColorConverter(etd.getEstimate().get(0).getColor()));
-    trainNameLength.set(etd.getEstimate().get(0).getLength() + " car " + getFullStationName(etd.getDestination()) + " train");
+    if(etd.getEstimate() != null) {
+      firstTrain.set(etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "0" : etd.getEstimate().get(0).getMinutes());
+      routeColor.set(materialColorConverter(etd.getEstimate().get(0).getColor()));
+      trainNameLength.set(etd.getEstimate().get(0).getLength() + " car " + getFullStationName(etd.getDestination()) + " train");
+    } else {
+      firstTrain.set("Unavailable");
+    }
   }
 }
