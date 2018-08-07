@@ -1,9 +1,7 @@
 package com.eddystudio.bartbetter.UI;
 
 import android.app.AlertDialog;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -11,6 +9,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -39,6 +38,7 @@ import com.eddystudio.bartbetter.ViewModel.Events;
 import com.eddystudio.bartbetter.databinding.FragmentDashboardBinding;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,7 +54,10 @@ public class DashboardFragment extends BaseFragment {
   private DashboardRecyclerViewAdapter adapter;
   private DashboardViewModel vm;
   private CollapsingToolbarLayout collapsingToolbarLayout;
-  List<Pair<String, String>> stationPairList = new ArrayList<>();
+  private List<Pair<String, String>> stationPairList = new ArrayList<>();
+
+  private Pair<DashboardRecyclerViewItemVM, Integer> lastDeletedItem = null;
+  private String lastDeletedRouteString = null;
 
   public DashboardFragment() {
     // Required empty public constructor
@@ -89,19 +92,24 @@ public class DashboardFragment extends BaseFragment {
       prefsEditor.putBoolean(AUTO_REFRESH_ENABLED, isChecked);
       prefsEditor.apply();
       if(isChecked) {
-        snackbarMessage("Auto refresh every 20 seconds.");
+        snackbarMessage("Auto refresh every 20 seconds.", null);
         loadFromPreference();
       } else {
-        snackbarMessage("Auto refresh turned off.");
+        snackbarMessage("Auto refresh turned off.", null);
       }
     });
   }
 
-  private void snackbarMessage(String message) {
+  private void snackbarMessage(String message, View.OnClickListener onClickListener) {
     if(getActivity() != null) {
-      Snackbar.make(binding.getRoot(),
-          message,
-          Snackbar.LENGTH_LONG).show();
+      if(onClickListener != null) {
+        Snackbar.make(binding.getRoot(), message, Snackbar.LENGTH_LONG)
+            .setAction("Undo", onClickListener)
+            .show();
+      } else {
+        Snackbar.make(binding.getRoot(), message, Snackbar.LENGTH_LONG)
+            .show();
+      }
     }
   }
 
@@ -115,23 +123,53 @@ public class DashboardFragment extends BaseFragment {
   }
 
   private void attachOnCardSwipe() {
-    CardSwipeController cardSwipeController = new CardSwipeController(new SwipeControllerActions() {
+
+    adapter.setLongClickListener(v -> {
+      binding.swipeRefreshLy.setEnabled(false);
+      return true;
+    });
+
+    CardSwipeController cardSwipeController = new CardSwipeController(getActivity(), CardSwipeController.SwipeAction.DELETE);
+    cardSwipeController.setAction(new SwipeControllerActions() {
       @Override
-      public void onRightClicked(int position) {
-        super.onRightClicked(position);
+      public void onDragged(int fromPos, int toPos) {
+        adapter.swapDataPos(fromPos, toPos);
+        List<String> list = getSharedPreferencesData();
+        if(fromPos < toPos) {
+          for(int i = fromPos; i < toPos; i++) {
+            Collections.swap(list, i, i + 1);
+          }
+        } else {
+          for(int i = fromPos; i > toPos; i--) {
+            Collections.swap(list, i, i - 1);
+          }
+        }
+        saveSharedPreferenceData(list);
+      }
+
+      @Override
+      public void onSwiped(int position) {
+        List<String> list = getSharedPreferencesData();
         deletePreferencesData(position);
-        snackbarMessage(Uilt.getFullStationName(stationPairList.get(position).first) + " -> " + Uilt.getFullStationName(stationPairList.get(position).second) + " removed");
+        lastDeletedItem = new Pair<>(adapter.getItemInPos(position), position);
+        lastDeletedRouteString = list.get(position);
         adapter.deleteData(position);
+        list.remove(position);
+
+        snackbarMessage(Uilt.getFullStationName(stationPairList.get(position).first) + " -> " + Uilt.getFullStationName(stationPairList.get(position).second) + " removed", v -> {
+          adapter.addDataInPos(lastDeletedItem.first, lastDeletedItem.second);
+          list.add(lastDeletedItem.second, lastDeletedRouteString);
+          saveSharedPreferenceData(list);
+        });
+      }
+
+      @Override
+      public void onDragFinished() {
+        binding.swipeRefreshLy.setEnabled(true);
       }
     });
     ItemTouchHelper itemTouchHelper = new ItemTouchHelper(cardSwipeController);
     itemTouchHelper.attachToRecyclerView(binding.recylerView);
-    binding.recylerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-      @Override
-      public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-        cardSwipeController.onDraw(c, "Remove", "#D32F2F");
-      }
-    });
   }
 
   private void loadFromPreference() {
@@ -193,7 +231,8 @@ public class DashboardFragment extends BaseFragment {
             R.layout.dashboard_single_recycler_view_item);
     binding.recylerView.setAdapter(adapter);
     binding.recylerView.setNestedScrollingEnabled(false);
-    binding.recylerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+    binding.recylerView.setHasFixedSize(true);
+    binding.recylerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
   }
 

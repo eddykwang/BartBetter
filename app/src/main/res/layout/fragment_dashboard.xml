@@ -41,13 +41,13 @@
       <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLy"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.RecyclerView
           android:id="@+id/recylerView"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
+          android:layout_height="match_parent"
           android:layout_marginTop="16dp"
           android:clipToPadding="false"
           android:scrollbars="none"

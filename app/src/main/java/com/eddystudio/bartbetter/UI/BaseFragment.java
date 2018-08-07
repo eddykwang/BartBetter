@@ -51,6 +51,14 @@ public class BaseFragment extends Fragment {
         return routeList == null ? new ArrayList<>() : routeList;
     }
 
+    protected void saveSharedPreferenceData(List<String> routes){
+      SharedPreferences.Editor prefsEditor = preference.edit();
+      Gson gson = new Gson();
+      String json = gson.toJson(routes);
+      prefsEditor.putString(DASHBOARDROUTS, json);
+      prefsEditor.apply();
+    }
+
     protected void addPreferencesData(String rout){
         List<String> routeList = getSharedPreferencesData();
         routeList.add(rout);

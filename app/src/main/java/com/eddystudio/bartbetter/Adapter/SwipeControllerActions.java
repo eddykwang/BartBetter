@@ -1,8 +1,10 @@
 package com.eddystudio.bartbetter.Adapter;
 
 
-public abstract class SwipeControllerActions {
-    public void onLeftClicked(int position) {}
+public interface SwipeControllerActions {
+  void onDragged(int fromPos, int toPos);
 
-    public void onRightClicked(int position) {}
+  void onDragFinished();
+
+  void onSwiped(int position);
 }

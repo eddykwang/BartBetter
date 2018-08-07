@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +31,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 import com.eddystudio.bartbetter.databinding.FragmentNotificationBinding;
+import com.twitter.sdk.android.tweetui.SearchTimeline;
+import com.twitter.sdk.android.tweetui.TweetTimelineRecyclerViewAdapter;
+import com.twitter.sdk.android.tweetui.UserTimeline;
 
 public class NotificationFragment extends BaseFragment {
 
@@ -75,6 +80,7 @@ public class NotificationFragment extends BaseFragment {
     super.onStart();
     viewModel.isViewDetailChecked.set(sharedPreferences.getBoolean(savedViewMorePreference, false));
     init();
+    setupTweeterView();
   }
 
   @Override
@@ -83,6 +89,23 @@ public class NotificationFragment extends BaseFragment {
     SharedPreferences.Editor editor = sharedPreferences.edit();
     editor.putBoolean(savedViewMorePreference, viewModel.isViewDetailChecked.get());
     editor.apply();
+  }
+
+  private void setupTweeterView() {
+    UserTimeline userTimeline = new UserTimeline.Builder()
+        .screenName("twitterdev")
+        .maxItemsPerRequest(5)
+        .build();
+
+
+    final TweetTimelineRecyclerViewAdapter adapter =
+        new TweetTimelineRecyclerViewAdapter.Builder(getContext())
+            .setTimeline(userTimeline)
+            .setViewStyle(R.style.tw__TweetLightWithActionsStyle)
+            .build();
+    RecyclerView recyclerView = binding.getRoot().findViewById(R.id.tweeter_recylerview);
+    recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+    recyclerView.setAdapter(adapter);
   }
 
   private void init() {
@@ -121,7 +144,7 @@ public class NotificationFragment extends BaseFragment {
     viewModel.isDelayReportProgressVisible.set(false);
     if(!isErrorShowed && getActivity() != null) {
       Snackbar.make(binding.getRoot(), "Error on loading", Snackbar.LENGTH_LONG)
-          .setAction("Retry", view-> init())
+          .setAction("Retry", view -> init())
           .show();
       isErrorShowed = true;
     }

@@ -2,7 +2,6 @@ package com.eddystudio.bartbetter.UI;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -146,10 +145,15 @@ public class QuickLookupFragment extends BaseFragment {
   }
 
   private void attachOnCardSwipe() {
-    CardSwipeController cardSwipeController = new CardSwipeController(new SwipeControllerActions() {
+    CardSwipeController cardSwipeController = new CardSwipeController(getContext(), CardSwipeController.SwipeAction.ADD);
+    cardSwipeController.setAction(new SwipeControllerActions() {
       @Override
-      public void onRightClicked(int position) {
-        super.onRightClicked(position);
+      public void onDragged(int fromPos, int toPos) {
+      }
+
+      @Override
+      public void onSwiped(int position) {
+        adapters.notifyItemChanged(position);
         String route = selectedStation + "-" + etdStations.get(position);
         List<String> dl = getSharedPreferencesData();
         if(!dl.contains(route)) {
@@ -163,15 +167,13 @@ public class QuickLookupFragment extends BaseFragment {
               .show();
         }
       }
+
+      @Override
+      public void onDragFinished() {
+      }
     });
     ItemTouchHelper itemTouchHelper = new ItemTouchHelper(cardSwipeController);
     itemTouchHelper.attachToRecyclerView(binding.recylerView);
-    binding.recylerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-      @Override
-      public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-        cardSwipeController.onDraw(c, "Add", "#FF4081");
-      }
-    });
   }
 
 
