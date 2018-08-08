@@ -152,6 +152,10 @@ public class QuickLookupFragment extends BaseFragment {
       }
 
       @Override
+      public void onSelected() {
+      }
+
+      @Override
       public void onSwiped(int position) {
         adapters.notifyItemChanged(position);
         String route = selectedStation + "-" + etdStations.get(position);

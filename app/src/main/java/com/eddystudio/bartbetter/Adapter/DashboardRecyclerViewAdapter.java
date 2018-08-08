@@ -16,7 +16,6 @@ public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
   private List<DashboardRecyclerViewItemVM> itemList;
   private final int layoutId;
   private final int recyclerViewLayout;
-  private View.OnLongClickListener longClickListener = null;
 
   public DashboardRecyclerViewAdapter(List<DashboardRecyclerViewItemVM> itemList,
                                       int layoutId, int recyclerViewLayout) {
@@ -28,9 +27,6 @@ public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
   @Override
   public void onBindViewHolder(ItemHolder holder, int position) {
     super.onBindViewHolder(holder, position);
-    if(longClickListener != null) {
-      holder.itemView.setOnLongClickListener(longClickListener);
-    }
     TextView textView = holder.itemView.findViewById(R.id.textView2);
     if(textView.getText().equals("Unavailable")) {
       textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
@@ -43,10 +39,6 @@ public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
         .setTransitionName(application.getString(R.string.textTransition) + position);
     holder.itemView.findViewById(R.id.dashboard_from_tv)
         .setTransitionName(application.getString(R.string.textTransition) + position);
-  }
-
-  public void setLongClickListener(View.OnLongClickListener longClickListener) {
-    this.longClickListener = longClickListener;
   }
 
   public void modifyData(DashboardRecyclerViewItemVM item, int position) {

@@ -20,6 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="120dp"
     android:layout_margin="8dp"
+    android:id="@+id/dashboard_cardview"
     android:foreground="?android:attr/selectableItemBackground"
     android:onClick="@{(view)-> obj.onItemClicked(view)}"
     app:cardBackgroundColor="@color/white"

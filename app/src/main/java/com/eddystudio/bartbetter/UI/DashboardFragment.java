@@ -123,12 +123,7 @@ public class DashboardFragment extends BaseFragment {
   }
 
   private void attachOnCardSwipe() {
-
-    adapter.setLongClickListener(v -> {
-      binding.swipeRefreshLy.setEnabled(false);
-      return true;
-    });
-
+    final boolean[] autoEnabled = {false};
     CardSwipeController cardSwipeController = new CardSwipeController(getActivity(), CardSwipeController.SwipeAction.DELETE);
     cardSwipeController.setAction(new SwipeControllerActions() {
       @Override
@@ -145,6 +140,15 @@ public class DashboardFragment extends BaseFragment {
           }
         }
         saveSharedPreferenceData(list);
+      }
+
+      @Override
+      public void onSelected() {
+        binding.swipeRefreshLy.setEnabled(false);
+        if(vm.isAutoRefreshEnabled()) {
+          vm.setAutoRefreshEnabled(false);
+          autoEnabled[0] = true;
+        }
       }
 
       @Override
@@ -166,6 +170,10 @@ public class DashboardFragment extends BaseFragment {
       @Override
       public void onDragFinished() {
         binding.swipeRefreshLy.setEnabled(true);
+        if(autoEnabled[0]) {
+          vm.setAutoRefreshEnabled(true);
+        }
+        loadFromPreference();
       }
     });
     ItemTouchHelper itemTouchHelper = new ItemTouchHelper(cardSwipeController);

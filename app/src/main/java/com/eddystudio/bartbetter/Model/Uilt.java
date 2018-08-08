@@ -1,6 +1,8 @@
 package com.eddystudio.bartbetter.Model;
 
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.util.DisplayMetrics;
 
 import com.eddystudio.bartbetter.R;
 
@@ -289,5 +291,14 @@ public class Uilt {
       default:
         return R.drawable.city_bg12;
     }
+  }
+
+  public static int convertDpToPx(int dp){
+    return Math.round(dp*(Resources.getSystem().getDisplayMetrics().xdpi/DisplayMetrics.DENSITY_DEFAULT));
+
+  }
+
+  public static int convertPxToDp(int px){
+    return Math.round(px/(Resources.getSystem().getDisplayMetrics().xdpi/ DisplayMetrics.DENSITY_DEFAULT));
   }
 }

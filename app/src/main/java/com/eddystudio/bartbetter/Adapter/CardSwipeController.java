@@ -2,6 +2,7 @@ package com.eddystudio.bartbetter.Adapter;
 
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -9,9 +10,13 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 
+import com.eddystudio.bartbetter.Model.Uilt;
 import com.eddystudio.bartbetter.R;
 
 import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_DRAG;
@@ -55,7 +60,14 @@ public class CardSwipeController extends Callback {
     if(action != null) {
       action.onDragFinished();
     }
-    viewHolder.itemView.setBackgroundColor(context.getColor(R.color.white));
+    
+    CardView cardView = viewHolder.itemView.findViewById(R.id.dashboard_cardview);
+
+    ViewGroup.MarginLayoutParams layoutParams =
+        (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
+    layoutParams.setMargins(Uilt.convertDpToPx(8), Uilt.convertDpToPx(8), Uilt.convertDpToPx(8), Uilt.convertDpToPx(8));
+    cardView.requestLayout();
+
     super.clearView(recyclerView, viewHolder);
   }
 
@@ -81,8 +93,19 @@ public class CardSwipeController extends Callback {
 
   @Override
   public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-    if(viewHolder != null && actionState == ACTION_STATE_DRAG)
-      viewHolder.itemView.setBackgroundColor(context.getColor(R.color.card_color));
+    if(actionState == ACTION_STATE_DRAG) {
+      CardView cardView = viewHolder.itemView.findViewById(R.id.dashboard_cardview);
+
+      if(action != null) {
+        action.onSelected();
+      }
+
+      ViewGroup.MarginLayoutParams layoutParams =
+          (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
+      layoutParams.setMargins(Uilt.convertDpToPx(16), Uilt.convertDpToPx(8), Uilt.convertDpToPx(-16), Uilt.convertDpToPx(8));
+      cardView.requestLayout();
+
+    }
     super.onSelectedChanged(viewHolder, actionState);
   }
 

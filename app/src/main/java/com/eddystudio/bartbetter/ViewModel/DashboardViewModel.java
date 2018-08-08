@@ -69,6 +69,10 @@ public class DashboardViewModel {
     this.autoRefreshEnabled = autoRefreshEnabled;
   }
 
+  public boolean isAutoRefreshEnabled() {
+    return autoRefreshEnabled;
+  }
+
   public void getAccurateEstTime(List<Pair<String, String>> routes) {
     AtomicInteger counter = new AtomicInteger();
     disposable.add(
