@@ -60,13 +60,14 @@ public class CardSwipeController extends Callback {
     if(action != null) {
       action.onDragFinished();
     }
-    
-    CardView cardView = viewHolder.itemView.findViewById(R.id.dashboard_cardview);
 
-    ViewGroup.MarginLayoutParams layoutParams =
-        (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
-    layoutParams.setMargins(Uilt.convertDpToPx(8), Uilt.convertDpToPx(8), Uilt.convertDpToPx(8), Uilt.convertDpToPx(8));
-    cardView.requestLayout();
+    if(swipeAction == SwipeAction.DELETE) {
+      CardView cardView = viewHolder.itemView.findViewById(R.id.dashboard_cardview);
+      ViewGroup.MarginLayoutParams layoutParams =
+          (ViewGroup.MarginLayoutParams) cardView.getLayoutParams();
+      layoutParams.setMargins(Uilt.convertDpToPx(8), Uilt.convertDpToPx(8), Uilt.convertDpToPx(8), Uilt.convertDpToPx(8));
+      cardView.requestLayout();
+    }
 
     super.clearView(recyclerView, viewHolder);
   }
