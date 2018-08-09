@@ -132,6 +132,9 @@ public class QuickLookupFragment extends BaseFragment {
 
       }
     });
+
+    binding.spinnerConstrainLy.setOnClickListener(v -> binding.stationSpinner.performClick());
+
     binding.swipeRefreshLy.setOnRefreshListener(() -> {
       quickLookupViewModel.getData(selectedStation);
     });

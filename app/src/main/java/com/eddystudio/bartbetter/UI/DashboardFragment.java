@@ -8,7 +8,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
@@ -45,6 +44,9 @@ import java.util.Objects;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import me.toptas.fancyshowcase.DismissListener;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
 
 import static com.eddystudio.bartbetter.UI.MainActivity.AUTO_REFRESH_ENABLED;
 
@@ -55,7 +57,7 @@ public class DashboardFragment extends BaseFragment {
   private DashboardViewModel vm;
   private CollapsingToolbarLayout collapsingToolbarLayout;
   private List<Pair<String, String>> stationPairList = new ArrayList<>();
-
+  private SwitchCompat switchCompat;
   private Pair<DashboardRecyclerViewItemVM, Integer> lastDeletedItem = null;
   private String lastDeletedRouteString = null;
 
@@ -77,11 +79,42 @@ public class DashboardFragment extends BaseFragment {
     setUpAdapter();
     init();
     setupFab();
+    showCaseSetup();
     return binding.getRoot();
   }
 
+  private void showCaseSetup() {
+
+    DismissListener fabDismissListener = new DismissListener() {
+      @Override
+      public void onDismiss(String id) {
+        new FancyShowCaseView.Builder(getActivity())
+            .focusOn(switchCompat)
+            .focusShape(FocusShape.ROUNDED_RECTANGLE)
+            .title("Turn on/off auto refresh.")
+            .showOnce("auto_refresh_switch_showcase")
+            .build()
+            .show();
+      }
+
+      @Override
+      public void onSkipped(String id) {
+
+      }
+    };
+
+    new FancyShowCaseView.Builder(getActivity())
+        .focusOn(binding.fabAdd)
+        .focusShape(FocusShape.CIRCLE)
+        .title("Add a route here.")
+        .showOnce("fab_showcase")
+        .dismissListener(fabDismissListener)
+        .build()
+        .show();
+  }
+
   private void setupSwitch() {
-    SwitchCompat switchCompat = binding.getRoot().findViewById(R.id.auto_refresh_switch);
+    switchCompat = binding.getRoot().findViewById(R.id.auto_refresh_switch);
     switchCompat.setVisibility(View.VISIBLE);
     boolean auto = preference.getBoolean(AUTO_REFRESH_ENABLED, false);
     switchCompat.setChecked(auto);
@@ -160,7 +193,7 @@ public class DashboardFragment extends BaseFragment {
         adapter.deleteData(position);
         list.remove(position);
 
-        snackbarMessage(Uilt.getFullStationName(stationPairList.get(position).first) + " -> " + Uilt.getFullStationName(stationPairList.get(position).second) + " removed", v -> {
+        snackbarMessage(Uilt.getFullStationName(lastDeletedItem.first.fromStation.get()) + " -> " + Uilt.getFullStationName(lastDeletedItem.first.destination.get()) + " removed", v -> {
           adapter.addDataInPos(lastDeletedItem.first, lastDeletedItem.second);
           list.add(lastDeletedItem.second, lastDeletedRouteString);
           saveSharedPreferenceData(list);
@@ -202,7 +235,17 @@ public class DashboardFragment extends BaseFragment {
         .observeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .compose(event -> Observable.merge(
-            event.ofType(Events.LoadingEvent.class).doOnNext(data -> binding.swipeRefreshLy.setRefreshing(data.isLoad())),
+            event.ofType(Events.LoadingEvent.class).doOnNext(data -> {
+              binding.swipeRefreshLy.setRefreshing(data.isLoad());
+              new FancyShowCaseView.Builder(getActivity())
+                  .focusOn(binding.recylerView.findViewHolderForAdapterPosition(0).itemView)
+                  .title("Tap to see more schedules,\nswipe left to deleted,\npress and drag to rearrange position. ")
+                  .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                  .showOnce("recyclerview_item_showcase")
+                  .delay(500)
+                  .build()
+                  .show();
+            }),
             event.ofType(Events.ErrorEvent.class).doOnNext(error -> handleError(error.getError())),
             event.ofType(Events.GoToDetailEvent.class).doOnNext(data -> goToDetail(data.getFrom(), data.getTo(), data.getRouteColor(), data.getView())),
             event.ofType(Events.GetEtdEvent.class).doOnNext(data -> adapter.modifyData(((Pair<DashboardRecyclerViewItemVM, Integer>) (data.getEtdStations())).first, ((Pair<DashboardRecyclerViewItemVM, Integer>) (data.getEtdStations())).second))

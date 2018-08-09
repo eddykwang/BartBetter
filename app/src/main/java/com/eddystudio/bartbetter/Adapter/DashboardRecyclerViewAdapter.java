@@ -2,7 +2,6 @@ package com.eddystudio.bartbetter.Adapter;
 
 import android.graphics.Typeface;
 import android.util.TypedValue;
-import android.view.View;
 import android.widget.TextView;
 
 import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemVM;
