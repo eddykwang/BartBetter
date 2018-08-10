@@ -13,6 +13,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -133,11 +134,10 @@ public class QuickLookupFragment extends BaseFragment {
       }
     });
 
-    binding.spinnerConstrainLy.setOnClickListener(v -> binding.stationSpinner.performClick());
+    binding.spinnerConstrainLy.setOnClickListener(v ->
+        binding.stationSpinner.onTouch(binding.getRoot(), MotionEvent.obtain(1, 1, MotionEvent.ACTION_UP, 1, 1, 1)));
 
-    binding.swipeRefreshLy.setOnRefreshListener(() -> {
-      quickLookupViewModel.getData(selectedStation);
-    });
+    binding.swipeRefreshLy.setOnRefreshListener(() -> quickLookupViewModel.getData(selectedStation));
   }
 
   private void setLastSelectedStation() {
