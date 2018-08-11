@@ -239,7 +239,7 @@ public class DashboardFragment extends BaseFragment {
               binding.swipeRefreshLy.setRefreshing(data.isLoad());
               new FancyShowCaseView.Builder(getActivity())
                   .focusOn(binding.recylerView.findViewHolderForAdapterPosition(0).itemView)
-                  .title("Tap to see more schedules,\nswipe left to deleted,\npress and drag to rearrange position. ")
+                  .title("Tap to see more schedules,\nswipe left to delete,\nhold and drag to rearrange position. ")
                   .focusShape(FocusShape.ROUNDED_RECTANGLE)
                   .showOnce("recyclerview_item_showcase")
                   .delay(500)
