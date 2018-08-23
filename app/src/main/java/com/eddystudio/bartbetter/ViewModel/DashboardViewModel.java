@@ -74,7 +74,6 @@ public class DashboardViewModel {
   }
 
   public void getAccurateEstTime(List<Pair<String, String>> routes) {
-    AtomicInteger counter = new AtomicInteger();
     disposable.add(
         repository.getAccurateEtdTime(routes)
             .observeOn(AndroidSchedulers.mainThread())
@@ -82,16 +81,13 @@ public class DashboardViewModel {
             .compose(result -> Observable.merge(
                 result.ofType(Repository.OnSuccess.class)
                     .map(etdResult -> getRoutesInfoToVm(etdResult.getEtdResult().getEtd(), etdResult.getEtdResult().getOrigin(), etdResult.getEtdResult().getDestination()))
-                    .doOnNext(etd -> {
-                      eventsSubject.onNext(new Events.GetEtdEvent(new Pair<>(etd, counter.get())));
-                    }),
+                    .doOnNext(etd -> eventsSubject.onNext(new Events.GetEtdEvent(etd))),
                 result.ofType(Repository.OnError.class).doOnNext(onError -> {
                   DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(new Etd(), onError.getFrom(), onError.getTo());
-                  eventsSubject.onNext(new Events.GetEtdEvent(new Pair<>(vm, counter.get())));
+                  eventsSubject.onNext(new Events.GetEtdEvent(vm));
                 })
             ))
             .subscribe(etd -> {
-                  counter.getAndIncrement();
                 },
                 this::handleError,
                 this::onComplete

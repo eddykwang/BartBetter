@@ -237,18 +237,20 @@ public class DashboardFragment extends BaseFragment {
         .compose(event -> Observable.merge(
             event.ofType(Events.LoadingEvent.class).doOnNext(data -> {
               binding.swipeRefreshLy.setRefreshing(data.isLoad());
-              new FancyShowCaseView.Builder(getActivity())
-                  .focusOn(binding.recylerView.findViewHolderForAdapterPosition(0).itemView)
-                  .title("Tap to see more schedules,\nswipe left to deleted,\npress and drag to rearrange position. ")
-                  .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                  .showOnce("recyclerview_item_showcase")
-                  .delay(500)
-                  .build()
-                  .show();
+              if(getActivity() != null && binding.recylerView.findViewHolderForAdapterPosition(0) != null) {
+                new FancyShowCaseView.Builder(getActivity())
+                    .focusOn(binding.recylerView.findViewHolderForAdapterPosition(0).itemView)
+                    .title("Tap to see more schedules,\nswipe left to deleted,\npress and drag to rearrange position. ")
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .showOnce("recyclerview_item_showcase")
+                    .delay(500)
+                    .build()
+                    .show();
+              }
             }),
             event.ofType(Events.ErrorEvent.class).doOnNext(error -> handleError(error.getError())),
             event.ofType(Events.GoToDetailEvent.class).doOnNext(data -> goToDetail(data.getFrom(), data.getTo(), data.getRouteColor(), data.getView())),
-            event.ofType(Events.GetEtdEvent.class).doOnNext(data -> adapter.modifyData(((Pair<DashboardRecyclerViewItemVM, Integer>) (data.getEtdStations())).first, ((Pair<DashboardRecyclerViewItemVM, Integer>) (data.getEtdStations())).second))
+            event.ofType(Events.GetEtdEvent.class).doOnNext(data -> adapter.modifyData((DashboardRecyclerViewItemVM) data.getEtdStations()))
         ))
         .subscribe();
   }

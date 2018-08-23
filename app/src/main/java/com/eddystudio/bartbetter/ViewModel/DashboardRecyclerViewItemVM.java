@@ -48,6 +48,15 @@ public class DashboardRecyclerViewItemVM {
     updateUi(etd, from, to);
   }
 
+
+  public String getFrom() {
+    return from;
+  }
+
+  public String getTo() {
+    return to;
+  }
+
   public void setItemClickListener(
       ItemClickListener itemClickListener) {
     this.itemClickListener = itemClickListener;

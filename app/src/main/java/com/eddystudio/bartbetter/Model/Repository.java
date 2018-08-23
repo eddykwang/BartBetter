@@ -149,8 +149,8 @@ public class Repository {
                     if(d.getRoot() != null) {
                       List<Etd> etds = d.getRoot().getStation().get(0).getEtd();
                       for(Etd etd : etds) {
+                        result[0] = etd;
                         if(etd.getAbbreviation().equals(trip.getLeg().get(0).getTrainHeadStation())) {
-                          result[0] = etd;
                           break;
                         }
                       }
