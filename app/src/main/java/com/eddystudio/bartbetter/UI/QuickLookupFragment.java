@@ -1,10 +1,19 @@
 package com.eddystudio.bartbetter.UI;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,12 +30,14 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.eddystudio.bartbetter.Adapter.CardSwipeController;
 import com.eddystudio.bartbetter.Adapter.QuickLookupRecyclerViewAdapter;
 import com.eddystudio.bartbetter.Adapter.SwipeControllerActions;
 import com.eddystudio.bartbetter.DI.Application;
+import com.eddystudio.bartbetter.Model.Response.Stations.Station;
 import com.eddystudio.bartbetter.Model.Uilt;
 import com.eddystudio.bartbetter.ViewModel.Events;
 import com.eddystudio.bartbetter.ViewModel.QuickLookupRecyclerViewItemVM;
@@ -34,6 +45,9 @@ import com.eddystudio.bartbetter.ViewModel.QuickLookupViewModel;
 import com.eddystudio.bartbetter.R;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,6 +72,8 @@ public class QuickLookupFragment extends BaseFragment {
   private QuickLookupRecyclerViewAdapter adapters;
   private static final String LAST_SELECTED_STATION = "LAST_SELECTED_STATION";
   private static final String LAST_SELECTED_SINPER_POSITION = "LAST_SELECTED_SINPER_POSITION";
+
+  private static final int LOCATION_REQUEST_CODE = 4344;
 
   public QuickLookupFragment() {
     // Required empty public constructor
@@ -105,6 +121,8 @@ public class QuickLookupFragment extends BaseFragment {
             event.ofType(Events.GetEtdEvent.class).doOnNext(data -> etdStations = (ArrayList<String>) data.getEtdStations())
         ))
         .subscribe();
+
+    binding.gpsImageview.setOnClickListener(v -> setUpGetCurrentLocation());
   }
 
   private void setupSinner() {
@@ -138,6 +156,71 @@ public class QuickLookupFragment extends BaseFragment {
         binding.stationSpinner.onTouch(binding.getRoot(), MotionEvent.obtain(1, 1, MotionEvent.ACTION_UP, 1, 1, 1)));
 
     binding.swipeRefreshLy.setOnRefreshListener(() -> quickLookupViewModel.getData(selectedStation));
+  }
+
+  private void setUpGetCurrentLocation() {
+    quickLookupViewModel.showSpinnerProgess.set(true);
+    binding.gpsImageview.setVisibility(View.INVISIBLE);
+    LocationManager locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(Context.LOCATION_SERVICE);
+    if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+        ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+      requestPermissions(
+          new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+          LOCATION_REQUEST_CODE);
+
+    } else {
+      if(locationManager != null) {
+
+        LocationListener locationListener = new LocationListener() {
+          @Override
+          public void onLocationChanged(Location location) {
+            List<Station> stations = MainActivity.stationInfoList;
+            Collections.sort(stations, (o1, o2) -> {
+              Location location1 = new Location("one");
+              location1.setLatitude(Double.parseDouble(o1.getGtfsLatitude()));
+              location1.setLongitude(Double.parseDouble(o1.getGtfsLongitude()));
+
+              Location location2 = new Location("two");
+              location2.setLatitude(Double.parseDouble(o2.getGtfsLatitude()));
+              location2.setLongitude(Double.parseDouble(o2.getGtfsLongitude()));
+
+              float dist1 = location.distanceTo(location1);
+              float dist2 = location.distanceTo(location2);
+              return Float.compare(dist1, dist2);
+            });
+
+            Station cloestStation = stations.get(0);
+            for(int i = 0; i < MainActivity.stationListSortcut.size(); ++i) {
+              if(MainActivity.stationListSortcut.get(i).equalsIgnoreCase(cloestStation.getAbbr())) {
+                binding.stationSpinner.setSelection(i);
+                locationManager.removeUpdates(this);
+                quickLookupViewModel.showSpinnerProgess.set(false);
+                binding.gpsImageview.setVisibility(View.VISIBLE);
+                break;
+              }
+            }
+
+          }
+
+          @Override
+          public void onStatusChanged(String provider, int status, Bundle extras) {
+
+          }
+
+          @Override
+          public void onProviderEnabled(String provider) {
+
+          }
+
+          @Override
+          public void onProviderDisabled(String provider) {
+
+          }
+        };
+
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10f, locationListener);
+      }
+    }
   }
 
   private void setLastSelectedStation() {
@@ -246,6 +329,27 @@ public class QuickLookupFragment extends BaseFragment {
           .setReorderingAllowed(true)
           .addSharedElement(textView, getString(R.string.textTransition))
           .commit();
+    }
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    switch(requestCode) {
+      case LOCATION_REQUEST_CODE:
+        if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+          setUpGetCurrentLocation();
+        } else {
+          AlertDialog alertDialog = new AlertDialog.Builder(Objects.requireNonNull(getActivity())).create();
+          alertDialog.setTitle("Failed");
+          alertDialog.setMessage("You need to grant permission to find the closest station.");
+          alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Close",
+              (dialog, which) -> dialog.dismiss());
+          alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Request",
+              ((dialog, which) -> setUpGetCurrentLocation()));
+          alertDialog.show();
+        }
+
     }
   }
 

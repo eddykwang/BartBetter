@@ -60,20 +60,22 @@
             android:autofillHints="Choose station to start "
             android:gravity="end"
             app:layout_constraintBottom_toBottomOf="@+id/textView17"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/gps_imageview"
             app:layout_constraintStart_toEndOf="@+id/textView17"
             app:layout_constraintTop_toTopOf="@+id/textView17"/>
 
           <ProgressBar
             android:id="@+id/progressBar3"
             style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
+            android:layout_width="24dp"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:layout_marginEnd="8dp"
             android:visibility="@{vm.showSpinnerProgess? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@+id/station_spinner"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"/>
 
           <TextView
             android:id="@+id/textView17"
@@ -85,6 +87,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
+
+          <ImageView
+            android:id="@+id/gps_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_my_location_black_24dp"/>
         </android.support.constraint.ConstraintLayout>
 
         <TextView

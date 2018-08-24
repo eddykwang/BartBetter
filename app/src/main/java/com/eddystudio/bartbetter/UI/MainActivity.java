@@ -3,34 +3,30 @@ package com.eddystudio.bartbetter.UI;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Repository;
+import com.eddystudio.bartbetter.Model.Response.Stations.Station;
 import com.eddystudio.bartbetter.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -49,11 +45,12 @@ public class MainActivity extends AppCompatActivity {
   public static final String BUDDLE_ARG_TO = "Buddle_Arg_To";
   public static final String AUTO_REFRESH_ENABLED = "auto_refresh_enabled";
 
-  public static final String STATION_LIST_SHORTCUT_MAPPER = "station_list_shortcut_mapper";
+  public static final String STATION_INFO_LIST = "station_info_list";
 
-  public static Map<String, String> stationShotcutMapper = new HashMap<>();
+  //  public static Map<String, String> stationShotcutMapper = new HashMap<>();
   public static ArrayList<String> stationList = new ArrayList<>();
   public static ArrayList<String> stationListSortcut = new ArrayList<>();
+  public static List<Station> stationInfoList = new ArrayList<>();
 
   private Fragment fragment;
   private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -126,20 +123,22 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void getAllStations() {
-    Type type = new TypeToken<Map<String, String>>() {}.getType();
+    Type type = new TypeToken<List<Station>>() {}.getType();
     Gson gson = new Gson();
-    Map<String, String> empty = new HashMap<>();
+    List<Station> empty = new ArrayList<>();
     String emptyList = gson.toJson(empty);
-    String mapper = PreferenceManager.getDefaultSharedPreferences(this).getString(STATION_LIST_SHORTCUT_MAPPER, emptyList);
-    stationShotcutMapper = gson.fromJson(mapper, type);
+    String mapper = PreferenceManager.getDefaultSharedPreferences(this).getString(STATION_INFO_LIST, emptyList);
+    stationInfoList = gson.fromJson(mapper, type);
 
-    if(stationList.isEmpty() || stationListSortcut.isEmpty()) {
-      stationListSortcut.addAll(stationShotcutMapper.keySet());
-      stationList.addAll(stationShotcutMapper.values());
-    }
-
-    if(stationShotcutMapper.isEmpty()) {
+    if(stationInfoList.isEmpty()) {
       getAllStationsFromApi();
+    } else {
+      if(stationList.isEmpty() || stationListSortcut.isEmpty()) {
+        for(Station station : stationInfoList) {
+          stationList.add(station.getName());
+          stationListSortcut.add(station.getAbbr());
+        }
+      }
     }
   }
 
@@ -148,19 +147,18 @@ public class MainActivity extends AppCompatActivity {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .map(station -> station.getRoot().getStations().getStation())
-        .concatMap(Observable::fromArray)
         .subscribe(stations -> {
-          for(int i = 0; i < stations.size(); ++i) {
-            stationShotcutMapper.put(stations.get(i).getAbbr(), stations.get(i).getName());
-          }
+          stationInfoList = stations;
 
-          stationListSortcut.addAll(stationShotcutMapper.keySet());
-          stationList.addAll(stationShotcutMapper.values());
+          for(Station station : stationInfoList) {
+            stationList.add(station.getName());
+            stationListSortcut.add(station.getAbbr());
+          }
 
           SharedPreferences.Editor prefsEditor = PreferenceManager.getDefaultSharedPreferences(this).edit();
           Gson gson = new Gson();
-          String stationMapper = gson.toJson(stationShotcutMapper);
-          prefsEditor.putString(STATION_LIST_SHORTCUT_MAPPER, stationMapper);
+          String stationInfoListStr = gson.toJson(stationInfoList);
+          prefsEditor.putString(STATION_INFO_LIST, stationInfoListStr);
           prefsEditor.apply();
         }));
   }
