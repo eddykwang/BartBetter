@@ -1,14 +1,6 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        release {
-            keyAlias 'eddystudio'
-            keyPassword 'eddy6221215'
-            storeFile file('C:/Android/eddy_studio_key_2018.jks')
-            storePassword 'eddy6221215'
-        }
-    }
     compileSdkVersion 27
     defaultConfig {
         applicationId 'com.eddystudio.bartbetter'
