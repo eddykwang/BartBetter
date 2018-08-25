@@ -49,7 +49,7 @@
           android:id="@+id/dashboard_from_tv"
           android:layout_width="wrap_content"
           android:layout_height="28dp"
-          android:layout_marginStart="8dp"
+          android:layout_marginStart="16dp"
           android:text="@{obj.fromStation}"
           android:textSize="20sp"
           app:layout_constraintStart_toStartOf="parent"
@@ -60,7 +60,7 @@
           android:id="@+id/constraintLayout"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginStart="8dp"
+          android:layout_marginStart="16dp"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/dashboard_from_tv">
 
@@ -114,7 +114,7 @@
           android:id="@+id/destination"
           android:layout_width="wrap_content"
           android:layout_height="29dp"
-          android:layout_marginStart="8dp"
+          android:layout_marginStart="16dp"
           android:text="@{obj.destination}"
           android:textSize="20sp"
           app:layout_constraintBottom_toBottomOf="parent"

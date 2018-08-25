@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#26A69A</color>
     <color name="colorPrimaryDark">#00897B</color>
-    <color name="colorAccent">#ff4081</color>
+    <color name="colorAccent">#26A69A</color>
 
     <color name="dotColor">#607D8B</color>
     <color name="selectedDotColor">#B0BEC5</color>

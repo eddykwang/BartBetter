@@ -1,6 +1,7 @@
 package com.eddystudio.bartbetter.UI;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -53,6 +54,11 @@ import java.util.Objects;
 
 
 import com.eddystudio.bartbetter.databinding.FragmentQuickLookupBinding;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import io.reactivex.Observable;
 
@@ -98,6 +104,19 @@ public class QuickLookupFragment extends BaseFragment {
     setUpAdapter();
     attachOnCardSwipe();
 
+
+    MapView mapView = binding.getRoot().findViewById(R.id.maps_view);
+    mapView.onCreate(savedInstanceState);
+    mapView.getMapAsync(new OnMapReadyCallback() {
+      @SuppressLint("MissingPermission")
+      @Override
+      public void onMapReady(GoogleMap googleMap) {
+        googleMap.setMyLocationEnabled(true);
+        LatLng sy  = new LatLng(-34.0,151.0);
+        googleMap.addMarker(new MarkerOptions().position(sy).title("Marker in Sydney"));
+
+      }
+    });
     return binding.getRoot();
   }
 
@@ -165,7 +184,8 @@ public class QuickLookupFragment extends BaseFragment {
     if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
         ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
       requestPermissions(
-          new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+          new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
+              Manifest.permission.ACCESS_COARSE_LOCATION},
           LOCATION_REQUEST_CODE);
 
     } else {
@@ -219,6 +239,8 @@ public class QuickLookupFragment extends BaseFragment {
         };
 
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10f, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10f, locationListener);
+
       }
     }
   }
