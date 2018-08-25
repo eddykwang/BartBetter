@@ -27,7 +27,7 @@ public class AboutActivity extends AppCompatActivity {
         .setDescription(getString(R.string.aboutpage_description))
         .isRTL(false)
         .setImage(R.mipmap.ic_launcher)
-        .addItem(new Element().setTitle("Version" + BuildConfig.VERSION_NAME))
+        .addItem(new Element().setTitle("Version " + BuildConfig.VERSION_NAME))
         .addItem(new Element().setTitle("Privacy Policy").setIconDrawable(R.drawable.about_icon_link).setOnClickListener((view -> {
           openUrl("https://eddykwang.github.io/eddystudio/ppbartbetter.html");
         })))

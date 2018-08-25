@@ -1,75 +1,79 @@
 apply plugin: 'com.android.application'
 
 android {
-  compileSdkVersion 27
-  defaultConfig {
-    applicationId 'com.eddystudio.bartbetter'
-    minSdkVersion 23
-    targetSdkVersion 27
-    versionCode 6
-    versionName "2.1.1"
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    vectorDrawables.useSupportLibrary = true
-  }
-  buildTypes {
-    release {
-      minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    signingConfigs {
+        release {
+            keyAlias 'eddystudio'
+            keyPassword 'eddy6221215'
+            storeFile file('C:/Android/eddy_studio_key_2018.jks')
+            storePassword 'eddy6221215'
+        }
     }
-  }
-  dataBinding {
-    enabled = true
-  }
-  compileOptions {
-    targetCompatibility 1.8
-    sourceCompatibility 1.8
-  }
-  productFlavors {
-  }
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId 'com.eddystudio.bartbetter'
+        minSdkVersion 23
+        targetSdkVersion 27
+        versionCode 6
+        versionName "2.1.1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    dataBinding {
+        enabled = true
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+    productFlavors {
+    }
 }
 
 apply plugin: 'kotlin-android'
 
 dependencies {
-  implementation fileTree(include: ['*.jar'], dir: 'libs')
-  implementation 'com.android.support:appcompat-v7:27.1.1'
-  implementation 'com.android.support:design:27.1.1'
-  implementation 'com.google.android.gms:play-services-maps:15.0.1'
-  implementation 'com.android.support.constraint:constraint-layout:1.1.2'
-  implementation 'com.android.support:support-vector-drawable:27.1.1'
-  implementation 'com.android.support:support-v4:27.1.1'
-  testImplementation 'junit:junit:4.12'
-  testImplementation 'org.mockito:mockito-core:2.19.0'
-
-  androidTestImplementation 'com.android.support.test:runner:1.0.2'
-  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-  implementation 'com.squareup.retrofit2:retrofit:2.4.0'
-  implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
-  implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-  implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-  implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
-  implementation 'com.android.support:cardview-v7:27.1.1'
-  implementation 'com.google.dagger:dagger-android:2.11'
-  implementation 'com.google.dagger:dagger-android-support:2.11'
-  // if you use the support libraries
-  implementation 'com.github.bumptech.glide:glide:4.6.1'
-  annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
-  annotationProcessor 'com.google.dagger:dagger-android-processor:2.11'
-  annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
-
-  implementation "android.arch.lifecycle:extensions:1.1.1"
-  implementation "android.arch.lifecycle:viewmodel:1.1.1"
-
-  implementation 'com.toptoche.searchablespinner:searchablespinnerlibrary:1.3.1'
-  implementation 'com.ryanjeffreybrooks:indefinitepagerindicator:1.0.8'
-  implementation 'com.github.chrisbanes:PhotoView:2.1.4'
-  implementation 'com.github.medyo:android-about-page:1.2.4'
-
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-
-  implementation 'com.github.faruktoptas:FancyShowCaseView:1.0.1'
-
-  implementation('com.twitter.sdk.android:twitter:3.3.0@aar') {
-    transitive = true
-  }
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.google.android.gms:play-services-maps:15.0.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.android.support:support-vector-drawable:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.19.0'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    implementation 'com.android.support:cardview-v7:27.1.1'
+    implementation 'com.google.dagger:dagger-android:2.11'
+    implementation 'com.google.dagger:dagger-android-support:2.11'
+    // if you use the support libraries
+    implementation 'com.github.bumptech.glide:glide:4.6.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.11'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+    implementation 'android.arch.lifecycle:extensions:1.1.1'
+    implementation 'android.arch.lifecycle:viewmodel:1.1.1'
+    implementation 'com.toptoche.searchablespinner:searchablespinnerlibrary:1.3.1'
+    implementation 'com.ryanjeffreybrooks:indefinitepagerindicator:1.0.8'
+    implementation 'com.github.chrisbanes:PhotoView:2.1.4'
+    implementation 'com.github.medyo:android-about-page:1.2.4'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation 'com.github.faruktoptas:FancyShowCaseView:1.0.1'
+    implementation('com.twitter.sdk.android:twitter:3.3.0@aar') {
+        transitive = true
+    }
 }
+
+apply plugin: 'kotlin-android-extensions'

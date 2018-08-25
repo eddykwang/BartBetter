@@ -55,8 +55,10 @@ import java.util.Objects;
 
 import com.eddystudio.bartbetter.databinding.FragmentQuickLookupBinding;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -105,13 +107,13 @@ public class QuickLookupFragment extends BaseFragment {
     attachOnCardSwipe();
 
 
-    MapView mapView = binding.getRoot().findViewById(R.id.maps_view);
-    mapView.onCreate(savedInstanceState);
+    SupportMapFragment mapView = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.maps_view);
+//    mapView.onCreate(savedInstanceState);
     mapView.getMapAsync(new OnMapReadyCallback() {
       @SuppressLint("MissingPermission")
       @Override
       public void onMapReady(GoogleMap googleMap) {
-        googleMap.setMyLocationEnabled(true);
+//        googleMap.setMyLocationEnabled(true);
         LatLng sy  = new LatLng(-34.0,151.0);
         googleMap.addMarker(new MarkerOptions().position(sy).title("Marker in Sydney"));
 
