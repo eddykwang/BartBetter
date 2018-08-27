@@ -36,13 +36,6 @@
         app:titleTextAppearance="@style/Toolbar.TitleText"
         />
 
-      <fragment
-          android:id="@+id/maps_view"
-          android:layout_height="250dp"
-          android:layout_width="fill_parent"
-          android:layout_marginBottom="16dp"
-          app:layout_scrollFlags="scroll"
-          class="com.google.android.gms.maps.SupportMapFragment"/>
 
       <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -51,12 +44,14 @@
 
         <android.support.constraint.ConstraintLayout
           android:id="@+id/spinnerConstrainLy"
-          android:layout_width="match_parent"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_marginStart="16dp"
-          android:layout_marginEnd="16dp"
+          android:layout_marginBottom="8dp"
+          android:layout_marginEnd="8dp"
           android:background="@drawable/bg_search"
-          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toStartOf="@+id/expand_map_iv"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toTopOf="parent">
 
@@ -108,66 +103,92 @@
             app:srcCompat="@drawable/ic_my_location_black_24dp"/>
         </android.support.constraint.ConstraintLayout>
 
-        <TextView
-          android:id="@+id/textView20"
+        <ImageView
+          android:id="@+id/expand_map_iv"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginBottom="8dp"
-          android:layout_marginStart="16dp"
-          android:layout_marginTop="8dp"
-          android:text="Destinations: "
-          android:textAppearance="@android:style/TextAppearance.Material.Menu"
-          app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@+id/spinnerConstrainLy"
-          app:layout_constraintVertical_bias="1.0"/>
+          android:layout_marginEnd="16dp"
+          app:layout_constraintBottom_toBottomOf="@+id/spinnerConstrainLy"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="@+id/spinnerConstrainLy"
+          app:srcCompat="@drawable/ic_unfold_more_black_24dp"/>
+
       </android.support.constraint.ConstraintLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-      android:id="@+id/swipeRefreshLy"
+    <LinearLayout
+      android:id="@+id/main_content_linear_layout"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      app:layout_behavior="@string/appbar_scrolling_view_behavior"
-      >
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-      <android.support.v4.widget.NestedScrollView
+      <fragment
+        android:id="@+id/maps_view"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_height="250dp"
+        android:layout_width="fill_parent">
+
+        <RelativeLayout
+          android:id="@+id/button"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+
+          <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/map_hide_iv"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="8dp"
+            android:layout_gravity="end"
+            android:layout_alignParentEnd="true"
+            android:background="@color/transparent_gray"
+            android:src="@drawable/ic_unfold_less_black_24dp"/>
+        </RelativeLayout>
+
+      </fragment>
+
+      <LinearLayout
+        android:id="@+id/dest_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:showIn="@layout/activity_main"
-        >
+        android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_margin="8dp"
+          android:text="Destinations:"
+          android:textSize="18sp"/>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+          android:id="@+id/swipeRefreshLy"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:orientation="vertical"
           >
 
-          <android.support.v7.widget.RecyclerView
-            android:id="@+id/recylerView"
+          <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none"
-            android:visibility="visible"
-            />
-
-
-          <RelativeLayout
-            android:id="@+id/onErrorRelaticeLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
+            tools:showIn="@layout/activity_main"
             >
 
-            <ImageView
-              android:id="@+id/onErrorImageView"
+            <LinearLayout
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              />
-          </RelativeLayout>
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              >
 
-        </LinearLayout>
-      </android.support.v4.widget.NestedScrollView>
-    </android.support.v4.widget.SwipeRefreshLayout>
+              <android.support.v7.widget.RecyclerView
+                android:id="@+id/recylerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:visibility="visible"
+                />
+            </LinearLayout>
+          </android.support.v4.widget.NestedScrollView>
+        </android.support.v4.widget.SwipeRefreshLayout>
+      </LinearLayout>
+    </LinearLayout>
   </android.support.design.widget.CoordinatorLayout>
 </layout>

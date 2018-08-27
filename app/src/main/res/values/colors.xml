@@ -6,6 +6,7 @@
 
     <color name="dotColor">#607D8B</color>
     <color name="selectedDotColor">#B0BEC5</color>
+    <color name="transparent_gray">#4d000000</color>
 
     <!--<color name="colorPrimary">#424242</color>-->
     <!--<color name="colorPrimaryDark">#212121</color>-->

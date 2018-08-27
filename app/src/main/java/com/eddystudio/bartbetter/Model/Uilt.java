@@ -1,7 +1,14 @@
 package com.eddystudio.bartbetter.Model;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.DisplayMetrics;
 
 import com.eddystudio.bartbetter.R;
@@ -300,5 +307,17 @@ public class Uilt {
 
   public static int convertPxToDp(int px){
     return Math.round(px/(Resources.getSystem().getDisplayMetrics().xdpi/ DisplayMetrics.DENSITY_DEFAULT));
+  }
+
+  public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
+    Drawable drawable = ContextCompat.getDrawable(context, drawableId);
+
+    Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+        drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+    Canvas canvas = new Canvas(bitmap);
+    drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+    drawable.draw(canvas);
+
+    return bitmap;
   }
 }

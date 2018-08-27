@@ -1,6 +1,8 @@
 package com.eddystudio.bartbetter.UI;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -26,8 +29,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -54,12 +59,15 @@ import java.util.Objects;
 
 
 import com.eddystudio.bartbetter.databinding.FragmentQuickLookupBinding;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import io.reactivex.Observable;
@@ -75,6 +83,7 @@ public class QuickLookupFragment extends BaseFragment {
   private static int sinpperPos;
   private QuickLookupViewModel quickLookupViewModel;
   private ArrayList<String> etdStations;
+  private GoogleMap googleMap;
 
   private static boolean isInitOpen = true;
   private QuickLookupRecyclerViewAdapter adapters;
@@ -108,27 +117,47 @@ public class QuickLookupFragment extends BaseFragment {
 
 
     SupportMapFragment mapView = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.maps_view);
-//    mapView.onCreate(savedInstanceState);
-    mapView.getMapAsync(new OnMapReadyCallback() {
-      @SuppressLint("MissingPermission")
-      @Override
-      public void onMapReady(GoogleMap googleMap) {
-//        googleMap.setMyLocationEnabled(true);
-        LatLng sy  = new LatLng(-34.0,151.0);
-        googleMap.addMarker(new MarkerOptions().position(sy).title("Marker in Sydney"));
+    mapView.getMapAsync(googleMap -> {
+      this.googleMap = googleMap;
 
+      int c = 0;
+      for(Station station : MainActivity.stationInfoList) {
+        Marker marker = googleMap.addMarker(new MarkerOptions()
+            .position(new LatLng(Double.parseDouble(station.getGtfsLatitude()), Double.parseDouble(station.getGtfsLongitude()))));
+        marker.setTag(c);
+        marker.setTitle(station.getName());
+        c++;
       }
+      googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.7749, -122.4194), 10f));
+      googleMap.setOnMarkerClickListener(marker -> {
+        binding.stationSpinner.setSelection((Integer) marker.getTag());
+        return false;
+      });
     });
+
+    binding.getRoot().findViewById(R.id.expand_map_iv).setVisibility(View.GONE);
+
+    binding.mapHideIv.setOnClickListener(v -> {
+      Objects.requireNonNull(mapView.getView()).setVisibility(View.GONE);
+      binding.expandMapIv.setVisibility(View.VISIBLE);
+    });
+    binding.expandMapIv.setOnClickListener(v -> {
+      Objects.requireNonNull(mapView.getView()).setVisibility(View.VISIBLE);
+      v.setVisibility(View.GONE);
+    });
+
+    binding.spinnerConstrainLy.setLayoutTransition(new LayoutTransition());
+    binding.spinnerConstrainLy.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+    binding.mainContentLinearLayout.setLayoutTransition(new LayoutTransition());
+    binding.mainContentLinearLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+    binding.gpsImageview.setOnClickListener(v -> setUpGetCurrentLocation());
+
     return binding.getRoot();
   }
 
   @Override
   public void onStart() {
     super.onStart();
-    if(binding.onErrorRelaticeLayout.getVisibility() == View.VISIBLE) {
-      binding.onErrorRelaticeLayout.setVisibility(View.GONE);
-      binding.recylerView.setVisibility(View.VISIBLE);
-    }
     setLastSelectedStation();
   }
 
@@ -142,8 +171,6 @@ public class QuickLookupFragment extends BaseFragment {
             event.ofType(Events.GetEtdEvent.class).doOnNext(data -> etdStations = (ArrayList<String>) data.getEtdStations())
         ))
         .subscribe();
-
-    binding.gpsImageview.setOnClickListener(v -> setUpGetCurrentLocation());
   }
 
   private void setupSinner() {
@@ -159,6 +186,13 @@ public class QuickLookupFragment extends BaseFragment {
         } else {
           selectedStation = MainActivity.stationListSortcut.get(i);
           sinpperPos = i;
+
+          Station selectedS = MainActivity.stationInfoList.get(i);
+          googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+              new LatLng(Double.parseDouble(selectedS.getGtfsLatitude()),
+                  Double.parseDouble(selectedS.getGtfsLongitude())), 13f));
+
+
           SharedPreferences.Editor editor = preference.edit();
           editor.putString(LAST_SELECTED_STATION, selectedStation);
           editor.putInt(LAST_SELECTED_SINPER_POSITION, sinpperPos);
@@ -196,7 +230,13 @@ public class QuickLookupFragment extends BaseFragment {
         LocationListener locationListener = new LocationListener() {
           @Override
           public void onLocationChanged(Location location) {
-            List<Station> stations = MainActivity.stationInfoList;
+
+            googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()))
+                .icon(BitmapDescriptorFactory.fromBitmap(Uilt.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_radio_button_checked_black_24dp)))
+                .title("Current Location"));
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13f));
+
+            List<Station> stations = new ArrayList<>(MainActivity.stationInfoList);
             Collections.sort(stations, (o1, o2) -> {
               Location location1 = new Location("one");
               location1.setLatitude(Double.parseDouble(o1.getGtfsLatitude()));
@@ -298,7 +338,7 @@ public class QuickLookupFragment extends BaseFragment {
   }
 
   private void setUpAdapter() {
-    adapters = new QuickLookupRecyclerViewAdapter(new ArrayList<>(), binding.recylerView.getId(),
+    adapters = new QuickLookupRecyclerViewAdapter(binding.recylerView.getId(),
         R.layout.home_page_single_recycler_view_item);
     binding.recylerView.setAdapter(adapters);
     binding.recylerView.setNestedScrollingEnabled(false);
@@ -317,18 +357,10 @@ public class QuickLookupFragment extends BaseFragment {
 
   private void handleError(Throwable throwable) {
     Log.e("error", "error on getting response", throwable);
-    loadErrorIV();
-    Snackbar.make(binding.getRoot(), "Error on loading", Snackbar.LENGTH_LONG).show();
+    adapters.clearData();
+    Snackbar.make(binding.getRoot(), "Route info not available.", Snackbar.LENGTH_LONG).show();
     binding.swipeRefreshLy.setRefreshing(false);
     quickLookupViewModel.showSpinnerProgess.set(false);
-  }
-
-  private void loadErrorIV() {
-    if(binding.onErrorRelaticeLayout.getVisibility() == View.GONE) {
-      binding.recylerView.setVisibility(View.GONE);
-      binding.onErrorRelaticeLayout.setVisibility(View.VISIBLE);
-      Glide.with(this).load(R.drawable.wentwrong).into(binding.onErrorImageView);
-    }
   }
 
   private void goToDetail(String from, String to, int color, View view) {
