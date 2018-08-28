@@ -37,7 +37,7 @@
         android:layout_marginTop="8dp"
         android:text="@{obj.destination}"
         android:textSize="20sp"
-        android:transitionName="@string/textTransition"
+        android:transitionName="@string/text_from_transition"
         app:layout_constraintBottom_toBottomOf="@+id/constraintLayout4"
         app:layout_constraintStart_toEndOf="@+id/constraintLayout4"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout4"

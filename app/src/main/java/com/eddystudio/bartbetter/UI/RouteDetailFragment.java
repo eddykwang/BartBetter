@@ -65,6 +65,11 @@ public class RouteDetailFragment extends Fragment {
       to = arg.getString(MainActivity.BUDDLE_ARG_TO);
       color = arg.getInt("color");
     }
+
+
+    setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
+    setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.slide_bottom));
+
     setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
     binding.setVm(new RouteDetailViewModel(from, to, color));
 

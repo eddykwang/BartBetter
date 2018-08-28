@@ -361,11 +361,12 @@ public class DashboardFragment extends BaseFragment {
   private void goToDetail(String from, String to, int color, View view) {
     if(getActivity() != null) {
       TextView textViewTo = view.findViewById(R.id.destination);
-      TextView textViewFrom = view.findViewById(R.id.textView18);
+      TextView textViewFrom = view.findViewById(R.id.dashboard_from_tv);
 
       RouteDetailFragment fragment = new RouteDetailFragment();
 
       fragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
+      fragment.setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
 
       Bundle arg = new Bundle();
       arg.putString(MainActivity.BUDDLE_ARG_FROM, from);
@@ -376,7 +377,8 @@ public class DashboardFragment extends BaseFragment {
           .beginTransaction()
           .replace(R.id.main_frame_layout, fragment)
           .setReorderingAllowed(true)
-          .addSharedElement(textViewTo, getString(R.string.textTransition))
+          .addSharedElement(textViewTo, getString(R.string.text_to_transition))
+          .addSharedElement(textViewFrom, getString(R.string.text_from_transition))
           .addToBackStack(null)
           .commit();
     }

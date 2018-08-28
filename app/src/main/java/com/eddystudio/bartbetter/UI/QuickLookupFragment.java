@@ -1,11 +1,8 @@
 package com.eddystudio.bartbetter.UI;
 
 import android.Manifest;
-import android.animation.Animator;
 import android.animation.LayoutTransition;
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -18,7 +15,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -29,16 +25,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.eddystudio.bartbetter.Adapter.CardSwipeController;
 import com.eddystudio.bartbetter.Adapter.QuickLookupRecyclerViewAdapter;
 import com.eddystudio.bartbetter.Adapter.SwipeControllerActions;
@@ -51,9 +43,7 @@ import com.eddystudio.bartbetter.ViewModel.QuickLookupViewModel;
 import com.eddystudio.bartbetter.R;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,9 +51,6 @@ import java.util.Objects;
 import com.eddystudio.bartbetter.databinding.FragmentQuickLookupBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -207,7 +194,7 @@ public class QuickLookupFragment extends BaseFragment {
       }
     });
 
-    binding.spinnerConstrainLy.setOnClickListener(v ->
+    binding.textView17.setOnClickListener(v ->
         binding.stationSpinner.onTouch(binding.getRoot(), MotionEvent.obtain(1, 1, MotionEvent.ACTION_UP, 1, 1, 1)));
 
     binding.swipeRefreshLy.setOnRefreshListener(() -> quickLookupViewModel.getData(selectedStation));
@@ -376,14 +363,13 @@ public class QuickLookupFragment extends BaseFragment {
       arg.putString(MainActivity.BUDDLE_ARG_FROM, from);
       arg.putString(MainActivity.BUDDLE_ARG_TO, to);
       arg.putInt("color", color);
-      arg.putString("transitionName", getString(R.string.goToDetailTransition));
       fragment.setArguments(arg);
       getActivity().getSupportFragmentManager()
           .beginTransaction()
           .addToBackStack(null)
           .replace(R.id.main_frame_layout, fragment)
           .setReorderingAllowed(true)
-          .addSharedElement(textView, getString(R.string.textTransition))
+          .addSharedElement(textView, getString(R.string.text_to_transition))
           .commit();
     }
   }

@@ -82,7 +82,7 @@
             android:text="@{vm.from}"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textSize="24sp"
-            android:transitionName="@string/textTransition2"
+            android:transitionName="@string/text_from_transition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="FROME"/>
@@ -95,7 +95,7 @@
             android:text="@{vm.to}"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textSize="24sp"
-            android:transitionName="@string/textTransition"
+            android:transitionName="@string/text_to_transition"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView18"
             tools:text="TO"/>

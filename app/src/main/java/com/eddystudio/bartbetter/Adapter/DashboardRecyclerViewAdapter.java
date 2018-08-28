@@ -2,6 +2,7 @@ package com.eddystudio.bartbetter.Adapter;
 
 import android.graphics.Typeface;
 import android.util.TypedValue;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemVM;
@@ -15,6 +16,7 @@ public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
   private List<DashboardRecyclerViewItemVM> itemList;
   private final int layoutId;
   private final int recyclerViewLayout;
+  private boolean isModifyingData = false;
 
   public DashboardRecyclerViewAdapter(List<DashboardRecyclerViewItemVM> itemList,
                                       int layoutId, int recyclerViewLayout) {
@@ -35,15 +37,20 @@ public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
       textView.setTypeface(Typeface.DEFAULT_BOLD);
     }
     holder.itemView.findViewById(R.id.destination)
-        .setTransitionName(application.getString(R.string.textTransition) + position);
+        .setTransitionName(application.getString(R.string.text_to_transition) + position);
     holder.itemView.findViewById(R.id.dashboard_from_tv)
-        .setTransitionName(application.getString(R.string.textTransition) + position);
+        .setTransitionName(application.getString(R.string.text_from_transition) + position);
+
+    if(isModifyingData) {
+      holder.itemView.setAnimation(AnimationUtils.loadLayoutAnimation(application, R.anim.layout_animation_fall_down).getAnimation());
+    }
   }
 
   public void modifyData(DashboardRecyclerViewItemVM item) {
     for(int i = 0; i < itemList.size(); ++i) {
       if(itemList.get(i).getFrom().equals(item.getFrom()) && itemList.get(i).getTo().equals(item.getTo())) {
         itemList.set(i, item);
+        isModifyingData = true;
         this.notifyItemChanged(i);
       }
     }

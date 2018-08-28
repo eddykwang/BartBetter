@@ -31,7 +31,7 @@ public class QuickLookupRecyclerViewAdapter extends BaseRecyclerViewAdapter {
     super.onBindViewHolder(holder, position);
     // the view being shared
     holder.itemView.findViewById(R.id.destination)
-        .setTransitionName(application.getString(R.string.textTransition) + position);
+        .setTransitionName(application.getString(R.string.text_from_transition) + position);
   }
 
   @Override
