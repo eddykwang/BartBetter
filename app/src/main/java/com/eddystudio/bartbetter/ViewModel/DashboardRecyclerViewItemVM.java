@@ -11,7 +11,6 @@ import com.eddystudio.bartbetter.Model.Uilt;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Observable;
 
 import static com.eddystudio.bartbetter.Model.Uilt.getFullStationName;
 import static com.eddystudio.bartbetter.Model.Uilt.materialColorConverter;

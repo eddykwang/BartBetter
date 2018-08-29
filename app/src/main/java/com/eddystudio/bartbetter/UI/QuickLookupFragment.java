@@ -37,17 +37,10 @@ import com.eddystudio.bartbetter.Adapter.SwipeControllerActions;
 import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Response.Stations.Station;
 import com.eddystudio.bartbetter.Model.Uilt;
+import com.eddystudio.bartbetter.R;
 import com.eddystudio.bartbetter.ViewModel.Events;
 import com.eddystudio.bartbetter.ViewModel.QuickLookupRecyclerViewItemVM;
 import com.eddystudio.bartbetter.ViewModel.QuickLookupViewModel;
-import com.eddystudio.bartbetter.R;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
-
 import com.eddystudio.bartbetter.databinding.FragmentQuickLookupBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -56,6 +49,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.Observable;
 

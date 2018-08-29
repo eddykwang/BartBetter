@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,21 +18,17 @@ import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Repository;
 import com.eddystudio.bartbetter.Model.Response.DelayReport.DelayReport;
 import com.eddystudio.bartbetter.Model.Response.ElevatorStatus.ElevatorStatus;
-import com.eddystudio.bartbetter.ViewModel.NotificationViewModel;
 import com.eddystudio.bartbetter.R;
+import com.eddystudio.bartbetter.ViewModel.NotificationViewModel;
+import com.eddystudio.bartbetter.databinding.FragmentNotificationBinding;
+import com.twitter.sdk.android.tweetui.TweetTimelineRecyclerViewAdapter;
+import com.twitter.sdk.android.tweetui.UserTimeline;
 
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-
-import com.eddystudio.bartbetter.databinding.FragmentNotificationBinding;
-import com.twitter.sdk.android.tweetui.SearchTimeline;
-import com.twitter.sdk.android.tweetui.TweetTimelineRecyclerViewAdapter;
-import com.twitter.sdk.android.tweetui.UserTimeline;
 
 public class NotificationFragment extends BaseFragment {
 

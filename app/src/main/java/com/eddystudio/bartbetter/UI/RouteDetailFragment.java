@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,14 +26,13 @@ import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Uilt;
+import com.eddystudio.bartbetter.R;
 import com.eddystudio.bartbetter.ViewModel.RouteDetailRecyclerViewModel;
 import com.eddystudio.bartbetter.ViewModel.RouteDetailViewModel;
-import com.eddystudio.bartbetter.R;
+import com.eddystudio.bartbetter.databinding.FragmentRoutDetailBinding;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.eddystudio.bartbetter.databinding.FragmentRoutDetailBinding;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;

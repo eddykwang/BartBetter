@@ -11,7 +11,6 @@ import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 

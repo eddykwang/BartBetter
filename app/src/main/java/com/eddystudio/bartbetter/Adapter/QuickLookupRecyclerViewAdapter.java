@@ -1,8 +1,8 @@
 package com.eddystudio.bartbetter.Adapter;
 
 
-import com.eddystudio.bartbetter.ViewModel.QuickLookupRecyclerViewItemVM;
 import com.eddystudio.bartbetter.R;
+import com.eddystudio.bartbetter.ViewModel.QuickLookupRecyclerViewItemVM;
 
 import java.util.ArrayList;
 

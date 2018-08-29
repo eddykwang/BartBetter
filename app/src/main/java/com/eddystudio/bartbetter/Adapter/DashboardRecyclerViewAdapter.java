@@ -2,11 +2,10 @@ package com.eddystudio.bartbetter.Adapter;
 
 import android.graphics.Typeface;
 import android.util.TypedValue;
-import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
-import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemVM;
 import com.eddystudio.bartbetter.R;
+import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemVM;
 
 import java.util.Collections;
 import java.util.List;

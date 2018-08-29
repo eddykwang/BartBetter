@@ -7,8 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.BR;
+import com.eddystudio.bartbetter.DI.Application;
 
 import javax.inject.Inject;
 

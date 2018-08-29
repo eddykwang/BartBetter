@@ -1,21 +1,14 @@
 package com.eddystudio.bartbetter.ViewModel;
 
-import android.util.Pair;
-
 import com.eddystudio.bartbetter.Model.Repository;
-import com.eddystudio.bartbetter.Model.Response.Schedule.Schedule;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.TestScheduler;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;

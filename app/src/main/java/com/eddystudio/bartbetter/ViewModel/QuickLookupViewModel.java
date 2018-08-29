@@ -1,9 +1,7 @@
 package com.eddystudio.bartbetter.ViewModel;
 
-import android.arch.lifecycle.ViewModel;
 import android.databinding.ObservableBoolean;
 import android.util.Log;
-import android.util.Pair;
 
 import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Repository;

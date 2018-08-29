@@ -7,7 +7,6 @@ import com.eddystudio.bartbetter.UI.MainActivity;
 import com.eddystudio.bartbetter.UI.NotificationFragment;
 import com.eddystudio.bartbetter.UI.QuickLookupFragment;
 import com.eddystudio.bartbetter.UI.RouteDetailFragment;
-import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemVM;
 import com.eddystudio.bartbetter.ViewModel.DashboardViewModel;
 import com.eddystudio.bartbetter.ViewModel.QuickLookupViewModel;
 

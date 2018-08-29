@@ -13,7 +13,6 @@ import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Response.Stations.BartStations;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.util.List;
 
 import javax.inject.Inject;
