@@ -15,9 +15,9 @@
     <import type="android.view.View"/>
   </data>
 
-  <LinearLayout
+  <android.support.design.widget.CoordinatorLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
     <include
@@ -27,8 +27,8 @@
       android:id="@+id/swipeRefreshLy"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-      >
 
       <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -454,5 +454,5 @@
         </LinearLayout>
       </android.support.v4.widget.NestedScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>
-  </LinearLayout>
+  </android.support.design.widget.CoordinatorLayout>
 </layout>

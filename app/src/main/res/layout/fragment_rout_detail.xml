@@ -14,8 +14,8 @@
     android:id="@+id/main_activity_coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:statusBarBackground="@android:color/transparent"
     android:fitsSystemWindows="true"
+    app:statusBarBackground="@android:color/transparent"
     tools:context="com.eddystudio.bartbetter.UI.MainActivity"
     >
 
@@ -23,17 +23,17 @@
       android:id="@+id/app_bar"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:background="@color/white"
       android:fitsSystemWindows="true"
       android:paddingBottom="0dp"
-      android:background="@color/white"
       >
 
       <android.support.design.widget.CollapsingToolbarLayout
         android:id="@+id/toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:contentScrim="@color/white"
         android:fitsSystemWindows="true"
+        app:contentScrim="@color/white"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
         app:toolbarId="@+id/toolbar">
 

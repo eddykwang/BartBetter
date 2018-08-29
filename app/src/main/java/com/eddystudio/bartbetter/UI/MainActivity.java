@@ -77,8 +77,11 @@ public class MainActivity extends AppCompatActivity {
   private void commitToNewFragment(Fragment fragment) {
     getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
-    getSupportFragmentManager().beginTransaction()
-        .replace(R.id.main_frame_layout, fragment, fragment.getClass().getSimpleName()).commit();
+    getSupportFragmentManager()
+        .beginTransaction()
+        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+        .replace(R.id.main_frame_layout, fragment, fragment.getClass().getSimpleName())
+        .commit();
   }
 
   @Override

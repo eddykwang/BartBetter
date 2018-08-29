@@ -8,24 +8,57 @@
 
   <android.support.design.widget.CoordinatorLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     >
 
-    <LinearLayout
+
+    <android.support.design.widget.AppBarLayout
+      android:id="@+id/appbar_layout"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="vertical">
+      android:background="@color/white">
 
-      <android.support.design.widget.AppBarLayout
+      <!--<android.support.v7.widget.Toolbar-->
+      <!--android:id="@+id/toolbar"-->
+      <!--style="@style/bb_toolbar_style"-->
+      <!--app:layout_collapseMode="pin"-->
+      <!--app:titleTextAppearance="@style/Toolbar.TitleText">-->
+
+      <!--<android.support.v7.widget.SwitchCompat-->
+      <!--android:id="@+id/auto_refresh_switch"-->
+      <!--android:layout_width="wrap_content"-->
+      <!--android:layout_height="wrap_content"-->
+      <!--android:layout_gravity="end"-->
+      <!--android:layout_alignParentEnd="true"-->
+      <!--android:layout_centerVertical="true"-->
+      <!--android:text="Auto Refresh"/>-->
+      <!--</android.support.v7.widget.Toolbar>-->
+      <android.support.design.widget.CollapsingToolbarLayout
+        android:id="@+id/toolbar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        app:contentScrim="@color/white"
+        app:layout_scrollFlags="scroll|exitUntilCollapsed"
+        app:expandedTitleTextAppearance="@style/Toolbar.Expand.TitleText"
+        app:expandedTitleMarginStart="16dp"
+        app:expandedTitleGravity="center_vertical |start"
+        app:collapsedTitleTextAppearance="@style/Toolbar.TitleText"
+        app:scrimAnimationDuration="800"
+        app:toolbarId="@+id/toolbar">
+
+        <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/main_app_bar_expand_height"
+          app:layout_collapseMode="parallax"/>
 
         <android.support.v7.widget.Toolbar
           android:id="@+id/toolbar"
-          style="@style/bb_toolbar_style"
+          android:layout_width="match_parent"
+          android:layout_height="?attr/actionBarSize"
+          app:titleTextAppearance="@style/Toolbar.TitleText"
           app:layout_collapseMode="pin"
-          app:titleTextAppearance="@style/Toolbar.TitleText">
+          >
 
           <android.support.v7.widget.SwitchCompat
             android:id="@+id/auto_refresh_switch"
@@ -36,25 +69,24 @@
             android:layout_centerVertical="true"
             android:text="Auto Refresh"/>
         </android.support.v7.widget.Toolbar>
-      </android.support.design.widget.AppBarLayout>
+      </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
 
-      <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLy"
+    <android.support.v4.widget.SwipeRefreshLayout
+      android:id="@+id/swipeRefreshLy"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+      <android.support.v7.widget.RecyclerView
+        android:id="@+id/recylerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <android.support.v7.widget.RecyclerView
-          android:id="@+id/recylerView"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:layout_marginTop="16dp"
-          android:clipToPadding="false"
-          android:scrollbars="none"
-          tools:listitem="@layout/dashboard_single_recycler_view_item"/>
-      </android.support.v4.widget.SwipeRefreshLayout>
-
-    </LinearLayout>
+        android:layout_marginTop="16dp"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        tools:listitem="@layout/dashboard_single_recycler_view_item"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.design.widget.FloatingActionButton
       android:id="@+id/fab_add"

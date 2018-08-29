@@ -56,7 +56,7 @@ public class NotificationFragment extends BaseFragment {
                            Bundle savedInstanceState) {
     binding = FragmentNotificationBinding.inflate(inflater, container, false);
     Application.getAppComponet().inject(this);
-    Toolbar toolbar = binding.getRoot().findViewById(R.id.bb_toolbar);
+    Toolbar toolbar = binding.getRoot().findViewById(R.id.toolbar);
     ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     getActivity().setTitle("Notifications");
 

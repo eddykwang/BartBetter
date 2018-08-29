@@ -33,7 +33,7 @@
         android:id="@+id/bb_toolbar"
         style="@style/bb_toolbar_style"
         app:layout_scrollFlags="scroll"
-        app:titleTextAppearance="@style/Toolbar.TitleText"
+        app:titleTextAppearance="@style/Toolbar.Expand.TitleText"
         />
 
 

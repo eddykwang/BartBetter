@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -76,6 +77,25 @@ public class DashboardFragment extends BaseFragment {
     vm = new DashboardViewModel();
 //    vm = ViewModelProviders.of(this).get(DashboardViewModel.class);
     Application.getAppComponet().inject(this);
+
+    AppBarLayout appBarLayout = binding.appbarLayout;
+    appBarLayout.addOnOffsetChangedListener((appbarLayout, offset) -> {
+      boolean isShow = true;
+      int scrollRange = -1;
+      if(scrollRange == -1) {
+        scrollRange = appBarLayout.getTotalScrollRange();
+      }
+      if(scrollRange + offset == 0) {
+//        switchCompat.setVisibility(View.VISIBLE);
+        switchCompat.animate().translationX(0);
+        isShow = true;
+      } else if(isShow) {
+//        switchCompat.setVisibility(View.GONE);
+        switchCompat.animate().translationX(switchCompat.getWidth() + 20);
+        isShow = false;
+      }
+    });
+
     setUpAdapter();
     init();
     setupFab();
@@ -283,8 +303,6 @@ public class DashboardFragment extends BaseFragment {
         new DashboardRecyclerViewAdapter(itemList, binding.recylerView.getId(),
             R.layout.dashboard_single_recycler_view_item);
     binding.recylerView.setAdapter(adapter);
-    binding.recylerView.setNestedScrollingEnabled(false);
-    binding.recylerView.setHasFixedSize(true);
     binding.recylerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
   }
