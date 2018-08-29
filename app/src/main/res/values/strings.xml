@@ -5,13 +5,11 @@
   <string name="title_notifications">General</string>
 
   <!-- TODO: Remove or change this placeholder text -->
-  <string name="hello_blank_fragment">Hello blank fragment</string>
   <string name="text_from_transition">text_from_transition</string>
   <string name="text_to_transition">text_to_transition</string>
   <string name="noInternetErrorMessage">Loading data from the server, please wait until it finished. </string>
   <string name="dialog_warnning">Sorry, origin and destination cannot be the same.</string>
 
   <string name="aboutpage_description">Bart Better is an Ad-free and open-source real-time BART tracking APP for BART community. It was made with love and passion! Thank you for using it. Please let me know if you have any suggestion. Credit to all the open source libraries as well.</string>
-  <string name="title_activity_maps">Map</string>
 
 </resources>

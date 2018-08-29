@@ -15,9 +15,5 @@
     <color name="routColor_red">#b2102f</color>
     <color name="routColor_blue">#2979ff</color>
     <color name="routColor_green">#388e3c</color>
-    <color name="routColor_yellow">#ffeb3b</color>
-    <color name="routColor_orange">#ff9800</color>
-    <color name="routeColor_other">#651fff</color>
-    <color name="white">#ffffff</color>
-    <color name="card_color">#EEEEEE</color>
+  <color name="white">#ffffff</color>
 </resources>
