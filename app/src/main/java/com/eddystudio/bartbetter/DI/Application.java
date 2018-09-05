@@ -18,7 +18,7 @@ public class Application extends android.app.Application {
     appComponet = DaggerAppComponent
         .builder()
         .appContextModule(new AppContextModule(this))
-        .retrofitModule(new RetrofitModule("http://api.bart.gov/"))
+        .retrofitModule(new RetrofitModule("https://api.bart.gov/"))
         .build();
 
     Twitter.initialize(this);
