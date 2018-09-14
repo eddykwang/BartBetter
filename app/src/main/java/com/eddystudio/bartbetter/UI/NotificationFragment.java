@@ -19,6 +19,7 @@ import com.eddystudio.bartbetter.Model.Repository;
 import com.eddystudio.bartbetter.Model.Response.DelayReport.DelayReport;
 import com.eddystudio.bartbetter.Model.Response.ElevatorStatus.ElevatorStatus;
 import com.eddystudio.bartbetter.R;
+import com.eddystudio.bartbetter.ViewModel.Events;
 import com.eddystudio.bartbetter.ViewModel.NotificationViewModel;
 import com.eddystudio.bartbetter.databinding.FragmentNotificationBinding;
 import com.twitter.sdk.android.tweetui.TweetTimelineRecyclerViewAdapter;
@@ -28,7 +29,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.eddystudio.bartbetter.ViewModel.NotificationViewModel.ClickedItemType.ABOUT;
+import static com.eddystudio.bartbetter.ViewModel.NotificationViewModel.ClickedItemType.MAP;
 
 public class NotificationFragment extends BaseFragment {
 
@@ -54,19 +60,9 @@ public class NotificationFragment extends BaseFragment {
     Toolbar toolbar = binding.getRoot().findViewById(R.id.toolbar);
     ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     getActivity().setTitle("Notifications");
-
-    viewModel.setItemClickListener(type -> {
-      switch(type) {
-        case MAP:
-          onMapClicked();
-          break;
-        case ABOUT:
-          onAboutClicked();
-          break;
-      }
-    });
     binding.setVm(viewModel);
-    binding.swipeRefreshLy.setOnRefreshListener(this::init);
+    binding.swipeRefreshLy.setOnRefreshListener(viewModel::init);
+    setupEvent();
     return binding.getRoot();
   }
 
@@ -74,7 +70,8 @@ public class NotificationFragment extends BaseFragment {
   public void onStart() {
     super.onStart();
     viewModel.isViewDetailChecked.set(sharedPreferences.getBoolean(savedViewMorePreference, false));
-    init();
+    isErrorShowed = false;
+    viewModel.init();
     setupTweeterView();
   }
 
@@ -84,6 +81,28 @@ public class NotificationFragment extends BaseFragment {
     SharedPreferences.Editor editor = sharedPreferences.edit();
     editor.putBoolean(savedViewMorePreference, viewModel.isViewDetailChecked.get());
     editor.apply();
+  }
+
+  private void setupEvent() {
+    viewModel.getEventsSubject()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .compose(event -> (
+            Observable.merge(
+                event.ofType(Events.LoadingEvent.class).doOnNext(data -> binding.swipeRefreshLy.setRefreshing(data.isLoad())),
+                event.ofType(Events.ErrorEvent.class).doOnNext(data -> onError(data.getError())),
+                event.ofType(Events.GetEtdEvent.class).doOnNext(data -> {
+                  switch((NotificationViewModel.ClickedItemType) data.getEtdStations()) {
+                    case MAP:
+                      onMapClicked();
+                      break;
+                    case ABOUT:
+                      onAboutClicked();
+                      break;
+                  }
+                })
+            )
+        )).subscribe();
   }
 
   private void setupTweeterView() {
@@ -103,65 +122,13 @@ public class NotificationFragment extends BaseFragment {
     recyclerView.setAdapter(adapter);
   }
 
-  private void init() {
-    isErrorShowed = false;
-    addDisposable(repository.getDelayReport()
-        .doOnSubscribe(ignored -> {
-          binding.swipeRefreshLy.setRefreshing(true);
-          viewModel.isDelayReportProgressVisible.set(true);
-        })
-        .delay(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-        .subscribeOn(AndroidSchedulers.mainThread())
-        .subscribe(delayReport -> {
-          convertToVM(delayReport);
-          binding.swipeRefreshLy.setRefreshing(false);
-          viewModel.isDelayReportProgressVisible.set(false);
-        }, this::onError));
-
-    addDisposable(repository.getElevatorStatus()
-        .doOnSubscribe(ignored -> {
-          binding.swipeRefreshLy.setRefreshing(true);
-          viewModel.isElevatorProgressVisible.set(true);
-        })
-        .delay(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-        .subscribeOn(AndroidSchedulers.mainThread())
-        .subscribe(elevatorStatus -> {
-          convertToVM(elevatorStatus);
-          binding.swipeRefreshLy.setRefreshing(false);
-          viewModel.isElevatorProgressVisible.set(false);
-        }, this::onError));
-  }
-
   private void onError(Throwable throwable) {
-    Log.e("error", "error on getting response", throwable);
-    binding.swipeRefreshLy.setRefreshing(false);
-    viewModel.isElevatorProgressVisible.set(false);
-    viewModel.isDelayReportProgressVisible.set(false);
     if(!isErrorShowed && getActivity() != null) {
       Snackbar.make(binding.getRoot(), "Error on loading", Snackbar.LENGTH_LONG)
-          .setAction("Retry", view -> init())
+          .setAction("Retry", view -> viewModel.init())
           .show();
       isErrorShowed = true;
     }
-  }
-
-  private void convertToVM(ElevatorStatus elevatorStatus) {
-    String station = elevatorStatus.getRoot().getBsa().get(0).getStation();
-    viewModel.elevatorStation.set(station.equals("") ? "All" : station);
-    viewModel.elevatorStatus.set(
-        elevatorStatus.getRoot().getBsa().get(0).getDescription().getCdataSection());
-    viewModel.isElevaorWorking.set(!station.equals("BART"));
-  }
-
-  private <R> R convertToVM(DelayReport delayReport) {
-    viewModel.delayDescription.set(
-        delayReport.getRoot().getBsa().get(0).getDescription().getCdataSection());
-    viewModel.reportDate.set(delayReport.getRoot().getDate());
-    viewModel.reportTime.set(delayReport.getRoot().getTime());
-    String delayStation = delayReport.getRoot().getBsa().get(0).getStation();
-    viewModel.reportStation.set(delayStation.equals("") ? "None" : delayStation);
-    viewModel.isNotDelay.set(delayStation.equals(""));
-    return null;
   }
 
   private void onAboutClicked() {
