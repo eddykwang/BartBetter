@@ -1,5 +1,6 @@
 package com.eddystudio.bartbetter.UI;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -39,7 +40,7 @@ import static com.eddystudio.bartbetter.ViewModel.NotificationViewModel.ClickedI
 public class NotificationFragment extends BaseFragment {
 
   private FragmentNotificationBinding binding;
-  private final NotificationViewModel viewModel = new NotificationViewModel();
+  private  NotificationViewModel viewModel;
   private static final String savedViewMorePreference = "VIEW_MORE_PREFERENCE";
   private static boolean isErrorShowed;
 
@@ -60,6 +61,7 @@ public class NotificationFragment extends BaseFragment {
     Toolbar toolbar = binding.getRoot().findViewById(R.id.toolbar);
     ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     getActivity().setTitle("Notifications");
+    viewModel = ViewModelProviders.of(this).get(NotificationViewModel.class);
     binding.setVm(viewModel);
     binding.swipeRefreshLy.setOnRefreshListener(viewModel::init);
     setupEvent();

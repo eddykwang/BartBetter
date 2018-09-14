@@ -116,4 +116,10 @@ public class NotificationViewModel extends ViewModel {
     this.isNotDelay.set(delayStation.equals(""));
     return null;
   }
+
+  @Override
+  protected void onCleared() {
+    super.onCleared();
+    compositeDisposable.clear();
+  }
 }
