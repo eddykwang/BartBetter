@@ -69,12 +69,13 @@ public class QuickLookupFragment extends BaseFragment {
   private QuickLookupViewModel quickLookupViewModel;
   private ArrayList<String> etdStations;
   private GoogleMap googleMap;
+  private SupportMapFragment mapView;
 
   private static boolean isInitOpen = true;
   private QuickLookupRecyclerViewAdapter adapters;
   private static final String LAST_SELECTED_STATION = "LAST_SELECTED_STATION";
   private static final String LAST_SELECTED_SINPER_POSITION = "LAST_SELECTED_SINPER_POSITION";
-
+  private static final String TO_SHOW_MAP_VIEW = "TO_SHOW_MAP_VIEW";
   private static final int LOCATION_REQUEST_CODE = 4344;
 
   public QuickLookupFragment() {
@@ -101,34 +102,33 @@ public class QuickLookupFragment extends BaseFragment {
     attachOnCardSwipe();
 
 
-    SupportMapFragment mapView = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.maps_view);
-    mapView.getMapAsync(googleMap -> {
-      this.googleMap = googleMap;
+    mapView = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.maps_view);
 
-      int c = 0;
-      for(Station station : MainActivity.stationInfoList) {
-        Marker marker = googleMap.addMarker(new MarkerOptions()
-            .position(new LatLng(Double.parseDouble(station.getGtfsLatitude()), Double.parseDouble(station.getGtfsLongitude()))));
-        marker.setTag(c);
-        marker.setTitle(station.getName());
-        c++;
-      }
-      googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.7749, -122.4194), 10f));
-      googleMap.setOnMarkerClickListener(marker -> {
-        binding.stationSpinner.setSelection((Integer) marker.getTag());
-        return false;
-      });
-    });
+    if(preference.getBoolean(TO_SHOW_MAP_VIEW, true)) {
+      setupMapView();
+      binding.getRoot().findViewById(R.id.expand_map_iv).setVisibility(View.GONE);
+    }else{
+      binding.getRoot().findViewById(R.id.expand_map_iv).setVisibility(View.VISIBLE);
+      Objects.requireNonNull(mapView.getView()).setVisibility(View.GONE);
+    }
 
-    binding.getRoot().findViewById(R.id.expand_map_iv).setVisibility(View.GONE);
 
     binding.mapHideIv.setOnClickListener(v -> {
       Objects.requireNonNull(mapView.getView()).setVisibility(View.GONE);
       binding.expandMapIv.setVisibility(View.VISIBLE);
+      mapView.onDestroyView();
+      SharedPreferences.Editor editor = preference.edit();
+      editor.putBoolean(TO_SHOW_MAP_VIEW, false);
+      editor.apply();
     });
+
     binding.expandMapIv.setOnClickListener(v -> {
       Objects.requireNonNull(mapView.getView()).setVisibility(View.VISIBLE);
       v.setVisibility(View.GONE);
+      setupMapView();
+      SharedPreferences.Editor editor = preference.edit();
+      editor.putBoolean(TO_SHOW_MAP_VIEW, true);
+      editor.apply();
     });
 
     binding.spinnerConstrainLy.setLayoutTransition(new LayoutTransition());
@@ -158,6 +158,26 @@ public class QuickLookupFragment extends BaseFragment {
         .subscribe();
   }
 
+  private void setupMapView() {
+    mapView.getMapAsync(googleMap -> {
+      this.googleMap = googleMap;
+
+      int c = 0;
+      for(Station station : MainActivity.stationInfoList) {
+        Marker marker = googleMap.addMarker(new MarkerOptions()
+            .position(new LatLng(Double.parseDouble(station.getGtfsLatitude()), Double.parseDouble(station.getGtfsLongitude()))));
+        marker.setTag(c);
+        marker.setTitle(station.getName());
+        c++;
+      }
+      googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.7749, -122.4194), 10f));
+      googleMap.setOnMarkerClickListener(marker -> {
+        binding.stationSpinner.setSelection((Integer) marker.getTag());
+        return false;
+      });
+    });
+  }
+
   private void setupSinner() {
     ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_list_item_1, MainActivity.stationList);
     spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -173,9 +193,12 @@ public class QuickLookupFragment extends BaseFragment {
           sinpperPos = i;
 
           Station selectedS = MainActivity.stationInfoList.get(i);
-          googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-              new LatLng(Double.parseDouble(selectedS.getGtfsLatitude()),
-                  Double.parseDouble(selectedS.getGtfsLongitude())), 13f));
+
+          if(preference.getBoolean(TO_SHOW_MAP_VIEW, true)) {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(Double.parseDouble(selectedS.getGtfsLatitude()),
+                    Double.parseDouble(selectedS.getGtfsLongitude())), 13f));
+          }
 
 
           SharedPreferences.Editor editor = preference.edit();
@@ -216,10 +239,12 @@ public class QuickLookupFragment extends BaseFragment {
           @Override
           public void onLocationChanged(Location location) {
 
-            googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()))
-                .icon(BitmapDescriptorFactory.fromBitmap(Uilt.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_radio_button_checked_black_24dp)))
-                .title("Current Location"));
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13f));
+            if(preference.getBoolean(TO_SHOW_MAP_VIEW, true)) {
+              googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()))
+                  .icon(BitmapDescriptorFactory.fromBitmap(Uilt.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_radio_button_checked_black_24dp)))
+                  .title("Current Location"));
+              googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13f));
+            }
 
             List<Station> stations = new ArrayList<>(MainActivity.stationInfoList);
             Collections.sort(stations, (o1, o2) -> {
