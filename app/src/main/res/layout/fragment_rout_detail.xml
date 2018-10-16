@@ -146,6 +146,8 @@
 
       </android.support.v4.widget.NestedScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <include layout="@layout/bottom_sheet_layout_content"/>
   </android.support.design.widget.CoordinatorLayout>
 
 </layout>
