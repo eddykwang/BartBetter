@@ -148,6 +148,7 @@
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <include
+      android:id="@+id/bottom_sheet_view"
       layout="@layout/bottom_sheet_layout_content"
       app:vm="@{vm}}"/>
   </android.support.design.widget.CoordinatorLayout>

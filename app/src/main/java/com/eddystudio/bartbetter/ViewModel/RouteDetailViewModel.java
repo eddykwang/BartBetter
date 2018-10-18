@@ -14,7 +14,10 @@ import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Uilt;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,13 +35,19 @@ public class RouteDetailViewModel {
   public ObservableBoolean isArrive = new ObservableBoolean(true);
   public ObservableField<String> date = new ObservableField<>("10/11/2018");
   public ObservableField<String> time = new ObservableField<>("10:20 am");
-  public ObservableBoolean expanded = new ObservableBoolean(true);
   private CompositeDisposable compositeDisposable = new CompositeDisposable();
   private Subject<Events> eventsSubject = PublishSubject.create();
   private final String fromShortcut;
   private final String toShortcut;
+
+  private int mYear, mMonth, mDay, mHour, mMinutes;
+
   @Inject
   public Repository repository;
+
+  public enum ClickEvents {
+    DATA_CLICK, TIME_CLICK, SET_BUTTON_CLICK, BOTTOM_SHEET_CLICK
+  }
 
   @Inject
   public RouteDetailViewModel(String from, String to, int color) {
@@ -50,26 +59,66 @@ public class RouteDetailViewModel {
     Application.getAppComponet().inject(this);
   }
 
-  public void dateClicked() {
+  public void bsOnClicked(){
+    eventsSubject.onNext(new Events.GetDataEvent(ClickEvents.BOTTOM_SHEET_CLICK));
+  }
 
+  public void dateClicked() {
+    eventsSubject.onNext(new Events.GetDataEvent(ClickEvents.DATA_CLICK));
   }
 
   public void timeClicked() {
-
+    eventsSubject.onNext(new Events.GetDataEvent(ClickEvents.TIME_CLICK));
   }
 
   public void setScheduleClicked() {
-
+    eventsSubject.onNext(new Events.GetDataEvent(ClickEvents.SET_BUTTON_CLICK));
+    String date = mMonth + "/" + mDay + "/" + mYear;
+    String time = formatTime(mHour, mMinutes);
+    getRoutesInfo(date,time, isArrive.get());
   }
 
   public Observable<Events> getEvents() {
     return eventsSubject.hide();
   }
 
+  public void bottomSheetup() {
+    final Calendar c = Calendar.getInstance();
+    mYear = c.get(Calendar.YEAR);
+    mMonth = c.get(Calendar.MONTH);
+    mDay = c.get(Calendar.DAY_OF_MONTH);
+    mHour = c.get(Calendar.HOUR);
+    mMinutes = c.get(Calendar.MINUTE);
 
-  public void getRoutesInfo() {
+    date.set(mMonth + "/" + mDay + "/" + mYear);
+    time.set(formatTime(mHour, mMinutes));
+  }
+
+  public void updateDate(int y, int m, int d) {
+    mYear = y;
+    mMonth = m;
+    mDay = d;
+    date.set(mMonth + "/" + mDay + "/" + mYear);
+
+  }
+
+  public void updateTime(int h, int m) {
+    mHour = h;
+    mMinutes = m;
+    time.set(formatTime(h, m));
+  }
+
+  private String formatTime(int hour, int minutes) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(Calendar.HOUR_OF_DAY, hour);
+    calendar.set(Calendar.MINUTE, minutes);
+    Format formatter = new SimpleDateFormat("hh:mm a");
+    return formatter.format(calendar.getTime());
+  }
+
+  public void getRoutesInfo(String date, String time, boolean isDepart) {
     compositeDisposable.add(
-        repository.getOneRouteSchedules(new Pair<>(fromShortcut, toShortcut))
+        repository.getOneRouteSchedules(new Pair<>(fromShortcut, toShortcut), date, time, isDepart)
             .doOnSubscribe(ignored -> eventsSubject.onNext(new Events.LoadingEvent(true)))
             .map(this::getTrips)
             .subscribe(this::getTrainLength, this::handleError)

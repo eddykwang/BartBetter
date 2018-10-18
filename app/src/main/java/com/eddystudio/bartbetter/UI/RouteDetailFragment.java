@@ -1,9 +1,12 @@
 package com.eddystudio.bartbetter.UI;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +15,7 @@ import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.SnapHelper;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionInflater;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +30,8 @@ import com.eddystudio.bartbetter.ViewModel.RouteDetailViewModel;
 import com.eddystudio.bartbetter.databinding.FragmentRoutDetailBinding;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Objects;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -41,6 +47,7 @@ public class RouteDetailFragment extends Fragment {
   private CompositeDisposable compositeDisposable = new CompositeDisposable();
   private AppBarLayout appBarLayout;
   private RouteDetailViewModel vm;
+  private BottomSheetBehavior bottomSheetBehavior;
 
   public RouteDetailFragment() {
   }
@@ -67,19 +74,20 @@ public class RouteDetailFragment extends Fragment {
 
     setupToolbar();
     setupAdapter();
+    setupBottomSheet();
     init();
     binding.swipeRefreshLy.setOnRefreshListener(() -> {
       adapter.clearAllData();
-      vm.getRoutesInfo();
+      vm.getRoutesInfo(null, null, true);
     });
     return binding.getRoot();
   }
 
   @Override
   public void onStart() {
-    super.onStart();
     adapter.clearAllData();
-    vm.getRoutesInfo();
+    super.onStart();
+    vm.getRoutesInfo(null, null, true);
 
   }
 
@@ -89,17 +97,17 @@ public class RouteDetailFragment extends Fragment {
         .observeOn(AndroidSchedulers.mainThread())
         .compose(event -> Observable.merge(
             event.ofType(Events.LoadingEvent.class).doOnNext(isLoading -> binding.swipeRefreshLy.setRefreshing(isLoading.isLoad())),
-            event.ofType(Events.GetDataEvent.class).doOnNext(data -> adapter.addData((RouteDetailRecyclerViewModel) data.getData()))
+            event.ofType(Events.GetDataEvent.class).doOnNext(data -> handleEvents(data.getData()))
         )).subscribe();
   }
 
   private void setupToolbar() {
     ImageView imageView = binding.getRoot().findViewById(R.id.toolbar_imageView);
     CollapsingToolbarLayout collapsingToolbarLayout = binding.getRoot().findViewById(R.id.toolbar_layout);
-    appBarLayout = getActivity().findViewById(R.id.app_bar);
+    appBarLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.app_bar);
     Toolbar toolbar = binding.getRoot().findViewById(R.id.toolbar);
     ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-    ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     imageView.setImageResource(Uilt.randomCityBgGenerator());
     collapsingToolbarLayout.setTitleEnabled(true);
     collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
@@ -117,6 +125,81 @@ public class RouteDetailFragment extends Fragment {
     binding.pageIndicator.attachToRecyclerView(binding.routeDetailRecyclerview);
     SnapHelper snapHelper = new PagerSnapHelper();
     snapHelper.attachToRecyclerView(binding.routeDetailRecyclerview);
+  }
+
+  private void setupBottomSheet() {
+    bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheetView.getRoot());
+    bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+      @Override
+      public void onStateChanged(@NonNull View view, int i) {
+        if(i == BottomSheetBehavior.STATE_EXPANDED) {
+          vm.bottomSheetup();
+        }
+      }
+
+      @Override
+      public void onSlide(@NonNull View view, float v) {
+        binding.bottomSheetView.arrowIv.setRotation(v * 180);
+      }
+    });
+  }
+
+  private void handleEvents(Object event) {
+    if(event instanceof RouteDetailRecyclerViewModel) {
+      adapter.addData((RouteDetailRecyclerViewModel) event);
+    } else if(event instanceof RouteDetailViewModel.ClickEvents) {
+      switch((RouteDetailViewModel.ClickEvents) event) {
+        case BOTTOM_SHEET_CLICK:
+          bottomSheetClicked();
+          break;
+        case DATA_CLICK:
+          dataClicked();
+          break;
+        case TIME_CLICK:
+          timeClicked();
+          break;
+        case SET_BUTTON_CLICK:
+          setButtonClicked();
+          break;
+        default:
+          break;
+      }
+    } else {
+      Log.e("Route Detail", "unhandled event");
+    }
+  }
+
+  private void bottomSheetClicked() {
+    if(bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_COLLAPSED) {
+      bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    } else {
+      bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+  }
+
+  private void dataClicked() {
+    final Calendar c = Calendar.getInstance();
+    int mYear = c.get(Calendar.YEAR);
+    int mMonth = c.get(Calendar.MONTH);
+    int mDay = c.get(Calendar.DAY_OF_MONTH);
+
+    DatePickerDialog datePickerDialog =
+        new DatePickerDialog(Objects.requireNonNull(getActivity()), (datePicker, year, monthOfYear, dayOfMonth) -> vm.updateDate(year, monthOfYear + 1, dayOfMonth), mYear, mMonth, mDay);
+    datePickerDialog.show();
+  }
+
+  private void timeClicked() {
+    final Calendar c = Calendar.getInstance();
+    int mHour = c.get(Calendar.HOUR_OF_DAY);
+    int mMinute = c.get(Calendar.MINUTE);
+
+    TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
+        (view, hourOfDay, minute) -> vm.updateTime(hourOfDay, minute), mHour, mMinute, false);
+    timePickerDialog.show();
+  }
+
+  private void setButtonClicked() {
+    adapter.clearAllData();
   }
 
   @Override
