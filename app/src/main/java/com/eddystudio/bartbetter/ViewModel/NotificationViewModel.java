@@ -4,7 +4,6 @@ package com.eddystudio.bartbetter.ViewModel;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 
 import com.eddystudio.bartbetter.DI.Application;
@@ -51,11 +50,11 @@ public class NotificationViewModel extends ViewModel {
   }
 
   public void onMapClicked() {
-    eventsSubject.onNext(new Events.GetEtdEvent(ClickedItemType.MAP));
+    eventsSubject.onNext(new Events.GetDataEvent(ClickedItemType.MAP));
   }
 
   public void onAboutClicked() {
-    eventsSubject.onNext(new Events.GetEtdEvent(ClickedItemType.ABOUT));
+    eventsSubject.onNext(new Events.GetDataEvent(ClickedItemType.ABOUT));
   }
 
   public Observable<Events> getEventsSubject() {

@@ -1,48 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:id="@+id/schedule_picker_view"
-  android:layout_width="match_parent"
-  android:layout_height="340dp"
-  android:background="@android:color/white"
-  android:clickable="true"
-  android:orientation="vertical"
-  app:behavior_hideable="false"
-  app:behavior_peekHeight="48dp"
-  app:cardElevation="12dp"
-  app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-  <android.support.constraint.ConstraintLayout
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <data>
+
+    <variable
+      name="vm"
+      type="com.eddystudio.bartbetter.ViewModel.RouteDetailViewModel"/>
+  </data>
+
+  <android.support.v7.widget.CardView
+    android:id="@+id/schedule_picker_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:clickable="true"
+    android:orientation="vertical"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="48dp"
+    app:cardElevation="12dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
       android:layout_width="match_parent"
-      android:layout_height="48dp"
-      android:orientation="horizontal"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent">
+      android:layout_height="match_parent">
 
-      <TextView
+      <RelativeLayout
+        android:id="@+id/relativeLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:layout_centerVertical="true"
+          android:gravity="center_vertical"
+          android:text="More Schedules"
+          />
+
+        <android.support.v7.widget.AppCompatImageView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginEnd="16dp"
+          android:layout_centerVertical="true"
+          android:layout_alignParentEnd="true"
+          android:src="@{vm.expanded ? @drawable/ic_expand_more_black_24dp : @drawable/ic_expand_less_black_24dp}"
+          android:tint="@android:color/darker_gray"/>
+      </RelativeLayout>
+
+      <EditText
+        android:id="@+id/date_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:focusable="false"
+        android:inputType="date"
+        android:onClick="@{()->vm.dateClicked()}"
+        android:text="@{vm.date}"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"/>
+
+      <EditText
+        android:id="@+id/time_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:focusable="false"
+        android:inputType="time"
+        android:onClick="@{()->vm.timeClicked()}"
+        android:text="@{vm.time}"
+        app:layout_constraintBottom_toBottomOf="@+id/date_input"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/date_input"
+        app:layout_constraintTop_toTopOf="@+id/date_input"/>
+
+      <Button
+        android:id="@+id/button2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="32dp"
+        android:onClick="@{()->vm.setScheduleClicked()}"
+        android:text="Set"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Arrive_RB"/>
+
+      <RadioButton
+        android:id="@+id/Depart_RB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:checked="@={vm.isArrive}"
+        android:text="Depart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/date_input"/>
+
+      <RadioButton
+        android:id="@+id/Arrive_RB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_centerVertical="true"
-        android:gravity="center_vertical"
-        android:text="Future Schedules"
-        />
+        android:checked="@={!vm.isArrive}"
+        android:text="Arrive"
+        app:layout_constraintBottom_toBottomOf="@+id/Depart_RB"
+        app:layout_constraintStart_toEndOf="@+id/Depart_RB"
+        app:layout_constraintTop_toTopOf="@+id/Depart_RB"/>
 
-      <android.support.v7.widget.AppCompatImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_expand_less_black_24dp"
-        android:tint="@android:color/darker_gray"/>
-    </RelativeLayout>
-
-  </android.support.constraint.ConstraintLayout>
-</android.support.v7.widget.CardView>
+    </android.support.constraint.ConstraintLayout>
+  </android.support.v7.widget.CardView>
+</layout>

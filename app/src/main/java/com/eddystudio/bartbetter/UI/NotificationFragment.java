@@ -10,15 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Repository;
-import com.eddystudio.bartbetter.Model.Response.DelayReport.DelayReport;
-import com.eddystudio.bartbetter.Model.Response.ElevatorStatus.ElevatorStatus;
 import com.eddystudio.bartbetter.R;
 import com.eddystudio.bartbetter.ViewModel.Events;
 import com.eddystudio.bartbetter.ViewModel.NotificationViewModel;
@@ -26,16 +23,11 @@ import com.eddystudio.bartbetter.databinding.FragmentNotificationBinding;
 import com.twitter.sdk.android.tweetui.TweetTimelineRecyclerViewAdapter;
 import com.twitter.sdk.android.tweetui.UserTimeline;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.eddystudio.bartbetter.ViewModel.NotificationViewModel.ClickedItemType.ABOUT;
-import static com.eddystudio.bartbetter.ViewModel.NotificationViewModel.ClickedItemType.MAP;
 
 public class NotificationFragment extends BaseFragment {
 
@@ -93,8 +85,8 @@ public class NotificationFragment extends BaseFragment {
             Observable.merge(
                 event.ofType(Events.LoadingEvent.class).doOnNext(data -> binding.swipeRefreshLy.setRefreshing(data.isLoad())),
                 event.ofType(Events.ErrorEvent.class).doOnNext(data -> onError(data.getError())),
-                event.ofType(Events.GetEtdEvent.class).doOnNext(data -> {
-                  switch((NotificationViewModel.ClickedItemType) data.getEtdStations()) {
+                event.ofType(Events.GetDataEvent.class).doOnNext(data -> {
+                  switch((NotificationViewModel.ClickedItemType) data.getData()) {
                     case MAP:
                       onMapClicked();
                       break;

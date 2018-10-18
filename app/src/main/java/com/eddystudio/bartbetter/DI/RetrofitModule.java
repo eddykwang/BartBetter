@@ -3,6 +3,9 @@ package com.eddystudio.bartbetter.DI;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
@@ -52,11 +55,14 @@ public class RetrofitModule {
 
   @Provides
   public Retrofit provideRetrofit(OkHttpClient okHttpClient) {
+    Gson gson = new GsonBuilder()
+        .setLenient()
+        .create();
 
     return new Retrofit.Builder()
         .baseUrl(baseUrl)
         .client(okHttpClient)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(gson))
         .build();
   }
 }

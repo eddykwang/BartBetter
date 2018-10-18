@@ -10,6 +10,7 @@ import com.eddystudio.bartbetter.UI.RouteDetailFragment;
 import com.eddystudio.bartbetter.ViewModel.DashboardViewModel;
 import com.eddystudio.bartbetter.ViewModel.NotificationViewModel;
 import com.eddystudio.bartbetter.ViewModel.QuickLookupViewModel;
+import com.eddystudio.bartbetter.ViewModel.RouteDetailViewModel;
 
 import javax.inject.Singleton;
 
@@ -39,4 +40,5 @@ public interface AppComponent {
 
   void inject(NotificationViewModel notificationViewModel);
 
+  void inject(RouteDetailViewModel routeDetailViewModel);
 }

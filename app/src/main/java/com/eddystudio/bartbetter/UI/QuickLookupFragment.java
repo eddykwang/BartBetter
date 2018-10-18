@@ -153,7 +153,7 @@ public class QuickLookupFragment extends BaseFragment {
             event.ofType(Events.CompleteEvent.class).doOnNext(data -> onComplete(data.getBartList())),
             event.ofType(Events.ErrorEvent.class).doOnNext(error -> handleError(error.getError())),
             event.ofType(Events.GoToDetailEvent.class).doOnNext(data -> goToDetail(data.getFrom(), data.getTo(), data.getRouteColor(), data.getView())),
-            event.ofType(Events.GetEtdEvent.class).doOnNext(data -> etdStations = (ArrayList<String>) data.getEtdStations())
+            event.ofType(Events.GetDataEvent.class).doOnNext(data -> etdStations = (ArrayList<String>) data.getData())
         ))
         .subscribe();
   }

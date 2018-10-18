@@ -81,7 +81,7 @@ public class QuickLookupViewModel {
       vmList.add(vm);
       etdStations.add(stations.get(i).getAbbreviation());
     }
-    eventsSubject.onNext(new Events.GetEtdEvent(etdStations));
+    eventsSubject.onNext(new Events.GetDataEvent(etdStations));
     return vmList;
   }
 }

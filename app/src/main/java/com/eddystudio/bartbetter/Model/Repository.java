@@ -127,7 +127,7 @@ public class Repository {
   //https://api.bart.gov/api/sched.aspx? cmd=depart  &orig=DALY&  dest=FRMT&  date=now&  key=MW9S-E7SL-26DU-VV8V&  b=0  &a=4  &l=1&  json=y
   public Observable<ScheduleFromAToB> getOneRouteSchedules(Pair<String, String> route) {
     return Observable.fromCallable(
-        () -> bartService.routeSchedules("depart", route.first, route.second, "now", KEY, "0", "3", "0", "y")
+        () -> bartService.routeSchedules("depart", route.first, route.second, "now", KEY, "0", "4", "0", "y")
             .execute())
         .map(Response::body)
         .subscribeOn(Schedulers.io());

@@ -12,31 +12,25 @@ import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.SnapHelper;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionInflater;
-import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.eddystudio.bartbetter.Adapter.RouteDetailRecyclerViewAdapter;
-import com.eddystudio.bartbetter.Model.Repository;
-import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Bart;
-import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
-import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
-import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Uilt;
 import com.eddystudio.bartbetter.R;
+import com.eddystudio.bartbetter.ViewModel.Events;
 import com.eddystudio.bartbetter.ViewModel.RouteDetailRecyclerViewModel;
 import com.eddystudio.bartbetter.ViewModel.RouteDetailViewModel;
 import com.eddystudio.bartbetter.databinding.FragmentRoutDetailBinding;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class RouteDetailFragment extends Fragment {
   private FragmentRoutDetailBinding binding;
@@ -45,8 +39,8 @@ public class RouteDetailFragment extends Fragment {
   private int color;
   private RouteDetailRecyclerViewAdapter adapter;
   private CompositeDisposable compositeDisposable = new CompositeDisposable();
-  public Repository repository = new Repository();
   private AppBarLayout appBarLayout;
+  private RouteDetailViewModel vm;
 
   public RouteDetailFragment() {
   }
@@ -64,17 +58,45 @@ public class RouteDetailFragment extends Fragment {
       color = arg.getInt("color");
     }
 
-
     setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
     setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.slide_bottom));
-
     setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
-    binding.setVm(new RouteDetailViewModel(from, to, color));
 
+    vm = new RouteDetailViewModel(from, to, color);
+    binding.setVm(vm);
+
+    setupToolbar();
+    setupAdapter();
+    init();
+    binding.swipeRefreshLy.setOnRefreshListener(() -> {
+      adapter.clearAllData();
+      vm.getRoutesInfo();
+    });
+    return binding.getRoot();
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    adapter.clearAllData();
+    vm.getRoutesInfo();
+
+  }
+
+  private void init() {
+    vm.getEvents()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .compose(event -> Observable.merge(
+            event.ofType(Events.LoadingEvent.class).doOnNext(isLoading -> binding.swipeRefreshLy.setRefreshing(isLoading.isLoad())),
+            event.ofType(Events.GetDataEvent.class).doOnNext(data -> adapter.addData((RouteDetailRecyclerViewModel) data.getData()))
+        )).subscribe();
+  }
+
+  private void setupToolbar() {
     ImageView imageView = binding.getRoot().findViewById(R.id.toolbar_imageView);
     CollapsingToolbarLayout collapsingToolbarLayout = binding.getRoot().findViewById(R.id.toolbar_layout);
     appBarLayout = getActivity().findViewById(R.id.app_bar);
-
     Toolbar toolbar = binding.getRoot().findViewById(R.id.toolbar);
     ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -82,64 +104,6 @@ public class RouteDetailFragment extends Fragment {
     collapsingToolbarLayout.setTitleEnabled(true);
     collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
     collapsingToolbarLayout.setTitle(Uilt.getFullStationName(to));
-    setupAdapter();
-    return binding.getRoot();
-  }
-
-  @Override
-  public void onStart() {
-    super.onStart();
-    getRoutesInfo();
-    binding.swipeRefreshLy.setOnRefreshListener(this::getRoutesInfo);
-
-  }
-
-  private void getRoutesInfo() {
-    List<Pair<String, String>> routes = new ArrayList<>();
-    routes.add(new Pair<>(from, to));
-    adapter.clearAllData();
-    compositeDisposable.add(
-        repository.getRouteSchedules(routes)
-            .doOnSubscribe(ignored -> binding.swipeRefreshLy.setRefreshing(true))
-            .observeOn(AndroidSchedulers.mainThread())
-            .map(this::getTrips)
-            .subscribe(this::getTrainLength, this::handleError)
-    );
-  }
-
-  private void getTrainLength(List<Trip> trips) {
-    List<Pair<String, String>> list = new ArrayList<>();
-    list.add(new Pair<>(from, to));
-    compositeDisposable.add(
-        repository.getListEstimate(list)
-            .observeOn(AndroidSchedulers.mainThread())
-            .map(bart -> getEtd(bart.first))
-            .concatMap(Observable::fromArray)
-            .subscribe(len -> addToAdapter(trips, len), this::handleError, this::onComplete)
-    );
-  }
-
-  private List<Etd> getEtd(Bart bart) {
-    Log.d("destination", bart.toString());
-    return bart.getRoot().getStation().get(0).getEtd();
-  }
-
-  private void addToAdapter(List<Trip> trips, List<Etd> etds) {
-    for(int i = 0; i < trips.size(); ++i) {
-      RouteDetailRecyclerViewModel vm = new RouteDetailRecyclerViewModel(trips.get(i), etds);
-      adapter.addData(vm);
-    }
-  }
-
-  private List<Trip> getTrips(ScheduleFromAToB schedule) {
-    return schedule.getRoot().getSchedule().getRequest().getTrip();
-  }
-
-  private void handleError(Throwable throwable) {
-  }
-
-  private void onComplete() {
-    binding.swipeRefreshLy.setRefreshing(false);
   }
 
   private void setupAdapter() {
@@ -159,5 +123,6 @@ public class RouteDetailFragment extends Fragment {
   public void onStop() {
     super.onStop();
     compositeDisposable.clear();
+    vm.onCleared();
   }
 }

@@ -270,7 +270,7 @@ public class DashboardFragment extends BaseFragment {
             }),
             event.ofType(Events.ErrorEvent.class).doOnNext(error -> handleError(error.getError())),
             event.ofType(Events.GoToDetailEvent.class).doOnNext(data -> goToDetail(data.getFrom(), data.getTo(), data.getRouteColor(), data.getView())),
-            event.ofType(Events.GetEtdEvent.class).doOnNext(data -> adapter.modifyData((DashboardRecyclerViewItemVM) data.getEtdStations()))
+            event.ofType(Events.GetDataEvent.class).doOnNext(data -> adapter.modifyData((DashboardRecyclerViewItemVM) data.getData()))
         ))
         .subscribe();
   }
