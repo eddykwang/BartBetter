@@ -33,8 +33,8 @@ public class RouteDetailViewModel {
   public ObservableField<String> to = new ObservableField<>("");
   public ObservableInt color = new ObservableInt();
   public ObservableBoolean isArrive = new ObservableBoolean(true);
-  public ObservableField<String> date = new ObservableField<>("10/11/2018");
-  public ObservableField<String> time = new ObservableField<>("10:20 am");
+  public ObservableField<String> date = new ObservableField<>("Today");
+  public ObservableField<String> time = new ObservableField<>("Now");
   private CompositeDisposable compositeDisposable = new CompositeDisposable();
   private Subject<Events> eventsSubject = PublishSubject.create();
   private final String fromShortcut;

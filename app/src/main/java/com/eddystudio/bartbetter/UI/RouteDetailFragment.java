@@ -71,7 +71,6 @@ public class RouteDetailFragment extends Fragment {
 
     vm = new RouteDetailViewModel(from, to, color);
     binding.setVm(vm);
-
     setupToolbar();
     setupAdapter();
     setupBottomSheet();
@@ -80,11 +79,13 @@ public class RouteDetailFragment extends Fragment {
       adapter.clearAllData();
       vm.getRoutesInfo(null, null, true);
     });
+    binding.bottomSheetFab.setOnClickListener(view -> bottomSheetClicked());
     return binding.getRoot();
   }
 
   @Override
   public void onStart() {
+    Objects.requireNonNull(getActivity()).findViewById(R.id.navigation).setVisibility(View.GONE);
     adapter.clearAllData();
     super.onStart();
     vm.getRoutesInfo(null, null, true);
@@ -132,14 +133,14 @@ public class RouteDetailFragment extends Fragment {
     bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
       @Override
       public void onStateChanged(@NonNull View view, int i) {
-        if(i == BottomSheetBehavior.STATE_EXPANDED) {
+        if(i == BottomSheetBehavior.STATE_DRAGGING || i == BottomSheetBehavior.STATE_EXPANDED) {
           vm.bottomSheetup();
         }
       }
 
       @Override
       public void onSlide(@NonNull View view, float v) {
-        binding.bottomSheetView.arrowIv.setRotation(v * 180);
+        binding.bottomSheetFab.animate().scaleX(1 - v).scaleY(1 - v).setDuration(0).start();
       }
     });
   }
@@ -205,6 +206,7 @@ public class RouteDetailFragment extends Fragment {
   @Override
   public void onStop() {
     super.onStop();
+    Objects.requireNonNull(getActivity()).findViewById(R.id.navigation).setVisibility(View.VISIBLE);
     compositeDisposable.clear();
     vm.onCleared();
   }
