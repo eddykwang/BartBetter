@@ -16,7 +16,7 @@
     app:expandedTitleGravity="center_vertical |start"
     app:expandedTitleMarginStart="16dp"
     app:expandedTitleTextAppearance="@style/Toolbar.Expand.TitleText"
-    app:layout_scrollFlags="scroll|exitUntilCollapsed"
+    app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
     app:scrimAnimationDuration="800"
     app:toolbarId="@+id/toolbar">
 

@@ -34,7 +34,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         app:contentScrim="@color/white"
-        app:layout_scrollFlags="scroll|exitUntilCollapsed"
+        app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
         app:toolbarId="@+id/toolbar">
 
         <ImageView

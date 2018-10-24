@@ -18,32 +18,17 @@
       android:layout_height="wrap_content"
       android:background="@color/white">
 
-      <!--<android.support.v7.widget.Toolbar-->
-      <!--android:id="@+id/toolbar"-->
-      <!--style="@style/bb_toolbar_style"-->
-      <!--app:layout_collapseMode="pin"-->
-      <!--app:titleTextAppearance="@style/Toolbar.TitleText">-->
-
-      <!--<android.support.v7.widget.SwitchCompat-->
-      <!--android:id="@+id/auto_refresh_switch"-->
-      <!--android:layout_width="wrap_content"-->
-      <!--android:layout_height="wrap_content"-->
-      <!--android:layout_gravity="end"-->
-      <!--android:layout_alignParentEnd="true"-->
-      <!--android:layout_centerVertical="true"-->
-      <!--android:text="Auto Refresh"/>-->
-      <!--</android.support.v7.widget.Toolbar>-->
       <android.support.design.widget.CollapsingToolbarLayout
         android:id="@+id/toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        app:contentScrim="@color/white"
-        app:layout_scrollFlags="scroll|exitUntilCollapsed"
-        app:expandedTitleTextAppearance="@style/Toolbar.Expand.TitleText"
-        app:expandedTitleMarginStart="16dp"
-        app:expandedTitleGravity="center_vertical |start"
         app:collapsedTitleTextAppearance="@style/Toolbar.TitleText"
+        app:contentScrim="@color/white"
+        app:expandedTitleGravity="center_vertical |start"
+        app:expandedTitleMarginStart="16dp"
+        app:expandedTitleTextAppearance="@style/Toolbar.Expand.TitleText"
+        app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
         app:scrimAnimationDuration="800"
         app:toolbarId="@+id/toolbar">
 
@@ -56,8 +41,8 @@
           android:id="@+id/toolbar"
           android:layout_width="match_parent"
           android:layout_height="?attr/actionBarSize"
-          app:titleTextAppearance="@style/Toolbar.TitleText"
           app:layout_collapseMode="pin"
+          app:titleTextAppearance="@style/Toolbar.TitleText"
           >
 
           <android.support.v7.widget.SwitchCompat
