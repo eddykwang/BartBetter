@@ -146,11 +146,13 @@ public class Repository {
 
   public Observable<AccurateEtdResult> getAccurateEtdTime(List<Pair<String, String>> routes) {
     return getRouteSchedules(routes)
+        .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1,3), (n,i) -> i))
         .concatMap(r -> {
           Trip trip = r.getRoot().getSchedule().getRequest().getTrip().get(0);
           final Etd[] result = {new Etd()};
           final Throwable[] error = new Throwable[1];
           return getEstimate(trip.getLeg().get(0).getOrigin())
+              .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1,3), (n,i) -> i))
               .onErrorResumeNext(err -> {
                 error[0] = err;
                 return Observable.just(new Bart());

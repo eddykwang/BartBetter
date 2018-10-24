@@ -226,7 +226,6 @@ public class DashboardFragment extends BaseFragment {
         if(autoEnabled[0]) {
           vm.setAutoRefreshEnabled(true);
         }
-        loadFromPreference();
       }
     });
     ItemTouchHelper itemTouchHelper = new ItemTouchHelper(cardSwipeController);

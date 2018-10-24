@@ -1,5 +1,6 @@
 package com.eddystudio.bartbetter.UI;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
@@ -8,8 +9,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.SnapHelper;
@@ -17,11 +19,15 @@ import android.support.v7.widget.Toolbar;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.eddystudio.bartbetter.Adapter.RouteDetailRecyclerViewAdapter;
+import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Uilt;
 import com.eddystudio.bartbetter.R;
 import com.eddystudio.bartbetter.ViewModel.Events;
@@ -37,8 +43,10 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
 
-public class RouteDetailFragment extends Fragment {
+public class RouteDetailFragment extends BaseFragment {
   private FragmentRoutDetailBinding binding;
   private String from;
   private String to;
@@ -64,6 +72,8 @@ public class RouteDetailFragment extends Fragment {
       to = arg.getString(MainActivity.BUDDLE_ARG_TO);
       color = arg.getInt("color");
     }
+
+    Application.getAppComponet().inject(this);
 
     setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
     setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.slide_bottom));
@@ -93,13 +103,22 @@ public class RouteDetailFragment extends Fragment {
   }
 
   private void init() {
-    vm.getEvents()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .compose(event -> Observable.merge(
-            event.ofType(Events.LoadingEvent.class).doOnNext(isLoading -> binding.swipeRefreshLy.setRefreshing(isLoading.isLoad())),
-            event.ofType(Events.GetDataEvent.class).doOnNext(data -> handleEvents(data.getData()))
-        )).subscribe();
+    addDisposable(
+        vm.getEvents()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(event -> Observable.merge(
+                event.ofType(Events.LoadingEvent.class).doOnNext(isLoading -> binding.swipeRefreshLy.setRefreshing(isLoading.isLoad())),
+                event.ofType(Events.GetDataEvent.class).doOnNext(data -> handleEvents(data.getData()))
+            )).subscribe(i -> setupShowCase()));
+  }
+
+  private void setupShowCase() {
+    new FancyShowCaseView.Builder(getActivity())
+        .title("Swipe to right to see more schedules.")
+        .showOnce("route_detail_recycler_view_showcase")
+        .build()
+        .show();
   }
 
   private void setupToolbar() {
@@ -109,6 +128,7 @@ public class RouteDetailFragment extends Fragment {
     Toolbar toolbar = binding.getRoot().findViewById(R.id.toolbar);
     ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+    setHasOptionsMenu(true);
     imageView.setImageResource(Uilt.randomCityBgGenerator());
     collapsingToolbarLayout.setTitleEnabled(true);
     collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
@@ -143,6 +163,36 @@ public class RouteDetailFragment extends Fragment {
         binding.bottomSheetFab.animate().scaleX(1 - v).scaleY(1 - v).setDuration(0).start();
       }
     });
+  }
+
+  @SuppressLint("RestrictedApi")
+  @Override
+  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    inflater.inflate(R.menu.route_detail_menu, menu);
+    if(menu instanceof MenuBuilder) {
+      ((MenuBuilder) menu).setOptionalIconsVisible(true);
+    }
+    super.onCreateOptionsMenu(menu, inflater);
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch(item.getItemId()) {
+      case R.id.route_detail_delete:
+        deleteRoute();
+        break;
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
+  private void deleteRoute() {
+    if(deleteRouteInDashBoard(from, to)) {
+      if(getFragmentManager() != null) {
+        getFragmentManager().popBackStack();
+      }
+    } else {
+      Snackbar.make(binding.getRoot(), "Something went wrong, please try again.", Snackbar.LENGTH_LONG).show();
+    }
   }
 
   private void handleEvents(Object event) {
