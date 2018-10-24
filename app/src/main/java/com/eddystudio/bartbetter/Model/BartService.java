@@ -25,10 +25,11 @@ public interface BartService {
     Call<ElevatorStatus> elevatorStatus();
 
     //api for get schedule detail from A to B
-    //https://api.bart.gov/api/sched.aspx? cmd=depart  &orig=DALY&  dest=FRMT&  date=now&  key=MW9S-E7SL-26DU-VV8V&  b=0  &a=3  &l=1&  json=y
+    //https://api.bart.gov/api/sched.aspx? cmd=depart  &orig=DALY&  dest=FRMT& time=01:20pm& date=now&  key=MW9S-E7SL-26DU-VV8V&  b=0  &a=3  &l=1&  json=y
     @GET("api/sched.aspx")
     Call<ScheduleFromAToB> routeSchedules(@Query("cmd") String cmd, @Query("orig") String origin,
-                                          @Query("dest") String destination, @Query("data") String data, @Query("key") String key,
+                                          @Query("dest") String destination, @Query("time")String time, @Query("data") String data,
+                                          @Query("key") String key,
                                           @Query("b") String b, @Query("a") String a, @Query("l") String l, @Query("json") String isJson);
 
 }

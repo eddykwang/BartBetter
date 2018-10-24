@@ -65,12 +65,12 @@ public interface Events {
     }
   }
 
-  class GetEtdEvent implements Events {
+  class GetDataEvent implements Events {
     private final Object etdStations;
 
-    public GetEtdEvent(Object etdStations) {this.etdStations = etdStations;}
+    public GetDataEvent(Object etdStations) {this.etdStations = etdStations;}
 
-    public Object getEtdStations() {
+    public Object getData() {
       return etdStations;
     }
   }

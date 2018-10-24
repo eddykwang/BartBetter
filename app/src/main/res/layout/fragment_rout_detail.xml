@@ -117,7 +117,7 @@
             android:id="@+id/route_detail_recyclerview"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="88dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
@@ -146,6 +146,23 @@
 
       </android.support.v4.widget.NestedScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <include
+      android:id="@+id/bottom_sheet_view"
+      layout="@layout/bottom_sheet_layout_content"
+      app:vm="@{vm}}"/>
+
+    <android.support.design.widget.FloatingActionButton
+      android:id="@+id/bottom_sheet_fab"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="16dp"
+      android:src="@drawable/ic_today_black_24dp"
+      android:tint="@color/colorAccent"
+      app:backgroundTint="@android:color/white"
+      app:elevation="4dp"
+      app:layout_anchor="@+id/bottom_sheet_view"
+      app:layout_anchorGravity="top|end"/>
   </android.support.design.widget.CoordinatorLayout>
 
 </layout>

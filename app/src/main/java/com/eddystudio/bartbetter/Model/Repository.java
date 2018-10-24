@@ -115,7 +115,7 @@ public class Repository {
         .onErrorResumeNext(Observable.empty())
         .concatMap(pair ->
             Observable.fromCallable(
-                () -> bartService.routeSchedules("depart", pair.first, pair.second, "now", KEY, "0", "4", "0", "y")
+                () -> bartService.routeSchedules("depart", pair.first, pair.second, "now", "now", KEY, "0", "4", "0", "y")
                     .execute())
                 .subscribeOn(Schedulers.io())
                 .map(Response::body)
@@ -125,9 +125,20 @@ public class Repository {
   }
 
   //https://api.bart.gov/api/sched.aspx? cmd=depart  &orig=DALY&  dest=FRMT&  date=now&  key=MW9S-E7SL-26DU-VV8V&  b=0  &a=4  &l=1&  json=y
-  public Observable<ScheduleFromAToB> getOneRouteSchedules(Pair<String, String> route) {
+  public Observable<ScheduleFromAToB> getOneRouteSchedules(Pair<String, String> route, String date, String time, boolean isDepart) {
+    if(date == null) {
+      date = "now";
+    }
+
+    if(time == null) {
+      time = "now";
+    }
+
+    String finalTime = time;
+    String finalDate = date;
+    String depart = isDepart ? "depart" : "arrive";
     return Observable.fromCallable(
-        () -> bartService.routeSchedules("depart", route.first, route.second, "now", KEY, "0", "3", "0", "y")
+        () -> bartService.routeSchedules(depart, route.first, route.second, finalTime, finalDate, KEY, "0", "4", "0", "y")
             .execute())
         .map(Response::body)
         .subscribeOn(Schedulers.io());
@@ -135,11 +146,13 @@ public class Repository {
 
   public Observable<AccurateEtdResult> getAccurateEtdTime(List<Pair<String, String>> routes) {
     return getRouteSchedules(routes)
+        .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1,3), (n,i) -> i))
         .concatMap(r -> {
           Trip trip = r.getRoot().getSchedule().getRequest().getTrip().get(0);
           final Etd[] result = {new Etd()};
           final Throwable[] error = new Throwable[1];
           return getEstimate(trip.getLeg().get(0).getOrigin())
+              .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1,3), (n,i) -> i))
               .onErrorResumeNext(err -> {
                 error[0] = err;
                 return Observable.just(new Bart());

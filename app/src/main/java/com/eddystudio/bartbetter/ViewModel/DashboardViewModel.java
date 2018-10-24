@@ -56,7 +56,7 @@ public class DashboardViewModel {
 //            .observeOn(AndroidSchedulers.mainThread())
 //            .map(this::getRoutesInfoToVm)
 //            .subscribe(data -> {
-//                  eventsSubject.onNext(new Events.GetEtdEvent(new Pair<>(data, counter.get())));
+//                  eventsSubject.onNext(new Events.GetDataEvent(new Pair<>(data, counter.get())));
 //                  counter.getAndIncrement();
 //                },
 //                this::handleError,
@@ -80,10 +80,10 @@ public class DashboardViewModel {
             .compose(result -> Observable.merge(
                 result.ofType(Repository.OnSuccess.class)
                     .map(etdResult -> getRoutesInfoToVm(etdResult.getEtdResult().getEtd(), etdResult.getEtdResult().getOrigin(), etdResult.getEtdResult().getDestination()))
-                    .doOnNext(etd -> eventsSubject.onNext(new Events.GetEtdEvent(etd))),
+                    .doOnNext(etd -> eventsSubject.onNext(new Events.GetDataEvent(etd))),
                 result.ofType(Repository.OnError.class).doOnNext(onError -> {
                   DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(new Etd(), onError.getFrom(), onError.getTo());
-                  eventsSubject.onNext(new Events.GetEtdEvent(vm));
+                  eventsSubject.onNext(new Events.GetDataEvent(vm));
                 })
             ))
             .subscribe(etd -> {

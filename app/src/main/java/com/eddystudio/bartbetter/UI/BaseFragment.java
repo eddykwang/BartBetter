@@ -20,62 +20,76 @@ import static com.eddystudio.bartbetter.UI.MainActivity.DASHBOARDROUTS;
 
 
 public class BaseFragment extends Fragment {
-    @Inject
-    public Repository repository;
-    @Inject
-    public SharedPreferences preference;
-    private CompositeDisposable compositeDisposable;
+  @Inject
+  public Repository repository;
+  @Inject
+  public SharedPreferences preference;
+  private CompositeDisposable compositeDisposable;
 
-    @Override
-    public void onDestroy() {
-        if (compositeDisposable != null && compositeDisposable.isDisposed()){
-            compositeDisposable.clear();
-        }
-        super.onDestroy();
+  @Override
+  public void onDestroy() {
+    if(compositeDisposable != null && compositeDisposable.isDisposed()) {
+      compositeDisposable.clear();
     }
+    super.onDestroy();
+  }
 
-    protected void addDisposable(Disposable disposable){
-        if (compositeDisposable == null){
-            compositeDisposable = new CompositeDisposable();
-        }
-        compositeDisposable.add(disposable);
+  protected void addDisposable(Disposable disposable) {
+    if(compositeDisposable == null) {
+      compositeDisposable = new CompositeDisposable();
     }
+    compositeDisposable.add(disposable);
+  }
 
-    protected List<String> getSharedPreferencesData(){
-        Type type = new TypeToken<List<String>>(){}.getType();
-        Gson gson = new Gson();
-        List<String> empty = new ArrayList<>();
-        String emptyList = gson.toJson(empty);
-        String json = preference.getString(DASHBOARDROUTS, emptyList);
-        List<String> routeList = gson.fromJson(json, type);
-        return routeList == null ? new ArrayList<>() : routeList;
-    }
+  protected List<String> getSharedPreferencesData() {
+    Type type = new TypeToken<List<String>>() {}.getType();
+    Gson gson = new Gson();
+    List<String> empty = new ArrayList<>();
+    String emptyList = gson.toJson(empty);
+    String json = preference.getString(DASHBOARDROUTS, emptyList);
+    List<String> routeList = gson.fromJson(json, type);
+    return routeList == null ? new ArrayList<>() : routeList;
+  }
 
-    protected void saveSharedPreferenceData(List<String> routes){
-      SharedPreferences.Editor prefsEditor = preference.edit();
-      Gson gson = new Gson();
-      String json = gson.toJson(routes);
-      prefsEditor.putString(DASHBOARDROUTS, json);
-      prefsEditor.apply();
-    }
+  protected void saveSharedPreferenceData(List<String> routes) {
+    SharedPreferences.Editor prefsEditor = preference.edit();
+    Gson gson = new Gson();
+    String json = gson.toJson(routes);
+    prefsEditor.putString(DASHBOARDROUTS, json);
+    prefsEditor.apply();
+  }
 
-    protected void addPreferencesData(String rout){
-        List<String> routeList = getSharedPreferencesData();
-        routeList.add(rout);
-        SharedPreferences.Editor prefsEditor = preference.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(routeList);
-        prefsEditor.putString(DASHBOARDROUTS, json);
-        prefsEditor.apply();
-    }
+  protected void addPreferencesData(String rout) {
+    List<String> routeList = getSharedPreferencesData();
+    routeList.add(rout);
+    SharedPreferences.Editor prefsEditor = preference.edit();
+    Gson gson = new Gson();
+    String json = gson.toJson(routeList);
+    prefsEditor.putString(DASHBOARDROUTS, json);
+    prefsEditor.apply();
+  }
 
-    protected void deletePreferencesData(int position){
-        List<String> routeList = getSharedPreferencesData();
-        routeList.remove(position);
-        SharedPreferences.Editor prefsEditor = preference.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(routeList);
-        prefsEditor.putString(DASHBOARDROUTS, json);
-        prefsEditor.apply();
-    }
+  protected void deletePreferencesData(int position) {
+    List<String> routeList = getSharedPreferencesData();
+    routeList.remove(position);
+    SharedPreferences.Editor prefsEditor = preference.edit();
+    Gson gson = new Gson();
+    String json = gson.toJson(routeList);
+    prefsEditor.putString(DASHBOARDROUTS, json);
+    prefsEditor.apply();
+  }
+
+  protected boolean deleteRouteInDashBoard(String from, String to) {
+    List<String> routeList = getSharedPreferencesData();
+    String routToDelete = from + "-" + to;
+    boolean result = routeList.remove(routToDelete);
+
+    SharedPreferences.Editor prefsEditor = preference.edit();
+    Gson gson = new Gson();
+    String json = gson.toJson(routeList);
+    prefsEditor.putString(DASHBOARDROUTS, json);
+    prefsEditor.apply();
+
+    return result;
+  }
 }

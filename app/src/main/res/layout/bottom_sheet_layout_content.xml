@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:tools="http://schemas.android.com/tools"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <data>
+
+    <variable
+      name="vm"
+      type="com.eddystudio.bartbetter.ViewModel.RouteDetailViewModel"/>
+  </data>
+
+  <android.support.v7.widget.CardView
+    android:id="@+id/schedule_picker_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:clickable="true"
+    android:orientation="vertical"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="72dp"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="4dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+    <android.support.constraint.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+      <android.support.constraint.ConstraintLayout
+        android:id="@+id/relativeLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="@color/colorAccent"
+        android:onClick="@{()->vm.bsOnClicked()}"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.AppCompatTextView
+          android:id="@+id/more_schedule_tv"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:layout_marginStart="16dp"
+          android:text="Schedules"
+          android:textColor="@android:color/white"
+          android:textSize="18sp"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"/>
+
+        <android.support.v7.widget.AppCompatTextView
+          android:id="@+id/appCompatTextView"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:layout_marginTop="8dp"
+          android:text="@{vm.date}"
+          android:textColor="@android:color/white"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/more_schedule_tv"/>
+
+        <android.support.v7.widget.AppCompatTextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerVertical="true"
+          android:layout_alignParentEnd="true"
+          android:layout_marginEnd="24dp"
+          android:text="@{vm.time}"
+          android:textColor="@android:color/white"
+          app:layout_constraintBottom_toBottomOf="@+id/appCompatTextView"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="@+id/appCompatTextView"/>
+
+        <ImageView
+          android:id="@+id/imageView22"
+          android:layout_width="32dp"
+          android:layout_height="4dp"
+          android:layout_marginTop="8dp"
+          android:layout_marginStart="8dp"
+          android:layout_marginEnd="8dp"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:srcCompat="@drawable/bg_drag_handle"/>
+      </android.support.constraint.ConstraintLayout>
+
+      <EditText
+        android:id="@+id/date_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:focusable="false"
+        android:inputType="date"
+        android:onClick="@{()->vm.dateClicked()}"
+        android:text="@{vm.date}"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"/>
+
+      <EditText
+        android:id="@+id/time_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:focusable="false"
+        android:inputType="time"
+        android:onClick="@{()->vm.timeClicked()}"
+        android:text="@{vm.time}"
+        app:layout_constraintBottom_toBottomOf="@+id/date_input"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/date_input"
+        app:layout_constraintTop_toTopOf="@+id/date_input"/>
+
+      <Button
+        android:id="@+id/button2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="48dp"
+        android:backgroundTint="@color/colorAccent"
+        android:onClick="@{()->vm.setScheduleClicked()}"
+        android:text="Set"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Arrive_RB"/>
+
+      <RadioButton
+        android:id="@+id/Depart_RB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:checked="@={vm.isArrive}"
+        android:text="Depart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/date_input"/>
+
+      <RadioButton
+        android:id="@+id/Arrive_RB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:checked="@={!vm.isArrive}"
+        android:text="Arrive"
+        app:layout_constraintBottom_toBottomOf="@+id/Depart_RB"
+        app:layout_constraintStart_toEndOf="@+id/Depart_RB"
+        app:layout_constraintTop_toTopOf="@+id/Depart_RB"/>
+
+    </android.support.constraint.ConstraintLayout>
+  </android.support.v7.widget.CardView>
+</layout>
