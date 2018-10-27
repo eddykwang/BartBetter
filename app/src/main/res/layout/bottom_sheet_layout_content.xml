@@ -21,7 +21,7 @@
     app:behavior_hideable="false"
     app:behavior_peekHeight="72dp"
     app:cardElevation="2dp"
-    app:cardCornerRadius="4dp"
+    app:cardCornerRadius="8dp"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
     <android.support.constraint.ConstraintLayout

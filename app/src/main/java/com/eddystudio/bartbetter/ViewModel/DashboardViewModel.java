@@ -86,8 +86,7 @@ public class DashboardViewModel {
                   eventsSubject.onNext(new Events.GetDataEvent(vm));
                 })
             ))
-            .subscribe(etd -> {
-                },
+            .subscribe(etd -> {},
                 this::handleError,
                 this::onComplete
             )

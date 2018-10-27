@@ -110,7 +110,7 @@ public class RouteDetailFragment extends BaseFragment {
             .compose(event -> Observable.merge(
                 event.ofType(Events.LoadingEvent.class).doOnNext(isLoading -> binding.swipeRefreshLy.setRefreshing(isLoading.isLoad())),
                 event.ofType(Events.GetDataEvent.class).doOnNext(data -> handleEvents(data.getData()))
-            )).subscribe(i -> setupShowCase()));
+            )).subscribe(i -> {}, i -> {}, this::setupShowCase));
   }
 
   private void setupShowCase() {
