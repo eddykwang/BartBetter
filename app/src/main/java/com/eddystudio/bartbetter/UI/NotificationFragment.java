@@ -32,7 +32,7 @@ import io.reactivex.schedulers.Schedulers;
 public class NotificationFragment extends BaseFragment {
 
   private FragmentNotificationBinding binding;
-  private  NotificationViewModel viewModel;
+  private NotificationViewModel viewModel;
   private static final String savedViewMorePreference = "VIEW_MORE_PREFERENCE";
   private static boolean isErrorShowed;
 
@@ -54,6 +54,7 @@ public class NotificationFragment extends BaseFragment {
     ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     getActivity().setTitle("Notifications");
     viewModel = ViewModelProviders.of(this).get(NotificationViewModel.class);
+    binding.setLifecycleOwner(this);
     binding.setVm(viewModel);
     binding.swipeRefreshLy.setOnRefreshListener(viewModel::init);
     setupEvent();
@@ -66,7 +67,6 @@ public class NotificationFragment extends BaseFragment {
     viewModel.isViewDetailChecked.set(sharedPreferences.getBoolean(savedViewMorePreference, false));
     isErrorShowed = false;
     viewModel.init();
-    setupTweeterView();
   }
 
   @Override
@@ -97,23 +97,6 @@ public class NotificationFragment extends BaseFragment {
                 })
             )
         )).subscribe();
-  }
-
-  private void setupTweeterView() {
-    UserTimeline userTimeline = new UserTimeline.Builder()
-        .screenName("twitterdev")
-        .maxItemsPerRequest(5)
-        .build();
-
-
-    final TweetTimelineRecyclerViewAdapter adapter =
-        new TweetTimelineRecyclerViewAdapter.Builder(getContext())
-            .setTimeline(userTimeline)
-            .setViewStyle(R.style.tw__TweetLightWithActionsStyle)
-            .build();
-    RecyclerView recyclerView = binding.getRoot().findViewById(R.id.tweeter_recylerview);
-    recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-    recyclerView.setAdapter(adapter);
   }
 
   private void onError(Throwable throwable) {

@@ -194,7 +194,7 @@ public class QuickLookupFragment extends BaseFragment {
 
           Station selectedS = MainActivity.stationInfoList.get(i);
 
-          if(preference.getBoolean(TO_SHOW_MAP_VIEW, true)) {
+          if(preference.getBoolean(TO_SHOW_MAP_VIEW, true) && googleMap != null) {
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(Double.parseDouble(selectedS.getGtfsLatitude()),
                     Double.parseDouble(selectedS.getGtfsLongitude())), 13f));

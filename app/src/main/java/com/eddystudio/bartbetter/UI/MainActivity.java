@@ -91,11 +91,13 @@ public class MainActivity extends AppCompatActivity {
 
     Application.getAppComponet().inject(this);
     navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-    navigation.setSelectedItemId(R.id.navigation_my_routes);
-    getAllStations();
 
-    setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
-    getWindow().setStatusBarColor(Color.TRANSPARENT);
+    if(savedInstanceState == null) {
+      navigation.setSelectedItemId(R.id.navigation_my_routes);
+      getAllStations();
+      setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
+      getWindow().setStatusBarColor(Color.TRANSPARENT);
+    }
 
   }
 
