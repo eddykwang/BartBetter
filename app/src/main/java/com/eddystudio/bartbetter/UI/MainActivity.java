@@ -1,6 +1,8 @@
 package com.eddystudio.bartbetter.UI;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -23,6 +26,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -35,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
       new QuickLookupFragment();
   private final DashboardFragment dashboardFragment = new DashboardFragment();
   private final NotificationFragment notificationFragment = new NotificationFragment();
-
+  private AlertDialog alertDialog;
   @Inject
   public Repository repository;
 
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
   public static ArrayList<String> stationListSortcut = new ArrayList<>();
   public static List<Station> stationInfoList = new ArrayList<>();
 
+  private BottomNavigationView navigation;
   private Fragment fragment;
   private CompositeDisposable compositeDisposable = new CompositeDisposable();
   private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -87,13 +92,13 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    BottomNavigationView navigation = findViewById(R.id.navigation);
+    navigation = findViewById(R.id.navigation);
 
     Application.getAppComponet().inject(this);
     navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+    setupLoadingDialog();
     if(savedInstanceState == null) {
-      navigation.setSelectedItemId(R.id.navigation_my_routes);
       getAllStations();
       setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
       getWindow().setStatusBarColor(Color.TRANSPARENT);
@@ -126,7 +131,17 @@ public class MainActivity extends AppCompatActivity {
     return super.onOptionsItemSelected(item);
   }
 
+  private void setupLoadingDialog() {
+    View mView = getLayoutInflater().inflate(R.layout.loading_dialog_layout, null);
+    alertDialog = new AlertDialog.Builder(this)
+        .setView(mView)
+        .setTitle("Loading")
+        .setCancelable(false)
+        .create();
+  }
+
   private void getAllStations() {
+    alertDialog.show();
     Type type = new TypeToken<List<Station>>() {}.getType();
     Gson gson = new Gson();
     List<Station> empty = new ArrayList<>();
@@ -143,28 +158,59 @@ public class MainActivity extends AppCompatActivity {
           stationListSortcut.add(station.getAbbr());
         }
       }
+      if(alertDialog.isShowing()) {
+        alertDialog.dismiss();
+      }
+      navigation.setSelectedItemId(R.id.navigation_my_routes);
     }
   }
 
   private void getAllStationsFromApi() {
+    AlertDialog errorDialog = new AlertDialog.Builder(this)
+        .setTitle("Error")
+        .setMessage("Cannot get data, please make sure you have Internet connection.")
+        .setCancelable(false)
+        .setPositiveButton("Retry", (dialogInterface, i) -> {
+          getAllStationsFromApi();
+        })
+        .create();
+
     compositeDisposable.add(repository.getStations()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
+        .delay(500, TimeUnit.MILLISECONDS)
         .map(station -> station.getRoot().getStations().getStation())
         .subscribe(stations -> {
-          stationInfoList = stations;
+              stationInfoList = stations;
 
-          for(Station station : stationInfoList) {
-            stationList.add(station.getName());
-            stationListSortcut.add(station.getAbbr());
-          }
+              for(Station station : stationInfoList) {
+                stationList.add(station.getName());
+                stationListSortcut.add(station.getAbbr());
+              }
 
-          SharedPreferences.Editor prefsEditor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-          Gson gson = new Gson();
-          String stationInfoListStr = gson.toJson(stationInfoList);
-          prefsEditor.putString(STATION_INFO_LIST, stationInfoListStr);
-          prefsEditor.apply();
-        }));
+              SharedPreferences.Editor prefsEditor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+              Gson gson = new Gson();
+              String stationInfoListStr = gson.toJson(stationInfoList);
+              prefsEditor.putString(STATION_INFO_LIST, stationInfoListStr);
+              prefsEditor.apply();
+            },
+            error -> {
+              alertDialog.dismiss();
+              errorDialog.show();
+            }
+            ,
+            () -> {
+
+              if(alertDialog.isShowing()) {
+                alertDialog.dismiss();
+              }
+
+              if(errorDialog.isShowing()) {
+                errorDialog.dismiss();
+              }
+
+              navigation.setSelectedItemId(R.id.navigation_my_routes);
+            }));
   }
 
   @Override
