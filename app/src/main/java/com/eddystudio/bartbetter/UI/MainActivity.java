@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
       new QuickLookupFragment();
   private final DashboardFragment dashboardFragment = new DashboardFragment();
   private final NotificationFragment notificationFragment = new NotificationFragment();
-  private AlertDialog alertDialog;
   @Inject
   public Repository repository;
 
@@ -97,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
     Application.getAppComponet().inject(this);
     navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-    setupLoadingDialog();
     if(savedInstanceState == null) {
       getAllStations();
       setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
@@ -131,17 +129,7 @@ public class MainActivity extends AppCompatActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  private void setupLoadingDialog() {
-    View mView = getLayoutInflater().inflate(R.layout.loading_dialog_layout, null);
-    alertDialog = new AlertDialog.Builder(this)
-        .setView(mView)
-        .setTitle("Loading")
-        .setCancelable(false)
-        .create();
-  }
-
   private void getAllStations() {
-    alertDialog.show();
     Type type = new TypeToken<List<Station>>() {}.getType();
     Gson gson = new Gson();
     List<Station> empty = new ArrayList<>();
@@ -158,14 +146,20 @@ public class MainActivity extends AppCompatActivity {
           stationListSortcut.add(station.getAbbr());
         }
       }
-      if(alertDialog.isShowing()) {
-        alertDialog.dismiss();
-      }
       navigation.setSelectedItemId(R.id.navigation_my_routes);
     }
   }
 
   private void getAllStationsFromApi() {
+    View mView = getLayoutInflater().inflate(R.layout.loading_dialog_layout, null);
+    AlertDialog alertDialog = new AlertDialog.Builder(this)
+        .setView(mView)
+        .setTitle("Loading")
+        .setCancelable(false)
+        .create();
+
+    alertDialog.show();
+
     AlertDialog errorDialog = new AlertDialog.Builder(this)
         .setTitle("Error")
         .setMessage("Cannot get data, please make sure you have Internet connection.")
