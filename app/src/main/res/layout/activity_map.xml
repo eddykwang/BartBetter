@@ -5,9 +5,8 @@
                 android:layout_height="match_parent"
                 tools:context="com.eddystudio.bartbetter.UI.MapActivity">
 
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/imageView17"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/bart_map_hdd" />
+  <com.github.chrisbanes.photoview.PhotoView
+    android:id="@+id/bartMapView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
 </RelativeLayout>
