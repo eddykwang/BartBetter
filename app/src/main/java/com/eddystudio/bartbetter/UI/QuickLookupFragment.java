@@ -5,6 +5,9 @@ import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -107,7 +110,7 @@ public class QuickLookupFragment extends BaseFragment {
     if(preference.getBoolean(TO_SHOW_MAP_VIEW, true)) {
       setupMapView();
       binding.getRoot().findViewById(R.id.expand_map_iv).setVisibility(View.GONE);
-    }else{
+    } else {
       binding.getRoot().findViewById(R.id.expand_map_iv).setVisibility(View.VISIBLE);
       Objects.requireNonNull(mapView.getView()).setVisibility(View.GONE);
     }
@@ -162,9 +165,15 @@ public class QuickLookupFragment extends BaseFragment {
     mapView.getMapAsync(googleMap -> {
       this.googleMap = googleMap;
 
+      int height = 68;
+      int width = (int) (height * 1.39);
+      Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bart_icon);
+      Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, width, height, false);
+
       int c = 0;
       for(Station station : MainActivity.stationInfoList) {
         Marker marker = googleMap.addMarker(new MarkerOptions()
+            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
             .position(new LatLng(Double.parseDouble(station.getGtfsLatitude()), Double.parseDouble(station.getGtfsLongitude()))));
         marker.setTag(c);
         marker.setTitle(station.getName());
