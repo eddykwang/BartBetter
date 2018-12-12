@@ -81,23 +81,57 @@ public class DashboardFragment extends BaseFragment {
     Application.getAppComponet().inject(this);
 
     AppBarLayout appBarLayout = binding.appbarLayout;
-    appBarLayout.addOnOffsetChangedListener((appbarLayout, offset) -> {
-      int scrollRange = -1;
-      if(scrollRange == -1) {
-        scrollRange = appBarLayout.getTotalScrollRange();
-      }
+    appBarLayout.postDelayed(() -> appBarLayout.addOnOffsetChangedListener((appbarLayout, offset) -> {
+      showCaseSetup();
+      int scrollRange = appBarLayout.getTotalScrollRange();
       if(scrollRange + offset == 0) {
         switchCompat.animate().translationX(0);
       } else {
-        switchCompat.postDelayed(() -> switchCompat.animate().translationX(switchCompat.getWidth() + 20), 1000);
+        switchCompat.animate().translationX(switchCompat.getWidth() + 20);
       }
-    });
+    }), 500);
+
+    init();
+
+    return binding.getRoot();
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    binding.getRoot().postDelayed(this::loadFromPreference
+        , 300);
+  }
+
+  private void init() {
+    vm.getEventsSubject()
+        .observeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .compose(event -> Observable.merge(
+            event.ofType(Events.LoadingEvent.class).doOnNext(data -> {
+              binding.swipeRefreshLy.setRefreshing(data.isLoad());
+              if(getActivity() != null && binding.recylerView.findViewHolderForAdapterPosition(0) != null) {
+                new FancyShowCaseView.Builder(getActivity())
+                    .focusOn(binding.recylerView.findViewHolderForAdapterPosition(0).itemView)
+                    .title("Tap to see more schedules,\nswipe left to deleted,\npress and drag to rearrange position. ")
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .showOnce("recyclerview_item_showcase")
+                    .delay(500)
+                    .build()
+                    .show();
+              }
+            }),
+            event.ofType(Events.ErrorEvent.class).doOnNext(error -> handleError(error.getError())),
+            event.ofType(Events.GoToDetailEvent.class).doOnNext(data -> goToDetail(data.getFrom(), data.getTo(), data.getRouteColor(), data.getView())),
+            event.ofType(Events.GetDataEvent.class).doOnNext(data -> adapter.modifyData((DashboardRecyclerViewItemVM) data.getData()))
+        ))
+        .subscribe();
 
     setUpAdapter();
-    init();
     setupFab();
-    showCaseSetup();
-    return binding.getRoot();
+    setupSwitch();
+    binding.swipeRefreshLy.setOnRefreshListener(this::loadFromPreference);
+    attachOnCardSwipe();
   }
 
   private void showCaseSetup() {
@@ -161,15 +195,6 @@ public class DashboardFragment extends BaseFragment {
             .show();
       }
     }
-  }
-
-  @Override
-  public void onStart() {
-    super.onStart();
-    setupSwitch();
-    loadFromPreference();
-    binding.swipeRefreshLy.setOnRefreshListener(this::loadFromPreference);
-    attachOnCardSwipe();
   }
 
   private void attachOnCardSwipe() {
@@ -244,31 +269,6 @@ public class DashboardFragment extends BaseFragment {
       vm.autoRefreshGetData(stationPairList);
       vm.getAccurateEstTime(stationPairList);
     }
-  }
-
-  private void init() {
-    vm.getEventsSubject()
-        .observeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .compose(event -> Observable.merge(
-            event.ofType(Events.LoadingEvent.class).doOnNext(data -> {
-              binding.swipeRefreshLy.setRefreshing(data.isLoad());
-              if(getActivity() != null && binding.recylerView.findViewHolderForAdapterPosition(0) != null) {
-                new FancyShowCaseView.Builder(getActivity())
-                    .focusOn(binding.recylerView.findViewHolderForAdapterPosition(0).itemView)
-                    .title("Tap to see more schedules,\nswipe left to deleted,\npress and drag to rearrange position. ")
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .showOnce("recyclerview_item_showcase")
-                    .delay(500)
-                    .build()
-                    .show();
-              }
-            }),
-            event.ofType(Events.ErrorEvent.class).doOnNext(error -> handleError(error.getError())),
-            event.ofType(Events.GoToDetailEvent.class).doOnNext(data -> goToDetail(data.getFrom(), data.getTo(), data.getRouteColor(), data.getView())),
-            event.ofType(Events.GetDataEvent.class).doOnNext(data -> adapter.modifyData((DashboardRecyclerViewItemVM) data.getData()))
-        ))
-        .subscribe();
   }
 
   private void setUpAdapter() {

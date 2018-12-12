@@ -66,7 +66,7 @@ public class NotificationFragment extends BaseFragment {
     super.onStart();
     viewModel.isViewDetailChecked.set(sharedPreferences.getBoolean(savedViewMorePreference, false));
     isErrorShowed = false;
-    viewModel.init();
+    binding.getRoot().postDelayed(() -> viewModel.init(), 300);
   }
 
   @Override

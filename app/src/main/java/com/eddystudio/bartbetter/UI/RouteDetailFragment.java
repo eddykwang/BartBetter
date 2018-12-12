@@ -95,10 +95,13 @@ public class RouteDetailFragment extends BaseFragment {
 
   @Override
   public void onStart() {
-    Objects.requireNonNull(getActivity()).findViewById(R.id.navigation).setVisibility(View.GONE);
-    adapter.clearAllData();
     super.onStart();
-    vm.getRoutesInfo(null, null, true);
+    Objects.requireNonNull(getActivity()).findViewById(R.id.navigation).setVisibility(View.GONE);
+
+    binding.getRoot().postDelayed(()->{
+      adapter.clearAllData();
+      vm.getRoutesInfo(null, null, true);
+    },300);
 
   }
 

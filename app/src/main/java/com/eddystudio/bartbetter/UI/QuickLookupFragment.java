@@ -98,18 +98,43 @@ public class QuickLookupFragment extends BaseFragment {
     ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     getActivity().setTitle("Discover");
 
-    init();
-    setupSinner();
-
-    setUpAdapter();
-    attachOnCardSwipe();
-
-
     mapView = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.maps_view);
+    Objects.requireNonNull(mapView.getView()).setVisibility(View.GONE);
+
+    binding.getRoot().postDelayed(() -> {
+      init();
+      setUpAdapter();
+      setupSinner();
+      initMapView();
+    }, 300);
+
+
+    return binding.getRoot();
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+  }
+
+  private void init() {
+    quickLookupViewModel.getEventsSubject()
+        .compose(event -> Observable.mergeArray(
+            event.ofType(Events.LoadingEvent.class).doOnNext(data -> binding.swipeRefreshLy.setRefreshing(data.isLoad())),
+            event.ofType(Events.CompleteEvent.class).doOnNext(data -> onComplete(data.getBartList())),
+            event.ofType(Events.ErrorEvent.class).doOnNext(error -> handleError(error.getError())),
+            event.ofType(Events.GoToDetailEvent.class).doOnNext(data -> goToDetail(data.getFrom(), data.getTo(), data.getRouteColor(), data.getView())),
+            event.ofType(Events.GetDataEvent.class).doOnNext(data -> etdStations = (ArrayList<String>) data.getData())
+        ))
+        .subscribe();
+  }
+
+  private void initMapView() {
 
     if(preference.getBoolean(TO_SHOW_MAP_VIEW, true)) {
       setupMapView();
       binding.getRoot().findViewById(R.id.expand_map_iv).setVisibility(View.GONE);
+      Objects.requireNonNull(mapView.getView()).setVisibility(View.VISIBLE);
     } else {
       binding.getRoot().findViewById(R.id.expand_map_iv).setVisibility(View.VISIBLE);
       Objects.requireNonNull(mapView.getView()).setVisibility(View.GONE);
@@ -139,26 +164,6 @@ public class QuickLookupFragment extends BaseFragment {
     binding.mainContentLinearLayout.setLayoutTransition(new LayoutTransition());
     binding.mainContentLinearLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
     binding.gpsImageview.setOnClickListener(v -> setUpGetCurrentLocation());
-
-    return binding.getRoot();
-  }
-
-  @Override
-  public void onStart() {
-    super.onStart();
-    setLastSelectedStation();
-  }
-
-  private void init() {
-    quickLookupViewModel.getEventsSubject()
-        .compose(event -> Observable.mergeArray(
-            event.ofType(Events.LoadingEvent.class).doOnNext(data -> binding.swipeRefreshLy.setRefreshing(data.isLoad())),
-            event.ofType(Events.CompleteEvent.class).doOnNext(data -> onComplete(data.getBartList())),
-            event.ofType(Events.ErrorEvent.class).doOnNext(error -> handleError(error.getError())),
-            event.ofType(Events.GoToDetailEvent.class).doOnNext(data -> goToDetail(data.getFrom(), data.getTo(), data.getRouteColor(), data.getView())),
-            event.ofType(Events.GetDataEvent.class).doOnNext(data -> etdStations = (ArrayList<String>) data.getData())
-        ))
-        .subscribe();
   }
 
   private void setupMapView() {
@@ -209,7 +214,6 @@ public class QuickLookupFragment extends BaseFragment {
                     Double.parseDouble(selectedS.getGtfsLongitude())), 13f));
           }
 
-
           SharedPreferences.Editor editor = preference.edit();
           editor.putString(LAST_SELECTED_STATION, selectedStation);
           editor.putInt(LAST_SELECTED_SINPER_POSITION, sinpperPos);
@@ -228,6 +232,7 @@ public class QuickLookupFragment extends BaseFragment {
         binding.stationSpinner.onTouch(binding.getRoot(), MotionEvent.obtain(1, 1, MotionEvent.ACTION_UP, 1, 1, 1)));
 
     binding.swipeRefreshLy.setOnRefreshListener(() -> quickLookupViewModel.getData(selectedStation));
+    setLastSelectedStation();
   }
 
   private void setUpGetCurrentLocation() {
@@ -362,6 +367,7 @@ public class QuickLookupFragment extends BaseFragment {
     binding.recylerView.setAdapter(adapters);
     binding.recylerView.setNestedScrollingEnabled(false);
     binding.recylerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+    attachOnCardSwipe();
   }
 
   private void runLayoutAnimation(final RecyclerView recyclerView) {
