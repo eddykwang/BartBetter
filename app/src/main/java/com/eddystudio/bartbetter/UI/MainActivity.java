@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
     getSupportFragmentManager()
         .beginTransaction()
-        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+        .setCustomAnimations(R.anim.fragment_trans_anim, android.R.anim.fade_out)
         .replace(R.id.main_frame_layout, fragment, fragment.getClass().getSimpleName())
         .commit();
   }

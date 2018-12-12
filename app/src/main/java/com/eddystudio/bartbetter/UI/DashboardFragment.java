@@ -82,19 +82,14 @@ public class DashboardFragment extends BaseFragment {
 
     AppBarLayout appBarLayout = binding.appbarLayout;
     appBarLayout.addOnOffsetChangedListener((appbarLayout, offset) -> {
-      boolean isShow = true;
       int scrollRange = -1;
       if(scrollRange == -1) {
         scrollRange = appBarLayout.getTotalScrollRange();
       }
       if(scrollRange + offset == 0) {
-//        switchCompat.setVisibility(View.VISIBLE);
         switchCompat.animate().translationX(0);
-        isShow = true;
-      } else if(isShow) {
-//        switchCompat.setVisibility(View.GONE);
-        switchCompat.animate().translationX(switchCompat.getWidth() + 20);
-        isShow = false;
+      } else {
+        switchCompat.postDelayed(() -> switchCompat.animate().translationX(switchCompat.getWidth() + 20), 1000);
       }
     });
 
