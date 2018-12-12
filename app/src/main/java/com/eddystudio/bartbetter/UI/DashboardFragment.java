@@ -20,6 +20,8 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -320,7 +322,8 @@ public class DashboardFragment extends BaseFragment {
     });
 
     binding.fabAdd.setOnClickListener(view -> {
-      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+      binding.fabAdd.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_rotate_anim));
+      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.custom_dailog_style);
       View mView = getLayoutInflater().inflate(R.layout.add_route_dialog_layout, null);
       builder.setView(mView);
       Spinner fromSpinner = mView.findViewById(R.id.dialog_from_spinner);

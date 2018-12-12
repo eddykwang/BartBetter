@@ -45,4 +45,13 @@
     <item name="android:textStyle">normal</item>
   </style>
 
+  <style name="custom_dailog_style" parent="@style/ThemeOverlay.AppCompat.Dialog.Alert">
+    <item name="android:windowAnimationStyle">@style/custom_dialog_animation</item>
+  </style>
+
+  <style name="custom_dialog_animation">
+    <item name="android:windowEnterAnimation">@anim/dialog_enter_anim</item>
+    <item name="android:windowExitAnimation">@anim/dialog_exit_anim</item>
+  </style>
+
 </resources>
