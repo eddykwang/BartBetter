@@ -10,12 +10,13 @@
     >
 
     <FrameLayout
-    android:id="@+id/main_frame_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_below="@+id/toolbar"
-    android:layout_above="@+id/navigation"
-    />
+      android:id="@+id/main_frame_layout"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_below="@+id/toolbar"
+      android:layout_above="@+id/navigation"
+      android:transitionGroup="true"
+      />
 
     <android.support.design.widget.BottomNavigationView
       android:id="@+id/navigation"

@@ -7,6 +7,7 @@
   <!-- TODO: Remove or change this placeholder text -->
   <string name="text_from_transition">text_from_transition</string>
   <string name="text_to_transition">text_to_transition</string>
+  <string name="view_transition">view_transition</string>
   <string name="noInternetErrorMessage">Loading data from the server, please wait until it finished. </string>
   <string name="dialog_warnning">Sorry, origin and destination cannot be the same.</string>
 

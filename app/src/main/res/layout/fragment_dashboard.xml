@@ -68,8 +68,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="16dp"
+        android:clipChildren="false"
         android:clipToPadding="false"
         android:scrollbars="none"
+        android:transitionGroup="false"
         tools:listitem="@layout/dashboard_single_recycler_view_item"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 

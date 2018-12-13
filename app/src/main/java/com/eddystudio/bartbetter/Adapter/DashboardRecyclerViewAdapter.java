@@ -38,6 +38,7 @@ public class DashboardRecyclerViewAdapter extends BaseRecyclerViewAdapter {
         .setTransitionName(application.getString(R.string.text_to_transition) + position);
     holder.itemView.findViewById(R.id.dashboard_from_tv)
         .setTransitionName(application.getString(R.string.text_from_transition) + position);
+    holder.itemView.setTransitionName(application.getString(R.string.view_transition) + position);
   }
 
   public void modifyData(DashboardRecyclerViewItemVM item) {

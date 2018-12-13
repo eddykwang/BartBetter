@@ -8,6 +8,7 @@
     <item name="colorAccent">@color/colorAccent</item>
     <item name="android:colorBackground">@color/white</item>
     <item name="android:titleTextStyle">@style/ActionbarTitleStyle</item>
+    <item name="android:windowContentTransitions">true</item>
   </style>
 
   <style name="AppTheme.NoActionBar" parent="AppTheme">

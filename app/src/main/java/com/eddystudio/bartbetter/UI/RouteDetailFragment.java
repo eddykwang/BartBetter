@@ -16,6 +16,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.SnapHelper;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -75,9 +78,10 @@ public class RouteDetailFragment extends BaseFragment {
 
     Application.getAppComponet().inject(this);
 
-    setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
-    setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.slide_bottom));
-    setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
+    setEnterTransition(new Fade());
+    setExitTransition(new Fade());
+
+//    setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.explode));
 
     vm = new RouteDetailViewModel(from, to, color);
     binding.setVm(vm);
@@ -98,10 +102,10 @@ public class RouteDetailFragment extends BaseFragment {
     super.onStart();
     Objects.requireNonNull(getActivity()).findViewById(R.id.navigation).setVisibility(View.GONE);
 
-    binding.getRoot().postDelayed(()->{
+    binding.getRoot().postDelayed(() -> {
       adapter.clearAllData();
       vm.getRoutesInfo(null, null, true);
-    },300);
+    }, 300);
 
   }
 
