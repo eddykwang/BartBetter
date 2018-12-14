@@ -7,10 +7,13 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.internal.BottomNavigationItemView;
+import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
   public static ArrayList<String> stationListSortcut = new ArrayList<>();
   public static List<Station> stationInfoList = new ArrayList<>();
 
+  private View badgeView;
+  private BottomNavigationItemView bottoMNavigationItemView;
   private BottomNavigationView navigation;
   private Fragment fragment;
   private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -70,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         break;
       case R.id.navigation_notifications:
         fragment = notificationFragment;
-
+        bottoMNavigationItemView.removeView(badgeView);
         break;
     }
     commitToNewFragment(fragment);
@@ -102,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
       getWindow().setStatusBarColor(Color.TRANSPARENT);
     }
 
+    BottomNavigationMenuView bottomNavigationItemView = (BottomNavigationMenuView) navigation.getChildAt(0);
+    bottoMNavigationItemView = (BottomNavigationItemView) bottomNavigationItemView.getChildAt(2);
+    badgeView = LayoutInflater.from(this).inflate(R.layout.notification_badge_layout, bottomNavigationItemView, false);
   }
 
   public static void setWindowFlag(Activity activity, final int bits, boolean on) {
@@ -118,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onStart() {
     super.onStart();
+    navigation.postDelayed(this::getDelayNotification, 2000);
   }
 
   @Override
@@ -127,6 +136,20 @@ public class MainActivity extends AppCompatActivity {
         onBackPressed();
     }
     return super.onOptionsItemSelected(item);
+  }
+
+  private void getDelayNotification() {
+    compositeDisposable.add(
+        repository.getDelayReport()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(delayReport -> {
+              String delayStation = delayReport.getRoot().getBsa().get(0).getStation();
+              if(!delayStation.contains("")) {
+                bottoMNavigationItemView.addView(badgeView);
+              } else {
+                bottoMNavigationItemView.removeView(badgeView);
+              }
+            }));
   }
 
   private void getAllStations() {

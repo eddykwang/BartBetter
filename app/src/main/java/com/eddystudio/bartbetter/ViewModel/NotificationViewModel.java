@@ -68,7 +68,6 @@ public class NotificationViewModel extends ViewModel {
           this.isDelayReportProgressVisible.set(true);
         })
         .delay(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-        .subscribeOn(AndroidSchedulers.mainThread())
         .subscribe(delayReport -> {
           convertToVM(delayReport);
           eventsSubject.onNext(new Events.LoadingEvent(false));
@@ -81,7 +80,6 @@ public class NotificationViewModel extends ViewModel {
           this.isElevatorProgressVisible.set(true);
         })
         .delay(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-        .subscribeOn(AndroidSchedulers.mainThread())
         .subscribe(elevatorStatus -> {
           convertToVM(elevatorStatus);
           eventsSubject.onNext(new Events.LoadingEvent(false));
