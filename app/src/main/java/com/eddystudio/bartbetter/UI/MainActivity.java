@@ -2,7 +2,6 @@ package com.eddystudio.bartbetter.UI;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Repository;
@@ -30,6 +30,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
   private View badgeView;
   private BottomNavigationItemView bottoMNavigationItemView;
+  private TextView badgeNumber;
   private BottomNavigationView navigation;
   private Fragment fragment;
   private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -110,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationMenuView bottomNavigationItemView = (BottomNavigationMenuView) navigation.getChildAt(0);
     bottoMNavigationItemView = (BottomNavigationItemView) bottomNavigationItemView.getChildAt(2);
     badgeView = LayoutInflater.from(this).inflate(R.layout.notification_badge_layout, bottomNavigationItemView, false);
+    badgeNumber = badgeView.findViewById(R.id.badge_number);
   }
 
   public static void setWindowFlag(Activity activity, final int bits, boolean on) {
@@ -139,15 +142,30 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void getDelayNotification() {
+    AtomicInteger num_reports = new AtomicInteger(0);
     compositeDisposable.add(
         repository.getDelayReport()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(delayReport -> {
               String delayStation = delayReport.getRoot().getBsa().get(0).getStation();
               if(!delayStation.contains("")) {
-                bottoMNavigationItemView.addView(badgeView);
-              } else {
+                num_reports.getAndIncrement();
+                badgeNumber.setText(String.valueOf(num_reports.get()));
                 bottoMNavigationItemView.removeView(badgeView);
+                bottoMNavigationItemView.addView(badgeView);
+              }
+            }));
+
+    compositeDisposable.add(
+        repository.getElevatorStatus()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(elevatorStatus -> {
+              String station = elevatorStatus.getRoot().getBsa().get(0).getStation();
+              if(station.equals("BART")) {
+                num_reports.getAndIncrement();
+                badgeNumber.setText(String.valueOf(num_reports.get()));
+                bottoMNavigationItemView.removeView(badgeView);
+                bottoMNavigationItemView.addView(badgeView);
               }
             }));
   }
