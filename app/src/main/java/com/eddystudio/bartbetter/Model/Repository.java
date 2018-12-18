@@ -8,6 +8,7 @@ import com.eddystudio.bartbetter.Model.Response.DelayReport.DelayReport;
 import com.eddystudio.bartbetter.Model.Response.ElevatorStatus.ElevatorStatus;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Bart;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
+import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Station;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Response.Stations.BartStations;
@@ -115,7 +116,7 @@ public class Repository {
         .onErrorResumeNext(Observable.empty())
         .concatMap(pair ->
             Observable.fromCallable(
-                () -> bartService.routeSchedules("depart", pair.first, pair.second, "now", "now", KEY, "0", "4", "0", "y")
+                () -> bartService.routeSchedules("depart", pair.first, pair.second, "now", "now", KEY, "1", "3", "0", "y")
                     .execute())
                 .subscribeOn(Schedulers.io())
                 .map(Response::body)
@@ -146,34 +147,41 @@ public class Repository {
 
   public Observable<AccurateEtdResult> getAccurateEtdTime(List<Pair<String, String>> routes) {
     return getRouteSchedules(routes)
-        .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1,3), (n,i) -> i))
+        .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1, 3), (n, i) -> i))
         .concatMap(r -> {
-          Trip trip = r.getRoot().getSchedule().getRequest().getTrip().get(0);
+          List<Trip> trips = r.getRoot().getSchedule().getRequest().getTrip();
           final Etd[] result = {new Etd()};
           final Throwable[] error = new Throwable[1];
-          return getEstimate(trip.getLeg().get(0).getOrigin())
-              .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1,3), (n,i) -> i))
+          return getEstimate(trips.get(0).getLeg().get(0).getOrigin())
+              .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1, 3), (n, i) -> i))
               .onErrorResumeNext(err -> {
                 error[0] = err;
                 return Observable.just(new Bart());
               })
               .map(d -> {
                     if(d.getRoot() != null) {
-                      List<Etd> etds = d.getRoot().getStation().get(0).getEtd();
-                      for(Etd etd : etds) {
-                        result[0] = etd;
-                        if(etd.getAbbreviation().equals(trip.getLeg().get(0).getTrainHeadStation())) {
-                          break;
+                      for(Etd etd : d.getRoot().getStation().get(0).getEtd()) {
+                        for(Trip trip : trips) {
+                          if(trip.getLeg().get(0).getTrainHeadStation().equals(etd.getAbbreviation())) {
+                            if(result[0].getEstimate() == null) {
+                              result[0] = etd;
+                            } else {
+                              if(convertStringToInt(etd.getEstimate().get(0).getMinutes()) < convertStringToInt(result[0].getEstimate().get(0).getMinutes())) {
+                                result[0] = etd;
+                              }
+                            }
+                          }
                         }
                       }
-                      return new OnSuccess(new EtdResult(result[0], trip.getOrigin(), trip.getDestination()));
-                    } else {
-                      return new OnError(new Throwable(error[0]), r.getRoot().getOrigin(), r.getRoot().getDestination());
                     }
-
+                    return new OnSuccess(new EtdResult(result[0], trips.get(0).getOrigin(), trips.get(0).getDestination()));
                   }
               );
         });
+  }
+
+  private Integer convertStringToInt(String time) {
+    return time.equalsIgnoreCase("Leaving") ? 0 : Integer.parseInt(time);
   }
 
   public interface AccurateEtdResult {}
