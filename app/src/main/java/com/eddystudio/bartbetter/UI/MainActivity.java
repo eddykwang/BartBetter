@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(delayReport -> {
               String delayStation = delayReport.getRoot().getBsa().get(0).getStation();
-              if(!delayStation.contains("")) {
+              if(!delayStation.equals("")) {
                 num_reports.getAndIncrement();
                 badgeNumber.setText(String.valueOf(num_reports.get()));
                 bottoMNavigationItemView.removeView(badgeView);
