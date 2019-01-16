@@ -20,9 +20,6 @@ import com.eddystudio.bartbetter.R;
 import com.eddystudio.bartbetter.ViewModel.Events;
 import com.eddystudio.bartbetter.ViewModel.NotificationViewModel;
 import com.eddystudio.bartbetter.databinding.FragmentNotificationBinding;
-import com.twitter.sdk.android.tweetui.TweetTimelineRecyclerViewAdapter;
-import com.twitter.sdk.android.tweetui.UserTimeline;
-
 import javax.inject.Inject;
 
 import io.reactivex.Observable;

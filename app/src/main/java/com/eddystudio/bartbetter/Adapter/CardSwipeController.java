@@ -128,7 +128,7 @@ public class CardSwipeController extends Callback {
       background.setColor(context.getColor(R.color.routColor_green));
       background.setBounds((int) (itemview.getLeft() + dX), itemview.getTop(), itemview.getLeft(), itemview.getBottom());
     } else {
-      background.setColor(context.getColor(R.color.tw__composer_red));
+      background.setColor(context.getColor(R.color.colorPink));
       background.setBounds((int) (itemview.getRight() + dX), itemview.getTop(), itemview.getRight(), itemview.getBottom());
     }
     background.draw(c);

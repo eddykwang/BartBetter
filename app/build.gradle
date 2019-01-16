@@ -76,9 +76,6 @@ dependencies {
   implementation 'com.github.medyo:android-about-page:1.2.4'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
   implementation 'com.github.faruktoptas:FancyShowCaseView:1.0.1'
-  implementation('com.twitter.sdk.android:twitter:3.3.0@aar') {
-    transitive = true
-  }
 //  kapt "com.android.databinding:compiler:$gradleVersion"
 }
 
