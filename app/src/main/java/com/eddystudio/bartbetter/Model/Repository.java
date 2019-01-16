@@ -14,6 +14,8 @@ import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Response.Stations.BartStations;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -150,7 +152,7 @@ public class Repository {
         .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1, 3), (n, i) -> i))
         .concatMap(r -> {
           List<Trip> trips = r.getRoot().getSchedule().getRequest().getTrip();
-          final Etd[] result = {new Etd()};
+          final List<Etd> etdList = new ArrayList<>();
           final Throwable[] error = new Throwable[1];
           return getEstimate(trips.get(0).getLeg().get(0).getOrigin())
               .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1, 3), (n, i) -> i))
@@ -163,18 +165,17 @@ public class Repository {
                       for(Etd etd : d.getRoot().getStation().get(0).getEtd()) {
                         for(Trip trip : trips) {
                           if(trip.getLeg().get(0).getTrainHeadStation().equals(etd.getAbbreviation())) {
-                            if(result[0].getEstimate() == null) {
-                              result[0] = etd;
-                            } else {
-                              if(convertStringToInt(etd.getEstimate().get(0).getMinutes()) < convertStringToInt(result[0].getEstimate().get(0).getMinutes())) {
-                                result[0] = etd;
-                              }
-                            }
+                            etdList.add(etd);
                           }
                         }
                       }
                     }
-                    return new OnSuccess(new EtdResult(result[0], trips.get(0).getOrigin(), trips.get(0).getDestination()));
+                    if(etdList.isEmpty()){
+                      etdList.add(new Etd());
+                    }else {
+                      etdList.sort((t1, t2) -> convertStringToInt(t1.getEstimate().get(0).getMinutes()) - convertStringToInt(t2.getEstimate().get(0).getMinutes()));
+                    }
+                    return new OnSuccess(new EtdResult(etdList, trips.get(0).getOrigin(), trips.get(0).getDestination()));
                   }
               );
         });

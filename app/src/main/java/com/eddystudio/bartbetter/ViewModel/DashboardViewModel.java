@@ -9,6 +9,7 @@ import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -82,7 +83,7 @@ public class DashboardViewModel {
                     .map(etdResult -> getRoutesInfoToVm(etdResult.getEtdResult().getEtd(), etdResult.getEtdResult().getOrigin(), etdResult.getEtdResult().getDestination()))
                     .doOnNext(etd -> eventsSubject.onNext(new Events.GetDataEvent(etd))),
                 result.ofType(Repository.OnError.class).doOnNext(onError -> {
-                  DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(new Etd(), onError.getFrom(), onError.getTo());
+                  DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(new ArrayList<Etd>(), onError.getFrom(), onError.getTo());
                   eventsSubject.onNext(new Events.GetDataEvent(vm));
                 })
             ))
@@ -97,22 +98,9 @@ public class DashboardViewModel {
     eventsSubject.onNext(new Events.LoadingEvent(false));
   }
 
-  private DashboardRecyclerViewItemVM getRoutesInfoToVm(ScheduleFromAToB scheduleFromAToB) {
-    List<Trip> trips = scheduleFromAToB.getRoot().getSchedule().getRequest().getTrip();
+  private DashboardRecyclerViewItemVM getRoutesInfoToVm(List<Etd> etds, String origin, String dest) {
 
-    DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(trips, scheduleFromAToB.getRoot().getOrigin(),
-        scheduleFromAToB.getRoot().getDestination());
-    vm.setItemClickListener((f, t, s, v) -> eventsSubject.onNext(new Events.GoToDetailEvent(f, t, s, v)));
-    return vm;
-  }
-
-  private DashboardRecyclerViewItemVM getRoutesInfoToVm(Etd etd, String origin, String dest) {
-
-    if(etd.getEstimate() != null) {
-      Log.d("accurate time", "\n" + origin + " to " + dest + " : " + etd.getEstimate().get(0).getMinutes());
-    }
-
-    DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(etd, origin, dest);
+    DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(etds, origin, dest);
     vm.setItemClickListener((f, t, s, v) -> eventsSubject.onNext(new Events.GoToDetailEvent(f, t, s, v)));
     return vm;
   }

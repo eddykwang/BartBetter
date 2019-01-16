@@ -105,8 +105,6 @@ public class MainActivity extends AppCompatActivity {
 
     if(savedInstanceState == null) {
       getAllStations();
-      setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
-      getWindow().setStatusBarColor(Color.TRANSPARENT);
     }
 
     BottomNavigationMenuView bottomNavigationItemView = (BottomNavigationMenuView) navigation.getChildAt(0);
@@ -115,16 +113,6 @@ public class MainActivity extends AppCompatActivity {
     badgeNumber = badgeView.findViewById(R.id.badge_number);
   }
 
-  public static void setWindowFlag(Activity activity, final int bits, boolean on) {
-    Window win = activity.getWindow();
-    WindowManager.LayoutParams winParams = win.getAttributes();
-    if(on) {
-      winParams.flags |= bits;
-    } else {
-      winParams.flags &= ~bits;
-    }
-    win.setAttributes(winParams);
-  }
 
   @Override
   protected void onStart() {

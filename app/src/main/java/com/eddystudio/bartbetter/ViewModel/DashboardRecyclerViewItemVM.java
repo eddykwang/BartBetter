@@ -5,12 +5,16 @@ import android.databinding.ObservableInt;
 import android.graphics.Color;
 import android.view.View;
 
+import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Estimate;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Uilt;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.eddystudio.bartbetter.Model.Uilt.getFullStationName;
 import static com.eddystudio.bartbetter.Model.Uilt.materialColorConverter;
@@ -31,20 +35,10 @@ public class DashboardRecyclerViewItemVM {
   private ItemClickListener itemClickListener;
 
 
-  public DashboardRecyclerViewItemVM(List<Trip> trips, String from, String to) {
+  public DashboardRecyclerViewItemVM(List<Etd> etds, String from, String to) {
     this.from = from;
     this.to = to;
-    try {
-      updateUi(trips, from, to);
-    } catch(ParseException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public DashboardRecyclerViewItemVM(Etd etd, String from, String to) {
-    this.from = from;
-    this.to = to;
-    updateUi(etd, from, to);
+    updateUi(etds, from, to);
   }
 
 
@@ -67,40 +61,40 @@ public class DashboardRecyclerViewItemVM {
     }
   }
 
-  private void updateUi(List<Trip> trips, String origin, String dest) throws ParseException {
+  private void updateUi(List<Etd> etds, String origin, String dest) {
     fromStation.set(Uilt.getFullStationName(origin));
     destination.set(Uilt.getFullStationName(dest));
-    if(trips.size() > 0) {
-      routeColor.set(Uilt.routeColorMatcher(trips.get(0).getLeg().get(0).getLine()));
-      if(trips.get(0).getLeg().size() > 1) {
-        routeColor2.set(Uilt.routeColorMatcher(trips.get(0).getLeg().get(1).getLine()));
-      } else {
-        routeColor2.set(routeColor.get());
-      }
 
-      firstTrain.set(Uilt.timeMinutesCalculator(trips.get(0).getLeg().get(0).getOrigTimeDate() + " " +
-          trips.get(0).getLeg().get(0).getOrigTimeMin()));
-      if(trips.get(1) != null) {
-        secondTrain.set(Uilt.timeMinutesCalculator(trips.get(1).getLeg().get(0).getOrigTimeDate() + " " +
-            trips.get(1).getLeg().get(0).getOrigTimeMin()));
-        if(trips.get(2) != null) {
-          thirdTrain.set(Uilt.timeMinutesCalculator(trips.get(2).getLeg().get(0).getOrigTimeDate() + " " +
-              trips.get(2).getLeg().get(0).getOrigTimeMin()));
-        }
-      }
-    }
-  }
+    if(etds.isEmpty()) return;
 
 
-  private void updateUi(Etd etd, String origin, String dest) {
-    fromStation.set(Uilt.getFullStationName(origin));
-    destination.set(Uilt.getFullStationName(dest));
-    if(etd.getEstimate() != null) {
-      firstTrain.set(etd.getEstimate().get(0).getMinutes().equals("Leaving") ? "0" : etd.getEstimate().get(0).getMinutes());
-      routeColor.set(materialColorConverter(etd.getEstimate().get(0).getColor()));
-      trainNameLength.set(etd.getEstimate().get(0).getLength() + " car " + getFullStationName(etd.getDestination()) + " train");
+    if(etds.get(0).getEstimate() != null) {
+      routeColor.set(materialColorConverter(etds.get(0).getEstimate().get(0).getColor()));
+      trainNameLength.set(etds.get(0).getEstimate().get(0).getLength() + " car " + getFullStationName(etds.get(0).getDestination()) + " train");
     } else {
       firstTrain.set("Unavailable");
     }
+
+    Set<String> timeList = new HashSet<>();
+
+    for(Etd etd : etds) {
+      for(Estimate estimate : etd.getEstimate()) {
+        timeList.add(estimate.getMinutes().equals("Leaving") ? "0" : estimate.getMinutes());
+      }
+    }
+
+    List<String> tl = new ArrayList<>(timeList);
+    tl.sort((t1, t2) -> Integer.parseInt(t1) - Integer.parseInt(t2));
+
+    if(tl.size() > 0) {
+      firstTrain.set(tl.get(0));
+    }
+    if(tl.size() > 1) {
+      secondTrain.set(tl.get(1));
+    }
+    if(tl.size() > 2) {
+      thirdTrain.set(tl.get(2));
+    }
+
   }
 }
