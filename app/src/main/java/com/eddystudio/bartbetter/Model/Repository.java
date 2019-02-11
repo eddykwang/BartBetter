@@ -8,14 +8,12 @@ import com.eddystudio.bartbetter.Model.Response.DelayReport.DelayReport;
 import com.eddystudio.bartbetter.Model.Response.ElevatorStatus.ElevatorStatus;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Bart;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
-import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Station;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Response.Stations.BartStations;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -164,15 +162,15 @@ public class Repository {
                     if(d.getRoot() != null) {
                       for(Etd etd : d.getRoot().getStation().get(0).getEtd()) {
                         for(Trip trip : trips) {
-                          if(trip.getLeg().get(0).getTrainHeadStation().equals(etd.getAbbreviation())) {
+                          if(trip.getLeg().get(0).getTrainHeadStation().equals(etd.getDestination())) {
                             etdList.add(etd);
                           }
                         }
                       }
                     }
-                    if(etdList.isEmpty()){
-                      etdList.add(new Etd());
-                    }else {
+                    if(etdList.isEmpty()) {
+                      return new OnError(new Throwable("Unable to get response!"), trips.get(0).getOrigin(), trips.get(0).getDestination());
+                    } else {
                       etdList.sort((t1, t2) -> convertStringToInt(t1.getEstimate().get(0).getMinutes()) - convertStringToInt(t2.getEstimate().get(0).getMinutes()));
                     }
                     return new OnSuccess(new EtdResult(etdList, trips.get(0).getOrigin(), trips.get(0).getDestination()));

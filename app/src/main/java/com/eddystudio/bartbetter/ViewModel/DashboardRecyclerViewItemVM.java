@@ -7,10 +7,8 @@ import android.view.View;
 
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Estimate;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
-import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Uilt;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

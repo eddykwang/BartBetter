@@ -43,32 +43,32 @@ public class RouteDetailRecyclerViewModel {
     }
 
     private void updateUi(){
-        updateFares();
+//        updateFares();
         updateRoutes();
     }
 
-    private void updateFares(){
-        if (trip.getFares() != null) {
-            for (Fare fare : trip.getFares().getFare()) {
-                switch (fare.getClass_()) {
-                    case "clipper":
-                        clipperPrice.set("$ " + fare.getAmount());
-                        break;
-                    case "cash":
-                        cashPrice.set("$ " + fare.getAmount());
-                        break;
-                    case "rtcclipper":
-                        seniorPrice.set("$ " + fare.getAmount());
-                        break;
-                    case "student":
-                        youthPrice.set("$ " + fare.getAmount());
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-    }
+//    private void updateFares(){
+//        if (trip.getFares() != null) {
+//            for (Fare fare : trip.getFares().getFare()) {
+//                switch (fare.getClass_()) {
+//                    case "clipper":
+//                        clipperPrice.set("$ " + fare.getAmount());
+//                        break;
+//                    case "cash":
+//                        cashPrice.set("$ " + fare.getAmount());
+//                        break;
+//                    case "rtcclipper":
+//                        seniorPrice.set("$ " + fare.getAmount());
+//                        break;
+//                    case "student":
+//                        youthPrice.set("$ " + fare.getAmount());
+//                        break;
+//                    default:
+//                        break;
+//                }
+//            }
+//        }
+//    }
 
     private void updateRoutes() {
         if (trip.getLeg() != null) {

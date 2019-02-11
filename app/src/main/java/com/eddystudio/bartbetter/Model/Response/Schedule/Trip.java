@@ -1,10 +1,9 @@
 
 package com.eddystudio.bartbetter.Model.Response.Schedule;
 
+import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
 
 public class Trip {
 
@@ -35,9 +34,6 @@ public class Trip {
     @SerializedName("@tripTime")
     @Expose
     private String tripTime;
-    @SerializedName("@co2")
-    @Expose
-    private String co2;
     @SerializedName("fares")
     @Expose
     private Fares fares;
@@ -115,14 +111,6 @@ public class Trip {
 
     public void setTripTime(String tripTime) {
         this.tripTime = tripTime;
-    }
-
-    public String getCo2() {
-        return co2;
-    }
-
-    public void setCo2(String co2) {
-        this.co2 = co2;
     }
 
     public Fares getFares() {

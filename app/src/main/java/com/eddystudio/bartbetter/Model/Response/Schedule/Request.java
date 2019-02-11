@@ -1,10 +1,9 @@
 
 package com.eddystudio.bartbetter.Model.Response.Schedule;
 
+import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
 
 public class Request {
 

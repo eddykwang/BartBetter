@@ -18,9 +18,6 @@ public class Root {
     @SerializedName("destination")
     @Expose
     private String destination;
-    @SerializedName("sched_num")
-    @Expose
-    private String schedNum;
     @SerializedName("schedule")
     @Expose
     private Schedule schedule;
@@ -58,14 +55,6 @@ public class Root {
 
     public void setDestination(String destination) {
         this.destination = destination;
-    }
-
-    public String getSchedNum() {
-        return schedNum;
-    }
-
-    public void setSchedNum(String schedNum) {
-        this.schedNum = schedNum;
     }
 
     public Schedule getSchedule() {

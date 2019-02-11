@@ -6,8 +6,6 @@ import android.util.Pair;
 import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Repository;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
-import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
-import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,8 +81,9 @@ public class DashboardViewModel {
                     .map(etdResult -> getRoutesInfoToVm(etdResult.getEtdResult().getEtd(), etdResult.getEtdResult().getOrigin(), etdResult.getEtdResult().getDestination()))
                     .doOnNext(etd -> eventsSubject.onNext(new Events.GetDataEvent(etd))),
                 result.ofType(Repository.OnError.class).doOnNext(onError -> {
-                  DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(new ArrayList<Etd>(), onError.getFrom(), onError.getTo());
-                  eventsSubject.onNext(new Events.GetDataEvent(vm));
+//                  DashboardRecyclerViewItemVM vm = new DashboardRecyclerViewItemVM(new ArrayList<Etd>(), onError.getFrom(), onError.getTo());
+//                  eventsSubject.onNext(new Events.GetDataEvent(vm));
+                    throw new RuntimeException(onError.getError());
                 })
             ))
             .subscribe(etd -> {},
@@ -106,7 +105,6 @@ public class DashboardViewModel {
   }
 
   private void handleError(Throwable throwable) {
-    Log.e("error", "error on getting response", throwable);
     eventsSubject.onNext(new Events.ErrorEvent(throwable));
   }
 

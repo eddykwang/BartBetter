@@ -376,7 +376,7 @@ public class DashboardFragment extends BaseFragment {
   private void handleError(Throwable throwable) {
     binding.swipeRefreshLy.setRefreshing(false);
     if(getActivity() != null) {
-      Snackbar.make(binding.getRoot(), "Error on loading", Snackbar.LENGTH_LONG).show();
+      Snackbar.make(binding.getRoot(), "Error on loading, cannot get route(s) info!", Snackbar.LENGTH_LONG).show();
     }
   }
 

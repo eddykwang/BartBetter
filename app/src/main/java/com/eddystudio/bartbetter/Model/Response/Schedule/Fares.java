@@ -4,8 +4,6 @@ package com.eddystudio.bartbetter.Model.Response.Schedule;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 public class Fares {
 
     @SerializedName("@level")
@@ -13,7 +11,7 @@ public class Fares {
     private String level;
     @SerializedName("fare")
     @Expose
-    private List<Fare> fare = null;
+    private Fare fare;
 
     public String getLevel() {
         return level;
@@ -23,11 +21,11 @@ public class Fares {
         this.level = level;
     }
 
-    public List<Fare> getFare() {
+    public Fare getFare() {
         return fare;
     }
 
-    public void setFare(List<Fare> fare) {
+    public void setFare(Fare fare) {
         this.fare = fare;
     }
 
