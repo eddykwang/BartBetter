@@ -10,6 +10,8 @@ import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Repository;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Bart;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
+import com.eddystudio.bartbetter.Model.Response.Fares.Fares;
+import com.eddystudio.bartbetter.Model.Response.Fares.RouteFares;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Uilt;
@@ -58,7 +60,7 @@ public class RouteDetailViewModel {
     Application.getAppComponet().inject(this);
   }
 
-  public void bsOnClicked(){
+  public void bsOnClicked() {
     eventsSubject.onNext(new Events.GetDataEvent(ClickEvents.BOTTOM_SHEET_CLICK));
   }
 
@@ -74,7 +76,7 @@ public class RouteDetailViewModel {
     eventsSubject.onNext(new Events.GetDataEvent(ClickEvents.SET_BUTTON_CLICK));
     String date = mMonth + "/" + mDay + "/" + mYear;
     String time = formatTime(mHour, mMinutes);
-    getRoutesInfo(date,time, isArrive.get());
+    getRoutesInfo(date, time, isArrive.get());
   }
 
   public Observable<Events> getEvents() {
@@ -120,19 +122,26 @@ public class RouteDetailViewModel {
         repository.getOneRouteSchedules(new Pair<>(fromShortcut, toShortcut), date, time, isDepart)
             .doOnSubscribe(ignored -> eventsSubject.onNext(new Events.LoadingEvent(true)))
             .map(this::getTrips)
-            .subscribe(this::getTrainLength, this::handleError)
+            .subscribe(trips -> getTrainLength(trips, date), this::handleError)
     );
   }
 
-  private void getTrainLength(List<Trip> trips) {
+  private void getTrainLength(List<Trip> trips, String date) {
     List<Pair<String, String>> list = new ArrayList<>();
     list.add(new Pair<>(fromShortcut, toShortcut));
     compositeDisposable.add(
         repository.getListEstimate(list)
             .map(bart -> getEtd(bart.first))
             .concatMap(Observable::fromArray)
-            .subscribe(len -> addToAdapter(trips, len), this::handleError, this::onComplete)
+            .subscribe(len -> getFares(fromShortcut, toShortcut, date, trips, len),
+                this::handleError)
     );
+  }
+
+  private void getFares(String origin, String dest, String date, List<Trip> trips, List<Etd> etds) {
+    compositeDisposable.add(
+        repository.getRouteFares(origin, dest, date)
+            .subscribe(routeFares -> addToAdapter(trips, etds, routeFares), this::handleError, this::onComplete));
   }
 
   private List<Etd> getEtd(Bart bart) {
@@ -140,9 +149,9 @@ public class RouteDetailViewModel {
     return bart.getRoot().getStation().get(0).getEtd();
   }
 
-  private void addToAdapter(List<Trip> trips, List<Etd> etds) {
+  private void addToAdapter(List<Trip> trips, List<Etd> etds, Fares routeFares) {
     for(int i = 0; i < trips.size(); ++i) {
-      RouteDetailRecyclerViewModel vm = new RouteDetailRecyclerViewModel(trips.get(i), etds);
+      RouteDetailRecyclerViewModel vm = new RouteDetailRecyclerViewModel(trips.get(i), etds, routeFares);
       eventsSubject.onNext(new Events.GetDataEvent(vm));
     }
   }

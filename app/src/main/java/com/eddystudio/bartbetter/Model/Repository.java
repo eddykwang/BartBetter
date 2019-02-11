@@ -8,6 +8,8 @@ import com.eddystudio.bartbetter.Model.Response.DelayReport.DelayReport;
 import com.eddystudio.bartbetter.Model.Response.ElevatorStatus.ElevatorStatus;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Bart;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
+import com.eddystudio.bartbetter.Model.Response.Fares.Fares;
+import com.eddystudio.bartbetter.Model.Response.Fares.RouteFares;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Response.Stations.BartStations;
@@ -145,6 +147,18 @@ public class Repository {
         .subscribeOn(Schedulers.io());
   }
 
+  public Observable<Fares> getRouteFares(String origin, String dest, String date) {
+    if(date == null) {
+      date = "today";
+    }
+    String finalD = date;
+    return Observable.fromCallable(() ->
+        bartService.routeFares(origin, dest, finalD, KEY, "y")
+            .execute())
+        .map(Response::body)
+        .subscribeOn(Schedulers.io());
+  }
+
   public Observable<AccurateEtdResult> getAccurateEtdTime(List<Pair<String, String>> routes) {
     return getRouteSchedules(routes)
         .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1, 3), (n, i) -> i))
@@ -162,7 +176,7 @@ public class Repository {
                     if(d.getRoot() != null) {
                       for(Etd etd : d.getRoot().getStation().get(0).getEtd()) {
                         for(Trip trip : trips) {
-                          if(trip.getLeg().get(0).getTrainHeadStation().equalsIgnoreCase("San Francisco International Airport")){
+                          if(trip.getLeg().get(0).getTrainHeadStation().equalsIgnoreCase("San Francisco International Airport")) {
                             trip.getLeg().get(0).setTrainHeadStation("SFO/Millbrae");
                           }
                           if(trip.getLeg().get(0).getTrainHeadStation().equals(etd.getDestination())) {
