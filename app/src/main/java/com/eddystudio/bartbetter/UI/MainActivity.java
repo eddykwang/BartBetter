@@ -46,16 +46,13 @@ public class MainActivity extends AppCompatActivity {
   @Inject
   public Repository repository;
 
-  public final static String DASHBOARDROUTS = "dashboardRouts";
+  public final static String DASHBOARDROUTS = "dashboardRouts_v1";
   public static final String BUDDLE_ARG_FROM = "Buddle_Arg_From";
   public static final String BUDDLE_ARG_TO = "Buddle_Arg_To";
   public static final String AUTO_REFRESH_ENABLED = "auto_refresh_enabled";
+  public static final String IS_USING_DISTANCE_TO_SORT = "is_using_distance_to_sort";
 
   public static final String STATION_INFO_LIST = "station_info_list";
-
-  //  public static Map<String, String> stationShotcutMapper = new HashMap<>();
-  public static ArrayList<String> stationList = new ArrayList<>();
-  public static ArrayList<String> stationListSortcut = new ArrayList<>();
   public static List<Station> stationInfoList = new ArrayList<>();
 
   private View badgeView;
@@ -169,12 +166,6 @@ public class MainActivity extends AppCompatActivity {
     if(stationInfoList.isEmpty()) {
       getAllStationsFromApi();
     } else {
-      if(stationList.isEmpty() || stationListSortcut.isEmpty()) {
-        for(Station station : stationInfoList) {
-          stationList.add(station.getName());
-          stationListSortcut.add(station.getAbbr());
-        }
-      }
       navigation.setSelectedItemId(R.id.navigation_my_routes);
     }
   }
@@ -205,12 +196,6 @@ public class MainActivity extends AppCompatActivity {
         .map(station -> station.getRoot().getStations().getStation())
         .subscribe(stations -> {
               stationInfoList = stations;
-
-              for(Station station : stationInfoList) {
-                stationList.add(station.getName());
-                stationListSortcut.add(station.getAbbr());
-              }
-
               SharedPreferences.Editor prefsEditor = PreferenceManager.getDefaultSharedPreferences(this).edit();
               Gson gson = new Gson();
               String stationInfoListStr = gson.toJson(stationInfoList);

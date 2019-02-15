@@ -32,10 +32,40 @@
         app:scrimAnimationDuration="800"
         app:toolbarId="@+id/toolbar">
 
-        <View
+        <LinearLayout
           android:layout_width="match_parent"
-          android:layout_height="@dimen/main_app_bar_expand_height"
-          app:layout_collapseMode="parallax"/>
+          android:layout_height="128dp"
+          app:layout_collapseMode="parallax">
+          <RadioGroup
+            android:layout_gravity="bottom"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+              android:id="@+id/dist_rbt"
+              android:layout_weight="1"
+              android:layout_width="0dp"
+              android:layout_height="match_parent"
+              android:background="@drawable/bg_custom_radio_left"
+              android:button="@android:color/transparent"
+              android:gravity="center"
+              android:text="Distance"/>
+
+            <RadioButton
+              android:id="@+id/manual_rbt"
+              android:layout_weight="1"
+              android:layout_width="0dp"
+              android:layout_height="match_parent"
+              android:background="@drawable/bg_custom_radio_right"
+              android:button="@android:color/transparent"
+              android:checked="true"
+              android:gravity="center"
+              android:text="Custom"/>
+          </RadioGroup>
+        </LinearLayout>
 
         <android.support.v7.widget.Toolbar
           android:id="@+id/toolbar"
@@ -63,16 +93,29 @@
       android:layout_height="match_parent"
       app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-      <android.support.v7.widget.RecyclerView
-        android:id="@+id/recylerView"
+      <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:scrollbars="none"
-        android:transitionGroup="false"
-        tools:listitem="@layout/dashboard_single_recycler_view_item"/>
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="vertical">
+
+
+
+          <android.support.v7.widget.RecyclerView
+            android:id="@+id/recylerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:scrollbars="none"
+            android:transitionGroup="false"
+            tools:listitem="@layout/dashboard_single_recycler_view_item"/>
+        </LinearLayout>
+      </android.support.v4.widget.NestedScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.design.widget.FloatingActionButton

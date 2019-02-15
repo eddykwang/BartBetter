@@ -16,10 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.SnapHelper;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
 import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,6 +28,8 @@ import android.widget.ImageView;
 
 import com.eddystudio.bartbetter.Adapter.RouteDetailRecyclerViewAdapter;
 import com.eddystudio.bartbetter.DI.Application;
+import com.eddystudio.bartbetter.Model.RouteModel;
+import com.eddystudio.bartbetter.Model.Response.Stations.Station;
 import com.eddystudio.bartbetter.Model.Uilt;
 import com.eddystudio.bartbetter.R;
 import com.eddystudio.bartbetter.ViewModel.Events;
@@ -47,7 +46,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
 
 public class RouteDetailFragment extends BaseFragment {
   private FragmentRoutDetailBinding binding;
@@ -193,7 +191,14 @@ public class RouteDetailFragment extends BaseFragment {
   }
 
   private void deleteRoute() {
-    if(deleteRouteInDashBoard(from, to)) {
+
+    Station froms = new Station();
+    Station tos = new Station();
+    froms.setAbbr(from);
+    tos.setAbbr(to);
+    RouteModel model = new RouteModel(froms, tos);
+
+    if(deleteRouteInDashBoard(model)) {
       if(getFragmentManager() != null) {
         getFragmentManager().popBackStack();
       }

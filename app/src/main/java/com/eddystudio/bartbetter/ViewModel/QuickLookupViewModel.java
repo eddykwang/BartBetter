@@ -7,6 +7,7 @@ import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Repository;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Bart;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
+import com.eddystudio.bartbetter.Model.Response.Stations.Station;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +72,7 @@ public class QuickLookupViewModel {
   }
 
   private ArrayList<QuickLookupRecyclerViewItemVM> convertToVM(List<Etd> stations) {
-    ArrayList<String> etdStations = new ArrayList<>();
+    ArrayList<Station> etdStations = new ArrayList<>();
     etdStations.clear();
     ArrayList<QuickLookupRecyclerViewItemVM> vmList = new ArrayList<>();
     for(int i = 0; i < stations.size(); ++i) {
@@ -79,7 +80,10 @@ public class QuickLookupViewModel {
           new QuickLookupRecyclerViewItemVM(selectedStation, stations.get(i));
       vm.setItemClickListener((f, t, r, v) -> eventsSubject.onNext(new Events.GoToDetailEvent(f, t, r, v)));
       vmList.add(vm);
-      etdStations.add(stations.get(i).getAbbreviation());
+      Station station = new Station();
+      station.setAbbr(stations.get(i).getAbbreviation());
+      station.setName(stations.get(i).getDestination());
+      etdStations.add(station);
     }
     eventsSubject.onNext(new Events.GetDataEvent(etdStations));
     return vmList;

@@ -1,5 +1,6 @@
 package com.eddystudio.bartbetter.Model;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 import android.util.Pair;
 
@@ -9,7 +10,6 @@ import com.eddystudio.bartbetter.Model.Response.ElevatorStatus.ElevatorStatus;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Bart;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 import com.eddystudio.bartbetter.Model.Response.Fares.Fares;
-import com.eddystudio.bartbetter.Model.Response.Fares.RouteFares;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Response.Stations.BartStations;
@@ -112,13 +112,13 @@ public class Repository {
   }
 
   //https://api.bart.gov/api/sched.aspx? cmd=depart  &orig=DALY&  dest=FRMT&  date=now&  key=MW9S-E7SL-26DU-VV8V&  b=0  &a=4  &l=1&  json=y
-  public Observable<ScheduleFromAToB> getRouteSchedules(List<Pair<String, String>> routes) {
+  public Observable<ScheduleFromAToB> getRouteSchedules(List<RouteModel> routes) {
     return Observable
         .fromIterable(routes)
         .onErrorResumeNext(Observable.empty())
         .concatMap(pair ->
             Observable.fromCallable(
-                () -> bartService.routeSchedules("depart", pair.first, pair.second, "now", "now", KEY, "1", "3", "0", "y")
+                () -> bartService.routeSchedules("depart", pair.getFrom().getAbbr(), pair.getTo().getAbbr(), "now", "now", KEY, "1", "3", "0", "y")
                     .execute())
                 .subscribeOn(Schedulers.io())
                 .map(Response::body)
@@ -159,7 +159,8 @@ public class Repository {
         .subscribeOn(Schedulers.io());
   }
 
-  public Observable<AccurateEtdResult> getAccurateEtdTime(List<Pair<String, String>> routes) {
+  @SuppressLint("NewApi")
+  public Observable<AccurateEtdResult> getAccurateEtdTime(List<RouteModel> routes) {
     return getRouteSchedules(routes)
         .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1, 3), (n, i) -> i))
         .concatMap(r -> {

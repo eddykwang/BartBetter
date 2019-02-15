@@ -1,22 +1,18 @@
 package com.eddystudio.bartbetter.UI;
 
-import android.Manifest;
 import android.animation.LayoutTransition;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -38,6 +34,7 @@ import com.eddystudio.bartbetter.Adapter.CardSwipeController;
 import com.eddystudio.bartbetter.Adapter.QuickLookupRecyclerViewAdapter;
 import com.eddystudio.bartbetter.Adapter.SwipeControllerActions;
 import com.eddystudio.bartbetter.DI.Application;
+import com.eddystudio.bartbetter.Model.RouteModel;
 import com.eddystudio.bartbetter.Model.Response.Stations.Station;
 import com.eddystudio.bartbetter.Model.Uilt;
 import com.eddystudio.bartbetter.R;
@@ -52,7 +49,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -67,19 +67,19 @@ import io.reactivex.Observable;
 public class QuickLookupFragment extends BaseFragment {
 
   private FragmentQuickLookupBinding binding;
-  private static String selectedStation;
+  //  private static String selectedStation;
+  private Station selectedStation;
   private static int sinpperPos;
   private QuickLookupViewModel quickLookupViewModel;
-  private ArrayList<String> etdStations;
+  private ArrayList<Station> etdStations;
   private GoogleMap googleMap;
   private SupportMapFragment mapView;
 
   private static boolean isInitOpen = true;
   private QuickLookupRecyclerViewAdapter adapters;
-  private static final String LAST_SELECTED_STATION = "LAST_SELECTED_STATION";
-  private static final String LAST_SELECTED_SINPER_POSITION = "LAST_SELECTED_SINPER_POSITION";
-  private static final String TO_SHOW_MAP_VIEW = "TO_SHOW_MAP_VIEW";
-  private static final int LOCATION_REQUEST_CODE = 4344;
+  private static final String LAST_SELECTED_STATION = "LAST_SELECTED_STATION_v1";
+  private static final String LAST_SELECTED_SINPER_POSITION = "LAST_SELECTED_SINPER_POSITION_v1";
+  private static final String TO_SHOW_MAP_VIEW = "TO_SHOW_MAP_VIEW_v1";
 
   public QuickLookupFragment() {
     // Required empty public constructor
@@ -124,7 +124,7 @@ public class QuickLookupFragment extends BaseFragment {
             event.ofType(Events.CompleteEvent.class).doOnNext(data -> onComplete(data.getBartList())),
             event.ofType(Events.ErrorEvent.class).doOnNext(error -> handleError(error.getError())),
             event.ofType(Events.GoToDetailEvent.class).doOnNext(data -> goToDetail(data.getFrom(), data.getTo(), data.getRouteColor(), data.getView())),
-            event.ofType(Events.GetDataEvent.class).doOnNext(data -> etdStations = (ArrayList<String>) data.getData())
+            event.ofType(Events.GetDataEvent.class).doOnNext(data -> etdStations = (ArrayList<Station>) data.getData())
         ))
         .subscribe();
   }
@@ -193,17 +193,17 @@ public class QuickLookupFragment extends BaseFragment {
   }
 
   private void setupSinner() {
-    ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_list_item_1, MainActivity.stationList);
+    ArrayAdapter<Station> spinnerAdapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_list_item_1, MainActivity.stationInfoList);
     spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     binding.stationSpinner.setAdapter(spinnerAdapter);
     binding.stationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
       @Override
       public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         if(isInitOpen) {
-          quickLookupViewModel.getData(selectedStation);
+          quickLookupViewModel.getData(selectedStation.getAbbr());
           isInitOpen = false;
         } else {
-          selectedStation = MainActivity.stationListSortcut.get(i);
+          selectedStation = MainActivity.stationInfoList.get(i);
           sinpperPos = i;
 
           Station selectedS = MainActivity.stationInfoList.get(i);
@@ -214,11 +214,19 @@ public class QuickLookupFragment extends BaseFragment {
                     Double.parseDouble(selectedS.getGtfsLongitude())), 13f));
           }
 
-          SharedPreferences.Editor editor = preference.edit();
-          editor.putString(LAST_SELECTED_STATION, selectedStation);
-          editor.putInt(LAST_SELECTED_SINPER_POSITION, sinpperPos);
-          editor.apply();
-          quickLookupViewModel.getData(selectedStation);
+//          SharedPreferences.Editor editor = preference.edit();
+//          editor.putString(LAST_SELECTED_STATION, selectedStation);
+//          editor.putInt(LAST_SELECTED_SINPER_POSITION, sinpperPos);
+//          editor.apply();
+
+          SharedPreferences.Editor prefsEditor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+          Gson gson = new Gson();
+          String selectedStationGsonString = gson.toJson(selectedStation);
+          prefsEditor.putString(LAST_SELECTED_STATION, selectedStationGsonString);
+          prefsEditor.putInt(LAST_SELECTED_SINPER_POSITION, sinpperPos);
+          prefsEditor.apply();
+
+          quickLookupViewModel.getData(selectedStation.getAbbr());
         }
       }
 
@@ -231,88 +239,89 @@ public class QuickLookupFragment extends BaseFragment {
     binding.textView17.setOnClickListener(v ->
         binding.stationSpinner.onTouch(binding.getRoot(), MotionEvent.obtain(1, 1, MotionEvent.ACTION_UP, 1, 1, 1)));
 
-    binding.swipeRefreshLy.setOnRefreshListener(() -> quickLookupViewModel.getData(selectedStation));
+    binding.swipeRefreshLy.setOnRefreshListener(() -> quickLookupViewModel.getData(selectedStation.getAbbr()));
     setLastSelectedStation();
   }
 
-  private void setUpGetCurrentLocation() {
+  @SuppressLint("MissingPermission")
+  @Override
+  public void locationPermissionGot() {
     quickLookupViewModel.showSpinnerProgess.set(true);
     binding.gpsImageview.setVisibility(View.INVISIBLE);
     LocationManager locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(Context.LOCATION_SERVICE);
-    if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-        ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-      requestPermissions(
-          new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-              Manifest.permission.ACCESS_COARSE_LOCATION},
-          LOCATION_REQUEST_CODE);
+    if(locationManager != null) {
 
-    } else {
-      if(locationManager != null) {
+      LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
 
-        LocationListener locationListener = new LocationListener() {
-          @Override
-          public void onLocationChanged(Location location) {
+          if(preference.getBoolean(TO_SHOW_MAP_VIEW, true)) {
+            googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()))
+                .icon(BitmapDescriptorFactory.fromBitmap(Uilt.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_radio_button_checked_black_24dp)))
+                .title("Current Location"));
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13f));
+          }
 
-            if(preference.getBoolean(TO_SHOW_MAP_VIEW, true)) {
-              googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()))
-                  .icon(BitmapDescriptorFactory.fromBitmap(Uilt.getBitmapFromVectorDrawable(getContext(), R.drawable.ic_radio_button_checked_black_24dp)))
-                  .title("Current Location"));
-              googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13f));
+          List<Station> stations = new ArrayList<>(MainActivity.stationInfoList);
+          Collections.sort(stations, (o1, o2) -> {
+            Location location1 = new Location("one");
+            location1.setLatitude(Double.parseDouble(o1.getGtfsLatitude()));
+            location1.setLongitude(Double.parseDouble(o1.getGtfsLongitude()));
+
+            Location location2 = new Location("two");
+            location2.setLatitude(Double.parseDouble(o2.getGtfsLatitude()));
+            location2.setLongitude(Double.parseDouble(o2.getGtfsLongitude()));
+
+            float dist1 = location.distanceTo(location1);
+            float dist2 = location.distanceTo(location2);
+            return Float.compare(dist1, dist2);
+          });
+
+          Station cloestStation = stations.get(0);
+          for(int i = 0; i < MainActivity.stationInfoList.size(); ++i) {
+            if(MainActivity.stationInfoList.get(i).getAbbr().equalsIgnoreCase(cloestStation.getAbbr())) {
+              binding.stationSpinner.setSelection(i);
+              locationManager.removeUpdates(this);
+              quickLookupViewModel.showSpinnerProgess.set(false);
+              binding.gpsImageview.setVisibility(View.VISIBLE);
+              break;
             }
-
-            List<Station> stations = new ArrayList<>(MainActivity.stationInfoList);
-            Collections.sort(stations, (o1, o2) -> {
-              Location location1 = new Location("one");
-              location1.setLatitude(Double.parseDouble(o1.getGtfsLatitude()));
-              location1.setLongitude(Double.parseDouble(o1.getGtfsLongitude()));
-
-              Location location2 = new Location("two");
-              location2.setLatitude(Double.parseDouble(o2.getGtfsLatitude()));
-              location2.setLongitude(Double.parseDouble(o2.getGtfsLongitude()));
-
-              float dist1 = location.distanceTo(location1);
-              float dist2 = location.distanceTo(location2);
-              return Float.compare(dist1, dist2);
-            });
-
-            Station cloestStation = stations.get(0);
-            for(int i = 0; i < MainActivity.stationListSortcut.size(); ++i) {
-              if(MainActivity.stationListSortcut.get(i).equalsIgnoreCase(cloestStation.getAbbr())) {
-                binding.stationSpinner.setSelection(i);
-                locationManager.removeUpdates(this);
-                quickLookupViewModel.showSpinnerProgess.set(false);
-                binding.gpsImageview.setVisibility(View.VISIBLE);
-                break;
-              }
-            }
-
           }
 
-          @Override
-          public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
 
-          }
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
 
-          @Override
-          public void onProviderEnabled(String provider) {
+        }
 
-          }
+        @Override
+        public void onProviderEnabled(String provider) {
 
-          @Override
-          public void onProviderDisabled(String provider) {
+        }
 
-          }
-        };
+        @Override
+        public void onProviderDisabled(String provider) {
 
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10f, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10f, locationListener);
+        }
+      };
 
-      }
+      locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10f, locationListener);
+      locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10f, locationListener);
+
     }
   }
 
   private void setLastSelectedStation() {
-    selectedStation = preference.getString(LAST_SELECTED_STATION, "12TH");
+
+    Gson gson = new Gson();
+    Type type = new TypeToken<Station>() {}.getType();
+    Station defaultStation = new Station();
+    defaultStation.setAbbr("12TH");
+    String defaultValue = gson.toJson(defaultStation);
+    String json = preference.getString(LAST_SELECTED_STATION, defaultValue);
+    selectedStation = gson.fromJson(json, type);
+
     sinpperPos = preference.getInt(LAST_SELECTED_SINPER_POSITION, 0);
     binding.stationSpinner.setSelection(sinpperPos);
     Log.d("lastStation", selectedStation + " : " + sinpperPos);
@@ -332,15 +341,16 @@ public class QuickLookupFragment extends BaseFragment {
       @Override
       public void onSwiped(int position) {
         adapters.notifyItemChanged(position);
-        String route = selectedStation + "-" + etdStations.get(position);
-        List<String> dl = getSharedPreferencesData();
+//        String route = selectedStation + "-" + etdStations.get(position);
+        RouteModel route = new RouteModel(selectedStation, etdStations.get(position));
+        List<RouteModel> dl = getSharedPreferencesData();
         if(!dl.contains(route)) {
           addPreferencesData(route);
         }
         if(getActivity() != null) {
           Snackbar.make(binding.getRoot(),
-              "Added " + Uilt.getFullStationName(selectedStation) + " -> " +
-                  Uilt.getFullStationName(etdStations.get(position)) + " to My Routes",
+              "Added " + Uilt.getFullStationName(selectedStation.getAbbr()) + " -> " +
+                  Uilt.getFullStationName(etdStations.get(position).getAbbr()) + " to My Routes",
               Snackbar.LENGTH_LONG)
               .show();
         }
@@ -409,27 +419,6 @@ public class QuickLookupFragment extends BaseFragment {
           .setReorderingAllowed(true)
           .addSharedElement(textView, getString(R.string.text_to_transition))
           .commit();
-    }
-  }
-
-  @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    switch(requestCode) {
-      case LOCATION_REQUEST_CODE:
-        if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-          setUpGetCurrentLocation();
-        } else {
-          AlertDialog alertDialog = new AlertDialog.Builder(Objects.requireNonNull(getActivity())).create();
-          alertDialog.setTitle("Failed");
-          alertDialog.setMessage("You need to grant permission to find the closest station.");
-          alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Close",
-              (dialog, which) -> dialog.dismiss());
-          alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Request",
-              ((dialog, which) -> setUpGetCurrentLocation()));
-          alertDialog.show();
-        }
-
     }
   }
 

@@ -1,19 +1,17 @@
 package com.eddystudio.bartbetter.UI;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
-import android.support.transition.ChangeBounds;
-import android.support.transition.ChangeImageTransform;
-import android.support.transition.ChangeTransform;
-import android.support.transition.Transition;
-import android.support.transition.TransitionSet;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,8 +24,6 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -39,6 +35,8 @@ import com.eddystudio.bartbetter.Adapter.CardSwipeController;
 import com.eddystudio.bartbetter.Adapter.DashboardRecyclerViewAdapter;
 import com.eddystudio.bartbetter.Adapter.SwipeControllerActions;
 import com.eddystudio.bartbetter.DI.Application;
+import com.eddystudio.bartbetter.Model.RouteModel;
+import com.eddystudio.bartbetter.Model.Response.Stations.Station;
 import com.eddystudio.bartbetter.Model.Uilt;
 import com.eddystudio.bartbetter.R;
 import com.eddystudio.bartbetter.ViewModel.DashboardRecyclerViewItemVM;
@@ -48,6 +46,7 @@ import com.eddystudio.bartbetter.databinding.FragmentDashboardBinding;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,17 +58,19 @@ import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 
 import static com.eddystudio.bartbetter.UI.MainActivity.AUTO_REFRESH_ENABLED;
+import static com.eddystudio.bartbetter.UI.MainActivity.IS_USING_DISTANCE_TO_SORT;
+import static com.eddystudio.bartbetter.UI.MainActivity.stationInfoList;
 
 public class DashboardFragment extends BaseFragment {
 
   private FragmentDashboardBinding binding;
   private DashboardRecyclerViewAdapter adapter;
   private DashboardViewModel vm;
-  private CollapsingToolbarLayout collapsingToolbarLayout;
-  private List<Pair<String, String>> stationPairList = new ArrayList<>();
+  private List<RouteModel> dashboardRouteList = new ArrayList<>();
+  private List<Station> dashboardOriginStationList = new ArrayList<>();
   private SwitchCompat switchCompat;
   private Pair<DashboardRecyclerViewItemVM, Integer> lastDeletedItem = null;
-  private String lastDeletedRouteString = null;
+  private RouteModel lastDeletedRouteString = null;
 
   public DashboardFragment() {
     // Required empty public constructor
@@ -98,6 +99,7 @@ public class DashboardFragment extends BaseFragment {
       }
     }), 500);
 
+    loadOldDataToNewData();
     init();
 
     return binding.getRoot();
@@ -108,6 +110,7 @@ public class DashboardFragment extends BaseFragment {
     super.onStart();
     binding.getRoot().postDelayed(this::loadFromPreference
         , 300);
+    setupRadioGroup();
   }
 
   private void init() {
@@ -139,6 +142,145 @@ public class DashboardFragment extends BaseFragment {
     setupSwitch();
     binding.swipeRefreshLy.setOnRefreshListener(this::loadFromPreference);
     attachOnCardSwipe();
+  }
+
+  private void loadOldDataToNewData() {
+    List<RouteModel> list = getSharedPreferencesData();
+
+    if(list.isEmpty()) {
+      List<String> oldRouteList = getOldSharedPreferencesData();
+      if(!oldRouteList.isEmpty()) {
+        for(String route : oldRouteList) {
+          String fromStation = route.split("-", 2)[0];
+          String toStation = route.split("-", 2)[1];
+
+          Station from = null;
+          Station to = null;
+          for(Station station : stationInfoList) {
+            if(station.getAbbr().equals(fromStation)) {
+              from = station;
+            }
+
+            if(station.getAbbr().equals(toStation)) {
+              to = station;
+            }
+          }
+          if(from != null && to != null) {
+            list.add(new RouteModel(from, to));
+          }
+        }
+      }
+      saveSharedPreferenceData(list);
+    }
+  }
+
+  private void setupRadioGroup() {
+    boolean isUsingDist = preference.getBoolean(IS_USING_DISTANCE_TO_SORT, false);
+    binding.distRbt.setChecked(isUsingDist);
+    binding.manualRbt.setChecked(!isUsingDist);
+    if(isUsingDist) {
+      setUpGetCurrentLocation();
+    }
+    binding.distRbt.setOnClickListener(v -> {
+      binding.distRbt.setChecked(true);
+      binding.manualRbt.setChecked(false);
+      SharedPreferences.Editor prefsEditor = preference.edit();
+      prefsEditor.putBoolean(IS_USING_DISTANCE_TO_SORT, true);
+      prefsEditor.apply();
+      setUpGetCurrentLocation();
+    });
+
+    binding.manualRbt.setOnClickListener(v -> {
+      binding.manualRbt.setChecked(true);
+      binding.distRbt.setChecked(false);
+      SharedPreferences.Editor prefsEditor = preference.edit();
+      prefsEditor.putBoolean(IS_USING_DISTANCE_TO_SORT, false);
+      prefsEditor.apply();
+    });
+  }
+
+  @SuppressLint("MissingPermission")
+  @Override
+  public void locationPermissionGot() {
+    LocationManager locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(Context.LOCATION_SERVICE);
+
+    dashboardOriginStationList.clear();
+    for(RouteModel pair : dashboardRouteList) {
+      for(Station station : stationInfoList) {
+        if(pair.getFrom().getAbbr().equalsIgnoreCase(station.getAbbr())) {
+          dashboardOriginStationList.add(station);
+        }
+      }
+    }
+
+    if(locationManager != null) {
+
+      LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+
+          Comparator<Station> locationComparator = (o1, o2) -> {
+            Location location1 = new Location("one");
+            location1.setLatitude(Double.parseDouble(o1.getGtfsLatitude()));
+            location1.setLongitude(Double.parseDouble(o1.getGtfsLongitude()));
+
+            Location location2 = new Location("two");
+            location2.setLatitude(Double.parseDouble(o2.getGtfsLatitude()));
+            location2.setLongitude(Double.parseDouble(o2.getGtfsLongitude()));
+
+            float dist1 = location.distanceTo(location1);
+            float dist2 = location.distanceTo(location2);
+            return Float.compare(dist1, dist2);
+          };
+
+          Collections.sort(dashboardOriginStationList, locationComparator);
+
+          for(int i = 0; i < dashboardOriginStationList.size() - 1; ++i) {
+            for(int j = 0; j < adapter.getItemList().size(); ++j) {
+              if(dashboardOriginStationList.get(i).getAbbr().equalsIgnoreCase(adapter.getItemList().get(j).getFrom())) {
+                adapter.swapDataPos(j, i);
+                Collections.swap(dashboardRouteList, j, i);
+              }
+            }
+          }
+          Collections.sort(dashboardRouteList, (r1, r2) -> {
+            Location location1 = new Location("one");
+            location1.setLatitude(Double.parseDouble(r1.getFrom().getGtfsLatitude()));
+            location1.setLongitude(Double.parseDouble(r1.getFrom().getGtfsLongitude()));
+
+            Location location2 = new Location("two");
+            location2.setLatitude(Double.parseDouble(r2.getFrom().getGtfsLatitude()));
+            location2.setLongitude(Double.parseDouble(r2.getFrom().getGtfsLongitude()));
+
+            float dist1 = location.distanceTo(location1);
+            float dist2 = location.distanceTo(location2);
+            return Float.compare(dist1, dist2);
+          });
+          saveSharedPreferenceData(dashboardRouteList);
+          locationManager.removeUpdates(this);
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+      };
+
+      locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10f, locationListener);
+      locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10f, locationListener);
+
+    }
   }
 
   private void showCaseSetup() {
@@ -211,7 +353,7 @@ public class DashboardFragment extends BaseFragment {
       @Override
       public void onDragged(int fromPos, int toPos) {
         adapter.swapDataPos(fromPos, toPos);
-        List<String> list = getSharedPreferencesData();
+        List<RouteModel> list = getSharedPreferencesData();
         if(fromPos < toPos) {
           for(int i = fromPos; i < toPos; i++) {
             Collections.swap(list, i, i + 1);
@@ -235,7 +377,7 @@ public class DashboardFragment extends BaseFragment {
 
       @Override
       public void onSwiped(int position) {
-        List<String> list = getSharedPreferencesData();
+        List<RouteModel> list = getSharedPreferencesData();
         deletePreferencesData(position);
         lastDeletedItem = new Pair<>(adapter.getItemInPos(position), position);
         lastDeletedRouteString = list.get(position);
@@ -255,6 +397,11 @@ public class DashboardFragment extends BaseFragment {
         if(autoEnabled[0]) {
           vm.setAutoRefreshEnabled(true);
         }
+        binding.manualRbt.setChecked(true);
+        binding.distRbt.setChecked(false);
+        SharedPreferences.Editor prefsEditor = preference.edit();
+        prefsEditor.putBoolean(IS_USING_DISTANCE_TO_SORT, false);
+        prefsEditor.apply();
       }
     });
     ItemTouchHelper itemTouchHelper = new ItemTouchHelper(cardSwipeController);
@@ -262,30 +409,32 @@ public class DashboardFragment extends BaseFragment {
   }
 
   private void loadFromPreference() {
-    List<String> list = getSharedPreferencesData();
+
+    List<RouteModel> list = getSharedPreferencesData();
+
     if(list.size() == 0) {
       binding.swipeRefreshLy.setRefreshing(false);
     } else {
-      stationPairList.clear();
-      for(int i = 0; i < list.size(); ++i) {
-        String fromStation = list.get(i).split("-", 2)[0];
-        String toStation = list.get(i).split("-", 2)[1];
-        stationPairList.add(new Pair<>(fromStation, toStation));
+      dashboardRouteList.clear();
+      dashboardRouteList.addAll(list);
+
+      if(binding.distRbt.isChecked()) {
+        setUpGetCurrentLocation();
       }
-//      vm.getRoutesEstimateTime(stationPairList);
-      vm.autoRefreshGetData(stationPairList);
-      vm.getAccurateEstTime(stationPairList);
+//      vm.getRoutesEstimateTime(dashboardRouteList);
+      vm.autoRefreshGetData(dashboardRouteList);
+      vm.getAccurateEstTime(dashboardRouteList);
     }
   }
 
   private void setUpAdapter() {
     List<DashboardRecyclerViewItemVM> itemList = new ArrayList<>();
 
-    List<String> list = getSharedPreferencesData();
+    List<RouteModel> list = getSharedPreferencesData();
 
     for(int i = 0; i < list.size(); ++i) {
-      String fromStation = list.get(i).split("-", 2)[0];
-      String toStation = list.get(i).split("-", 2)[1];
+      String fromStation = list.get(i).getFrom().getAbbr();
+      String toStation = list.get(i).getTo().getAbbr();
       Log.d("dashboard", "From " + fromStation + " to " + toStation);
       DashboardRecyclerViewItemVM viewItemModel = new DashboardRecyclerViewItemVM(new ArrayList<>(), fromStation, toStation);
       viewItemModel.setItemClickListener((f, t, x, l) -> {
@@ -334,8 +483,8 @@ public class DashboardFragment extends BaseFragment {
       CheckBox returnRouteCheckbox = mView.findViewById((R.id.dialog_return_route_checkbox));
 
       warnningLayout.setVisibility(View.GONE);
-      ArrayAdapter<String> spinnerAdapter =
-          new ArrayAdapter<String>(Objects.requireNonNull(getActivity()), android.R.layout.simple_list_item_1, MainActivity.stationList);
+      ArrayAdapter<Station> spinnerAdapter =
+          new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_list_item_1, MainActivity.stationInfoList);
       spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
       fromSpinner.setAdapter(spinnerAdapter);
       toSpinner.setAdapter(spinnerAdapter);
@@ -350,16 +499,16 @@ public class DashboardFragment extends BaseFragment {
       alertDialog.setOnShowListener(dialogInterface -> {
         Button b = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
         b.setOnClickListener(view1 -> {
-          String origin = MainActivity.stationListSortcut.get(fromSpinner.getSelectedItemPosition());
-          String destination = MainActivity.stationListSortcut.get(toSpinner.getSelectedItemPosition());
+          Station origin = MainActivity.stationInfoList.get(fromSpinner.getSelectedItemPosition());
+          Station destination = MainActivity.stationInfoList.get(toSpinner.getSelectedItemPosition());
 
-          if(!origin.equals(destination)) {
-            List<String> dashboardList = getSharedPreferencesData();
-            if(!dashboardList.contains(origin + "-" + destination)) {
-              addPreferencesData(origin + "-" + destination);
+          if(!origin.getAbbr().equals(destination.getAbbr())) {
+            List<RouteModel> dashboardList = getSharedPreferencesData();
+            if(!dashboardList.contains(new RouteModel(origin, destination))) {
+              addPreferencesData(new RouteModel(origin, destination));
             }
-            if(returnRouteCheckbox.isChecked() && !dashboardList.contains(destination + "-" + origin)) {
-              addPreferencesData(destination + "-" + origin);
+            if(returnRouteCheckbox.isChecked() && !dashboardList.contains(new RouteModel(origin, destination))) {
+              addPreferencesData(new RouteModel(destination, origin));
             }
             dialogInterface.dismiss();
             setUpAdapter();

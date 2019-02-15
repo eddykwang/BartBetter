@@ -1,13 +1,10 @@
 package com.eddystudio.bartbetter.ViewModel;
 
-import android.util.Log;
-import android.util.Pair;
-
 import com.eddystudio.bartbetter.DI.Application;
+import com.eddystudio.bartbetter.Model.RouteModel;
 import com.eddystudio.bartbetter.Model.Repository;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +34,7 @@ public class DashboardViewModel {
     return eventsSubject.subscribeOn(Schedulers.io()).hide();
   }
 
-  public void autoRefreshGetData(List<Pair<String, String>> routes) {
+  public void autoRefreshGetData(List<RouteModel> routes) {
     disposable.add(
         Observable
             .interval(20, TimeUnit.SECONDS)
@@ -71,7 +68,7 @@ public class DashboardViewModel {
     return autoRefreshEnabled;
   }
 
-  public void getAccurateEstTime(List<Pair<String, String>> routes) {
+  public void getAccurateEstTime(List<RouteModel> routes) {
     disposable.add(
         repository.getAccurateEtdTime(routes)
             .observeOn(AndroidSchedulers.mainThread())
