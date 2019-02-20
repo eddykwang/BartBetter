@@ -85,7 +85,7 @@ public class RouteDetailRecyclerViewModel {
       firstRouteColor.set(Uilt.routeColorMatcher(firstRouteInfo.getLine()));
 
       for(int i = 0; i < etds.size(); ++i) {
-        if(etds.get(i).getAbbreviation().equals(firstRouteInfo.getTrainHeadStation())) {
+        if(etds.get(i).getDestination().equals(firstRouteInfo.getTrainHeadStation())) {
           trainLength.set("( " + etds.get(i).getEstimate().get(0).getLength() + " Car )");
         }
       }

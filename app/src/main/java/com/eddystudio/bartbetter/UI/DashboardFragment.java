@@ -71,6 +71,8 @@ public class DashboardFragment extends BaseFragment {
   private SwitchCompat switchCompat;
   private Pair<DashboardRecyclerViewItemVM, Integer> lastDeletedItem = null;
   private RouteModel lastDeletedRouteString = null;
+  private boolean isLocationLoading = false;
+  private boolean isDataLoading = false;
 
   public DashboardFragment() {
     // Required empty public constructor
@@ -119,7 +121,8 @@ public class DashboardFragment extends BaseFragment {
         .observeOn(AndroidSchedulers.mainThread())
         .compose(event -> Observable.merge(
             event.ofType(Events.LoadingEvent.class).doOnNext(data -> {
-              binding.swipeRefreshLy.setRefreshing(data.isLoad());
+              binding.swipeRefreshLy.setRefreshing(data.isLoad() || isLocationLoading);
+              isDataLoading = data.isLoad();
               if(getActivity() != null && binding.recylerView.findViewHolderForAdapterPosition(0) != null) {
                 new FancyShowCaseView.Builder(getActivity())
                     .focusOn(binding.recylerView.findViewHolderForAdapterPosition(0).itemView)
@@ -179,11 +182,15 @@ public class DashboardFragment extends BaseFragment {
     binding.distRbt.setChecked(isUsingDist);
     binding.manualRbt.setChecked(!isUsingDist);
     if(isUsingDist) {
+      isLocationLoading = true;
+      binding.swipeRefreshLy.setRefreshing(true);
       setUpGetCurrentLocation();
     }
     binding.distRbt.setOnClickListener(v -> {
       binding.distRbt.setChecked(true);
       binding.manualRbt.setChecked(false);
+      isLocationLoading = true;
+      binding.swipeRefreshLy.setRefreshing(true);
       SharedPreferences.Editor prefsEditor = preference.edit();
       prefsEditor.putBoolean(IS_USING_DISTANCE_TO_SORT, true);
       prefsEditor.apply();
@@ -258,7 +265,8 @@ public class DashboardFragment extends BaseFragment {
           });
           saveSharedPreferenceData(dashboardRouteList);
           locationManager.removeUpdates(this);
-
+          isLocationLoading = false;
+          binding.swipeRefreshLy.setRefreshing(isDataLoading || isLocationLoading);
         }
 
         @Override
