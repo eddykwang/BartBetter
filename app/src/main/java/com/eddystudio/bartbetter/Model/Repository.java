@@ -178,9 +178,9 @@ public class Repository {
                       for(Etd etd : d.getRoot().getStation().get(0).getEtd()) {
                         for(Trip trip : trips) {
                           if(trip.getLeg().get(0).getTrainHeadStation().equalsIgnoreCase("San Francisco International Airport")) {
-                            trip.getLeg().get(0).setTrainHeadStation("SFO/Millbrae");
+                            trip.getLeg().get(0).setTrainHeadStation("SFO/Millbrae | SF Airport | San Francisco International Airport");
                           }
-                          if(trip.getLeg().get(0).getTrainHeadStation().equals(etd.getDestination())) {
+                          if(trip.getLeg().get(0).getTrainHeadStation().contains(etd.getDestination())) {
                             etdList.add(etd);
                           }
                         }
