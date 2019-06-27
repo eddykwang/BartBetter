@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Repository;
-import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Bart;
+import com.eddystudio.bartbetter.Model.Response.EstimateResponse.EstimateResponse;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 import com.eddystudio.bartbetter.Model.Response.Stations.Station;
 
@@ -58,9 +58,9 @@ public class QuickLookupViewModel {
     disposable.clear();
   }
 
-  private List<Etd> getEtd(Bart bart) {
-    Log.d("destination", bart.toString());
-    return bart.getRoot().getStation().get(0).getEtd();
+  private List<Etd> getEtd(EstimateResponse estimateResponse) {
+    Log.d("destination", estimateResponse.toString());
+    return estimateResponse.getRoot().getStation().get(0).getEtd();
   }
 
   private void handleError(Throwable throwable) {

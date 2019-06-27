@@ -7,7 +7,7 @@ import android.util.Pair;
 import com.eddystudio.bartbetter.DI.Application;
 import com.eddystudio.bartbetter.Model.Response.DelayReport.DelayReport;
 import com.eddystudio.bartbetter.Model.Response.ElevatorStatus.ElevatorStatus;
-import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Bart;
+import com.eddystudio.bartbetter.Model.Response.EstimateResponse.EstimateResponse;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 import com.eddystudio.bartbetter.Model.Response.Fares.Fares;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
@@ -68,7 +68,7 @@ public class Repository {
   }
 
   //?cmd=etd&orig={fromStation}&key=MW9S-E7SL-26DU-VV8V&json=y"
-  public Observable<Pair<Bart, String>> getListEstimate(
+  public Observable<Pair<EstimateResponse, String>> getListEstimate(
       List<Pair<String, String>> fromStation) {
     return Observable
         .fromIterable(fromStation)
@@ -84,7 +84,7 @@ public class Repository {
 
 
   //?cmd=etd&orig={fromStation}&key=MW9S-E7SL-26DU-VV8V&json=y"
-  public Observable<Bart> getEstimate(String fromStation) {
+  public Observable<EstimateResponse> getEstimate(String fromStation) {
     return Observable.fromCallable(
         () -> bartService.bartEstmate("etd", fromStation, KEY, "y")
             .execute())
@@ -122,6 +122,7 @@ public class Repository {
                     .execute())
                 .subscribeOn(Schedulers.io())
                 .map(Response::body)
+
         )
 
         .subscribeOn(Schedulers.io());
@@ -144,6 +145,10 @@ public class Repository {
         () -> bartService.routeSchedules(depart, route.first, route.second, finalTime, finalDate, KEY, "0", "4", "0", "y")
             .execute())
         .map(Response::body)
+            .doOnNext(a->
+            {
+                Log.d("debug",a.toString());
+            })
         .subscribeOn(Schedulers.io());
   }
 
@@ -171,7 +176,7 @@ public class Repository {
               .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1, 3), (n, i) -> i))
               .onErrorResumeNext(err -> {
                 error[0] = err;
-                return Observable.just(new Bart());
+                return Observable.just(new EstimateResponse());
               })
               .map(d -> {
                     if(d.getRoot() != null) {

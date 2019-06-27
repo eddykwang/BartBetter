@@ -1,6 +1,6 @@
 package com.eddystudio.bartbetter.Model;
 
-import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Bart;
+import com.eddystudio.bartbetter.Model.Response.EstimateResponse.EstimateResponse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,10 +23,10 @@ public class RepositoryTest {
 
   @Test
   public void testGetEstimateDateWithEmptyString() {
-    when(repository.getEstimate("")).thenReturn(Observable.just(new Bart()));
+    when(repository.getEstimate("")).thenReturn(Observable.just(new EstimateResponse()));
 
-    Observable<Bart> observable = repository.getEstimate("");
-    TestObserver<Bart> testObserver =  observable.test();
+    Observable<EstimateResponse> observable = repository.getEstimate("");
+    TestObserver<EstimateResponse> testObserver =  observable.test();
     testObserver.assertNoErrors();
     testObserver.getEvents();
     testObserver.assertComplete();

@@ -8,7 +8,6 @@ import android.graphics.Color;
 import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Etd;
 import com.eddystudio.bartbetter.Model.Response.Fares.Fare;
 import com.eddystudio.bartbetter.Model.Response.Fares.Fares;
-import com.eddystudio.bartbetter.Model.Response.Fares.RouteFares;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Leg;
 import com.eddystudio.bartbetter.Model.Response.Schedule.Trip;
 import com.eddystudio.bartbetter.Model.Uilt;

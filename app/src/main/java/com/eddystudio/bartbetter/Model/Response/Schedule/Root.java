@@ -21,9 +21,6 @@ public class Root {
     @SerializedName("schedule")
     @Expose
     private Schedule schedule;
-    @SerializedName("message")
-    @Expose
-    private Message message;
 
     public String getId() {
         return id;
@@ -63,14 +60,6 @@ public class Root {
 
     public void setSchedule(Schedule schedule) {
         this.schedule = schedule;
-    }
-
-    public Message getMessage() {
-        return message;
-    }
-
-    public void setMessage(Message message) {
-        this.message = message;
     }
 
 }

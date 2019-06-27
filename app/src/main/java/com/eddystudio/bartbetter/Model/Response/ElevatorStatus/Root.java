@@ -11,9 +11,6 @@ public class Root {
     @SerializedName("@id")
     @Expose
     private String id;
-    @SerializedName("uri")
-    @Expose
-    private Uri uri;
     @SerializedName("date")
     @Expose
     private String date;
@@ -23,9 +20,6 @@ public class Root {
     @SerializedName("bsa")
     @Expose
     private List<Bsa> bsa = null;
-    @SerializedName("message")
-    @Expose
-    private String message;
 
     public String getId() {
         return id;
@@ -33,14 +27,6 @@ public class Root {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public Uri getUri() {
-        return uri;
-    }
-
-    public void setUri(Uri uri) {
-        this.uri = uri;
     }
 
     public String getDate() {
@@ -65,14 +51,6 @@ public class Root {
 
     public void setBsa(List<Bsa> bsa) {
         this.bsa = bsa;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
 }

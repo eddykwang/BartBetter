@@ -3,9 +3,8 @@ package com.eddystudio.bartbetter.Model;
 
 import com.eddystudio.bartbetter.Model.Response.DelayReport.DelayReport;
 import com.eddystudio.bartbetter.Model.Response.ElevatorStatus.ElevatorStatus;
-import com.eddystudio.bartbetter.Model.Response.EstimateResponse.Bart;
+import com.eddystudio.bartbetter.Model.Response.EstimateResponse.EstimateResponse;
 import com.eddystudio.bartbetter.Model.Response.Fares.Fares;
-import com.eddystudio.bartbetter.Model.Response.Fares.RouteFares;
 import com.eddystudio.bartbetter.Model.Response.Schedule.ScheduleFromAToB;
 import com.eddystudio.bartbetter.Model.Response.Stations.BartStations;
 
@@ -15,7 +14,7 @@ import retrofit2.http.Query;
 
 public interface BartService {
   @GET("api/etd.aspx")
-  Call<Bart> bartEstmate(@Query("cmd") String fromStation, @Query("orig") String origin, @Query("key") String key, @Query("json") String isJson);
+  Call<EstimateResponse> bartEstmate(@Query("cmd") String fromStation, @Query("orig") String origin, @Query("key") String key, @Query("json") String isJson);
 
   @GET("api/stn.aspx?cmd=stns&key=MW9S-E7SL-26DU-VV8V&json=y")
   Call<BartStations> bartStations();
