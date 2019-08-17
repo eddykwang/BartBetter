@@ -16,25 +16,24 @@
       />
   </data>
 
-  <android.support.v7.widget.CardView
+  <androidx.cardview.widget.CardView
     android:layout_width="match_parent"
     android:layout_height="120dp"
     android:layout_margin="8dp"
     android:id="@+id/dashboard_cardview"
     android:foreground="?android:attr/selectableItemBackground"
     android:onClick="@{(view)-> obj.onItemClicked(view)}"
-    app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="2dp"
     app:cardElevation="3dp"
     >
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/cardConstrainLayout"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       >
 
-      <android.support.constraint.ConstraintLayout
+      <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -56,7 +55,7 @@
           app:layout_constraintTop_toTopOf="parent"
           bind:text="Fremont"/>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
           android:id="@+id/constraintLayout"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
@@ -79,7 +78,7 @@
             app:layout_constraintVertical_bias="0.0"
             bind:text="10 car fremont train"/>
 
-          <android.support.v7.widget.AppCompatImageView
+          <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageView18"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -88,7 +87,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
           android:id="@+id/destination"
@@ -102,9 +101,9 @@
           app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
           bind:text="Daly City"/>
 
-      </android.support.constraint.ConstraintLayout>
+      </androidx.constraintlayout.widget.ConstraintLayout>
 
-      <android.support.constraint.ConstraintLayout
+      <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/timerConstrainLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -167,7 +166,7 @@
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toEndOf="@+id/textView"
           bind:text="10"/>
-      </android.support.constraint.ConstraintLayout>
+      </androidx.constraintlayout.widget.ConstraintLayout>
 
       <View
         android:id="@+id/view"
@@ -179,6 +178,6 @@
         app:layout_constraintTop_toTopOf="parent"
         bind:background="@color/colorPrimaryDark"/>
 
-    </android.support.constraint.ConstraintLayout>
-  </android.support.v7.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+  </androidx.cardview.widget.CardView>
 </layout>

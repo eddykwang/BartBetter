@@ -9,7 +9,7 @@
         <import type="android.view.View"/>
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -38,7 +38,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView22"
             app:srcCompat="@android:color/darker_gray" />
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/first_route_constrian_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -168,9 +168,9 @@
                 app:layout_constraintTop_toTopOf="@+id/first_route_destination_train"
                 tools:text="(10 Car)" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/transfer_route_constrain_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -288,9 +288,9 @@
                 app:layout_constraintTop_toTopOf="@+id/second_route_destination_station"
                 tools:text="11 : 26 AM" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -412,7 +412,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/senior_price"
                 tools:text="$ 1.95" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

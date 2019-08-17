@@ -34,10 +34,10 @@
     </activity>
     <activity
       android:name=".UI.MapActivity"
-      android:theme="@style/AppTheme.White.ActionBar"/>
+      android:theme="@style/AppTheme.ActivityTheme"/>
     <activity
       android:name=".UI.AboutActivity"
-      android:theme="@style/AppTheme.White.ActionBar"/>
+      android:theme="@style/AppTheme.ActivityTheme"/>
   </application>
 
 </manifest>

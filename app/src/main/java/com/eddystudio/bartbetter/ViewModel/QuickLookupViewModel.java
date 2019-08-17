@@ -1,6 +1,6 @@
 package com.eddystudio.bartbetter.ViewModel;
 
-import android.databinding.ObservableBoolean;
+import androidx.databinding.ObservableBoolean;
 import android.util.Log;
 
 import com.eddystudio.bartbetter.DI.Application;

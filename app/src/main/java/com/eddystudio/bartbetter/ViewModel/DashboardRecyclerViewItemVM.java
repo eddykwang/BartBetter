@@ -1,7 +1,7 @@
 package com.eddystudio.bartbetter.ViewModel;
 
-import android.databinding.ObservableField;
-import android.databinding.ObservableInt;
+import androidx.databinding.ObservableField;
+import androidx.databinding.ObservableInt;
 import android.graphics.Color;
 import android.view.View;
 

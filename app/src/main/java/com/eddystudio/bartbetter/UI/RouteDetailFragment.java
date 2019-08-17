@@ -4,18 +4,19 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.menu.MenuBuilder;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PagerSnapHelper;
-import android.support.v7.widget.SnapHelper;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.transition.TransitionInflater;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
+import androidx.recyclerview.widget.SnapHelper;
+import androidx.appcompat.widget.Toolbar;
 import android.transition.Fade;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,6 +60,10 @@ public class RouteDetailFragment extends BaseFragment {
   private BottomSheetBehavior bottomSheetBehavior;
 
   public RouteDetailFragment() {
+    setAllowEnterTransitionOverlap(false);
+    setAllowReturnTransitionOverlap(false);
+    setEnterTransition(new Fade());
+    setExitTransition(new Fade());
   }
 
   @Nullable
@@ -75,11 +80,6 @@ public class RouteDetailFragment extends BaseFragment {
     }
 
     Application.getAppComponet().inject(this);
-
-    setEnterTransition(new Fade());
-    setExitTransition(new Fade());
-
-//    setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.explode));
 
     vm = new RouteDetailViewModel(from, to, color);
     binding.setVm(vm);

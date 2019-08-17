@@ -11,13 +11,14 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import android.transition.Fade;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -83,6 +84,10 @@ public class QuickLookupFragment extends BaseFragment {
 
   public QuickLookupFragment() {
     // Required empty public constructor
+    setAllowEnterTransitionOverlap(false);
+    setAllowReturnTransitionOverlap(false);
+    setEnterTransition(new Fade());
+    setExitTransition(new Fade());
   }
 
   @Override
@@ -95,11 +100,11 @@ public class QuickLookupFragment extends BaseFragment {
     binding.setVm(quickLookupViewModel);
 
     Toolbar toolbar = binding.getRoot().findViewById(R.id.bb_toolbar);
-    ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+    ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
     getActivity().setTitle("Discover");
 
     mapView = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.maps_view);
-    Objects.requireNonNull(mapView.getView()).setVisibility(View.GONE);
+    Objects.requireNonNull(Objects.requireNonNull(mapView).getView()).setVisibility(View.GONE);
 
     binding.getRoot().postDelayed(() -> {
       init();
@@ -130,14 +135,17 @@ public class QuickLookupFragment extends BaseFragment {
   }
 
   private void initMapView() {
+    if (mapView.getView() == null){
+      return;
+    }
 
     if(preference.getBoolean(TO_SHOW_MAP_VIEW, true)) {
       setupMapView();
       binding.getRoot().findViewById(R.id.expand_map_iv).setVisibility(View.GONE);
-      Objects.requireNonNull(mapView.getView()).setVisibility(View.VISIBLE);
+      mapView.getView().setVisibility(View.VISIBLE);
     } else {
       binding.getRoot().findViewById(R.id.expand_map_iv).setVisibility(View.VISIBLE);
-      Objects.requireNonNull(mapView.getView()).setVisibility(View.GONE);
+      mapView.getView().setVisibility(View.GONE);
     }
 
 
@@ -193,54 +201,61 @@ public class QuickLookupFragment extends BaseFragment {
   }
 
   private void setupSinner() {
-    ArrayAdapter<Station> spinnerAdapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_list_item_1, MainActivity.stationInfoList);
-    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    binding.stationSpinner.setAdapter(spinnerAdapter);
-    binding.stationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-      @Override
-      public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        if(isInitOpen) {
-          quickLookupViewModel.getData(selectedStation.getAbbr());
-          isInitOpen = false;
-        } else {
-          selectedStation = MainActivity.stationInfoList.get(i);
-          sinpperPos = i;
+    if (getActivity() != null) {
+      ArrayAdapter<Station> spinnerAdapter =
+          new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,
+              MainActivity.stationInfoList);
+      spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+      binding.stationSpinner.setAdapter(spinnerAdapter);
+      binding.stationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+          if (isInitOpen) {
+            quickLookupViewModel.getData(selectedStation.getAbbr());
+            isInitOpen = false;
+          } else {
+            selectedStation = MainActivity.stationInfoList.get(i);
+            sinpperPos = i;
 
-          Station selectedS = MainActivity.stationInfoList.get(i);
+            Station selectedS = MainActivity.stationInfoList.get(i);
 
-          if(preference.getBoolean(TO_SHOW_MAP_VIEW, true) && googleMap != null) {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(Double.parseDouble(selectedS.getGtfsLatitude()),
-                    Double.parseDouble(selectedS.getGtfsLongitude())), 13f));
+            if (preference.getBoolean(TO_SHOW_MAP_VIEW, true) && googleMap != null) {
+              googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                  new LatLng(Double.parseDouble(selectedS.getGtfsLatitude()),
+                      Double.parseDouble(selectedS.getGtfsLongitude())), 13f));
+            }
+
+            //          SharedPreferences.Editor editor = preference.edit();
+            //          editor.putString(LAST_SELECTED_STATION, selectedStation);
+            //          editor.putInt(LAST_SELECTED_SINPER_POSITION, sinpperPos);
+            //          editor.apply();
+
+            SharedPreferences.Editor prefsEditor =
+                PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+            Gson gson = new Gson();
+            String selectedStationGsonString = gson.toJson(selectedStation);
+            prefsEditor.putString(LAST_SELECTED_STATION, selectedStationGsonString);
+            prefsEditor.putInt(LAST_SELECTED_SINPER_POSITION, sinpperPos);
+            prefsEditor.apply();
+
+            quickLookupViewModel.getData(selectedStation.getAbbr());
           }
-
-//          SharedPreferences.Editor editor = preference.edit();
-//          editor.putString(LAST_SELECTED_STATION, selectedStation);
-//          editor.putInt(LAST_SELECTED_SINPER_POSITION, sinpperPos);
-//          editor.apply();
-
-          SharedPreferences.Editor prefsEditor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
-          Gson gson = new Gson();
-          String selectedStationGsonString = gson.toJson(selectedStation);
-          prefsEditor.putString(LAST_SELECTED_STATION, selectedStationGsonString);
-          prefsEditor.putInt(LAST_SELECTED_SINPER_POSITION, sinpperPos);
-          prefsEditor.apply();
-
-          quickLookupViewModel.getData(selectedStation.getAbbr());
         }
-      }
 
-      @Override
-      public void onNothingSelected(AdapterView<?> adapterView) {
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
 
-      }
-    });
+        }
+      });
 
-    binding.textView17.setOnClickListener(v ->
-        binding.stationSpinner.onTouch(binding.getRoot(), MotionEvent.obtain(1, 1, MotionEvent.ACTION_UP, 1, 1, 1)));
+      binding.textView17.setOnClickListener(v ->
+          binding.stationSpinner.onTouch(binding.getRoot(),
+              MotionEvent.obtain(1, 1, MotionEvent.ACTION_UP, 1, 1, 1)));
 
-    binding.swipeRefreshLy.setOnRefreshListener(() -> quickLookupViewModel.getData(selectedStation.getAbbr()));
-    setLastSelectedStation();
+      binding.swipeRefreshLy.setOnRefreshListener(
+          () -> quickLookupViewModel.getData(selectedStation.getAbbr()));
+      setLastSelectedStation();
+    }
   }
 
   @SuppressLint("MissingPermission")
@@ -399,11 +414,10 @@ public class QuickLookupFragment extends BaseFragment {
   }
 
   private void goToDetail(String from, String to, int color, View view) {
-    if(getActivity() != null) {
+    if(getFragmentManager() != null) {
       TextView textView = view.findViewById(R.id.destination);
       RouteDetailFragment fragment = new RouteDetailFragment();
 
-      //fragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
       fragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
       fragment.setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_view_transition));
 
@@ -412,12 +426,12 @@ public class QuickLookupFragment extends BaseFragment {
       arg.putString(MainActivity.BUDDLE_ARG_TO, to);
       arg.putInt("color", color);
       fragment.setArguments(arg);
-      getActivity().getSupportFragmentManager()
+      getFragmentManager()
           .beginTransaction()
-          .addToBackStack(null)
           .replace(R.id.main_frame_layout, fragment)
           .setReorderingAllowed(true)
           .addSharedElement(textView, getString(R.string.text_to_transition))
+          .addToBackStack(null)
           .commit();
     }
   }

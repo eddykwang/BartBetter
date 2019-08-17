@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#121212</color>
+    <color name="colorPrimaryDark">#121212</color>
+    <color name="colorAccent">#607D8B</color>
+
+    <color name="toolbarColor">#121212</color>
+    <color name="appBarLayoutColor">#121212</color>
+
+    <color name="dotColor">#607D8B</color>
+    <color name="selectedDotColor">#B0BEC5</color>
+    <color name="transparent_gray">#4d000000</color>
+
+    <!--<color name="colorPrimary">#424242</color>-->
+    <!--<color name="colorPrimaryDark">#212121</color>-->
+    <color name="colorPink">#FF4081</color>
+
+    <color name="routColor_red">#b2102f</color>
+    <color name="routColor_blue">#2979ff</color>
+    <color name="routColor_green">#388e3c</color>
+    <color name="white">#ffffff</color>
+</resources>

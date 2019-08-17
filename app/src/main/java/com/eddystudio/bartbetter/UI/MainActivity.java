@@ -1,22 +1,22 @@
 package com.eddystudio.bartbetter.UI;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.internal.BottomNavigationItemView;
-import android.support.design.internal.BottomNavigationMenuView;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.transition.Fade;
+import androidx.transition.Slide;
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.eddystudio.bartbetter.DI.Application;
@@ -45,12 +45,14 @@ public class MainActivity extends AppCompatActivity {
   private final NotificationFragment notificationFragment = new NotificationFragment();
   @Inject
   public Repository repository;
+  private SharedPreferences sharedPreferences;
 
   public final static String DASHBOARDROUTS = "dashboardRouts_v1";
   public static final String BUDDLE_ARG_FROM = "Buddle_Arg_From";
   public static final String BUDDLE_ARG_TO = "Buddle_Arg_To";
   public static final String AUTO_REFRESH_ENABLED = "auto_refresh_enabled";
   public static final String IS_USING_DISTANCE_TO_SORT = "is_using_distance_to_sort";
+  public static final String THEME_MODE_PREFERENCE = "THEME_MODE_PREFERENCE";
 
   public static final String STATION_INFO_LIST = "station_info_list";
   public static List<Station> stationInfoList = new ArrayList<>();
@@ -66,17 +68,17 @@ public class MainActivity extends AppCompatActivity {
     switch(item.getItemId()) {
       case R.id.navigation_quick_lookup:
         fragment = quickLookupFragment;
-
         break;
       case R.id.navigation_my_routes:
         fragment = dashboardFragment;
-
         break;
       case R.id.navigation_notifications:
         fragment = notificationFragment;
         bottoMNavigationItemView.removeView(badgeView);
         break;
     }
+    //fragment.setEnterTransition(new Fade());
+    //fragment.setExitTransition(new Fade());
     commitToNewFragment(fragment);
     return true;
   };
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     getSupportFragmentManager()
         .beginTransaction()
-        .setCustomAnimations(R.anim.fragment_trans_anim, android.R.anim.fade_out)
+        //.setCustomAnimations(R.anim.fragment_trans_anim, android.R.anim.fade_out, R.anim.fragment_trans_anim,R.anim.fragment_trans_anim)
         .replace(R.id.main_frame_layout, fragment, fragment.getClass().getSimpleName())
         .commit();
   }
@@ -94,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    int Mode = sharedPreferences.getInt(THEME_MODE_PREFERENCE, AppCompatDelegate.getDefaultNightMode());
+    AppCompatDelegate.setDefaultNightMode(Mode);
     setContentView(R.layout.activity_main);
     navigation = findViewById(R.id.navigation);
 
@@ -160,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
     Gson gson = new Gson();
     List<Station> empty = new ArrayList<>();
     String emptyList = gson.toJson(empty);
-    String mapper = PreferenceManager.getDefaultSharedPreferences(this).getString(STATION_INFO_LIST, emptyList);
+    String mapper = sharedPreferences.getString(STATION_INFO_LIST, emptyList);
     stationInfoList = gson.fromJson(mapper, type);
 
     if(stationInfoList.isEmpty()) {

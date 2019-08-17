@@ -8,21 +8,21 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.content.ContextCompat;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.eddystudio.bartbetter.Model.Uilt;
 import com.eddystudio.bartbetter.R;
 
-import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_DRAG;
-import static android.support.v7.widget.helper.ItemTouchHelper.Callback;
-import static android.support.v7.widget.helper.ItemTouchHelper.DOWN;
-import static android.support.v7.widget.helper.ItemTouchHelper.LEFT;
-import static android.support.v7.widget.helper.ItemTouchHelper.RIGHT;
-import static android.support.v7.widget.helper.ItemTouchHelper.UP;
+import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_DRAG;
+import static androidx.recyclerview.widget.ItemTouchHelper.Callback;
+import static androidx.recyclerview.widget.ItemTouchHelper.DOWN;
+import static androidx.recyclerview.widget.ItemTouchHelper.LEFT;
+import static androidx.recyclerview.widget.ItemTouchHelper.RIGHT;
+import static androidx.recyclerview.widget.ItemTouchHelper.UP;
 
 public class CardSwipeController extends Callback {
 

@@ -1,23 +1,25 @@
 package com.eddystudio.bartbetter.UI;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import android.transition.Fade;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.util.Pair;
@@ -76,6 +78,10 @@ public class DashboardFragment extends BaseFragment {
 
   public DashboardFragment() {
     // Required empty public constructor
+    setAllowEnterTransitionOverlap(false);
+    setAllowReturnTransitionOverlap(false);
+    setEnterTransition(new Fade());
+    setExitTransition(new Fade());
   }
 
   @Override
@@ -85,7 +91,6 @@ public class DashboardFragment extends BaseFragment {
     Toolbar toolbar = binding.getRoot().findViewById(R.id.toolbar);
     ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     getActivity().setTitle("My Routes");
-
     vm = new DashboardViewModel();
 //    vm = ViewModelProviders.of(this).get(DashboardViewModel.class);
     Application.getAppComponet().inject(this);
@@ -446,14 +451,12 @@ public class DashboardFragment extends BaseFragment {
       Log.d("dashboard", "From " + fromStation + " to " + toStation);
       DashboardRecyclerViewItemVM viewItemModel = new DashboardRecyclerViewItemVM(new ArrayList<>(), fromStation, toStation);
       viewItemModel.setItemClickListener((f, t, x, l) -> {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder
+        new MaterialAlertDialogBuilder(Objects.requireNonNull(getActivity()), R.style.MyDialog)
             .setTitle("Loading")
             .setMessage(R.string.noInternetErrorMessage)
-            .setPositiveButton("Ok", null);
+            .setPositiveButton("Ok", null)
+            .show();
 
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
       });
       itemList.add(viewItemModel);
     }
@@ -482,7 +485,7 @@ public class DashboardFragment extends BaseFragment {
 
     binding.fabAdd.setOnClickListener(view -> {
       binding.fabAdd.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_rotate_anim));
-      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.custom_dailog_style);
+      MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), R.style.MyDialog);
       View mView = getLayoutInflater().inflate(R.layout.add_route_dialog_layout, null);
       builder.setView(mView);
       Spinner fromSpinner = mView.findViewById(R.id.dialog_from_spinner);
@@ -502,6 +505,7 @@ public class DashboardFragment extends BaseFragment {
       builder.setNegativeButton("Cancel", null);
 
       AlertDialog alertDialog = builder.create();
+
       alertDialog.setTitle("Add A Route");
 
       alertDialog.setOnShowListener(dialogInterface -> {
@@ -554,10 +558,10 @@ public class DashboardFragment extends BaseFragment {
       fragment.setArguments(arg);
       getActivity().getSupportFragmentManager()
           .beginTransaction()
-          .replace(R.id.main_frame_layout, fragment)
           .setReorderingAllowed(true)
           .addSharedElement(textViewTo, getString(R.string.text_to_transition))
           .addSharedElement(textViewFrom, getString(R.string.text_from_transition))
+          .replace(R.id.main_frame_layout, fragment)
           .addToBackStack(null)
           .commit();
     }

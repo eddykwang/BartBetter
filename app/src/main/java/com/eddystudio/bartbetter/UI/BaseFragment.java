@@ -3,11 +3,11 @@ package com.eddystudio.bartbetter.UI;
 import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AlertDialog;
 
+import androidx.fragment.app.Fragment;
 import com.eddystudio.bartbetter.Model.RouteModel;
 import com.eddystudio.bartbetter.Model.Repository;
 import com.google.gson.Gson;
@@ -132,6 +132,9 @@ public abstract class BaseFragment extends Fragment {
   }
 
   public void setUpGetCurrentLocation() {
+    if (getActivity() == null) {
+      return;
+    }
     if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
         ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
       requestPermissions(

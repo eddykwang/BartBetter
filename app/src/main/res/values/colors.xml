@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#26A69A</color>
+    <color name="colorPrimary">#ffffff</color>
     <color name="colorPrimaryDark">#00897B</color>
     <color name="colorAccent">#26A69A</color>
+
+    <color name="toolbarColor">#ffffff</color>
+    <color name="appBarLayoutColor">#fff</color>
 
     <color name="dotColor">#607D8B</color>
     <color name="selectedDotColor">#B0BEC5</color>
