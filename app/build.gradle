@@ -6,8 +6,8 @@ android {
     applicationId 'com.eddystudio.bartbetter'
     minSdkVersion 21
     targetSdkVersion 29
-    versionCode 18
-    versionName "3.5.0"
+    versionCode 19
+    versionName "3.5.1"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
   }
@@ -37,8 +37,8 @@ apply plugin: 'kotlin-android'
 
 dependencies {
   implementation fileTree(include: ['*.jar'], dir: 'libs')
-  implementation 'com.google.android.material:material:1.1.0-alpha09'
-  implementation 'androidx.vectordrawable:vectordrawable:1.0.1'
+  implementation 'com.google.android.material:material:1.2.0-alpha01'
+  implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
   implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 
   implementation 'com.google.android.gms:play-services-maps:17.0.0'

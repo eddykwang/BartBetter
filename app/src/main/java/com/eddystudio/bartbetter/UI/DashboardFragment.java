@@ -491,6 +491,8 @@ public class DashboardFragment extends BaseFragment {
       Spinner fromSpinner = mView.findViewById(R.id.dialog_from_spinner);
       Spinner toSpinner = mView.findViewById(R.id.dialog_to_spinner);
       ConstraintLayout warnningLayout = mView.findViewById(R.id.dialog_error_layout);
+      TextView warningTv = warnningLayout.findViewById(R.id.warningTv);
+
       CheckBox returnRouteCheckbox = mView.findViewById((R.id.dialog_return_route_checkbox));
 
       warnningLayout.setVisibility(View.GONE);
@@ -518,6 +520,10 @@ public class DashboardFragment extends BaseFragment {
             List<RouteModel> dashboardList = getSharedPreferencesData();
             if(!dashboardList.contains(new RouteModel(origin, destination))) {
               addPreferencesData(new RouteModel(origin, destination));
+            }else {
+              warningTv.setText(getText(R.string.dialog_warnning_same_route));
+              warnningLayout.setVisibility(View.VISIBLE);
+              return;
             }
             if(returnRouteCheckbox.isChecked() && !dashboardList.contains(new RouteModel(origin, destination))) {
               addPreferencesData(new RouteModel(destination, origin));
@@ -527,6 +533,7 @@ public class DashboardFragment extends BaseFragment {
             loadFromPreference();
           } else {
             warnningLayout.setVisibility(View.VISIBLE);
+            warningTv.setText(getText(R.string.dialog_warnning_same_station));
           }
         });
       });

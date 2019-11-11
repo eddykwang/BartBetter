@@ -3,6 +3,7 @@ package com.eddystudio.bartbetter.Model.Response.Stations;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.util.Objects;
 
 public class Station {
 
@@ -106,18 +107,24 @@ public class Station {
     this.zipcode = zipcode;
   }
 
-  @Override
-  public boolean equals(Object obj) {
-    if(obj == this) {
-      return true;
-    }
+  @Override public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Station station = (Station) o;
+    return Objects.equals(name, station.name) &&
+        Objects.equals(abbr, station.abbr) &&
+        Objects.equals(gtfsLatitude, station.gtfsLatitude) &&
+        Objects.equals(gtfsLongitude, station.gtfsLongitude) &&
+        Objects.equals(address, station.address) &&
+        Objects.equals(city, station.city) &&
+        Objects.equals(county, station.county) &&
+        Objects.equals(state, station.state) &&
+        Objects.equals(zipcode, station.zipcode);
+  }
 
-    if(obj instanceof Station) {
-      return false;
-    }
-
-    Station other = (Station) obj;
-    return other.getAbbr().equals(this.getAbbr());
+  @Override public int hashCode() {
+    return Objects.hash(name, abbr, gtfsLatitude, gtfsLongitude, address, city, county, state,
+        zipcode);
   }
 
   @Override

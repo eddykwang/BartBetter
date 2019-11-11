@@ -40,24 +40,24 @@ public class Repository {
     bartService = retrofit.create(BartService.class);
 
     RxJavaPlugins.setErrorHandler(e -> {
-      if(e instanceof UndeliverableException) {
+      if (e instanceof UndeliverableException) {
         e = e.getCause();
       }
-      if(e instanceof IOException) {
+      if (e instanceof IOException) {
         // fine, irrelevant network problem or API that throws on cancellation
         return;
       }
-      if(e instanceof InterruptedException) {
+      if (e instanceof InterruptedException) {
         // fine, some blocking code was interrupted by a dispose call
         return;
       }
-      if((e instanceof NullPointerException) || (e instanceof IllegalArgumentException)) {
+      if ((e instanceof NullPointerException) || (e instanceof IllegalArgumentException)) {
         // that's likely a bug in the application
         Thread.currentThread().getUncaughtExceptionHandler()
             .uncaughtException(Thread.currentThread(), e);
         return;
       }
-      if(e instanceof IllegalStateException) {
+      if (e instanceof IllegalStateException) {
         // that's a bug in RxJava or in a custom operator
         Thread.currentThread().getUncaughtExceptionHandler()
             .uncaughtException(Thread.currentThread(), e);
@@ -81,7 +81,6 @@ public class Repository {
         )
         .subscribeOn(Schedulers.io());
   }
-
 
   //?cmd=etd&orig={fromStation}&key=MW9S-E7SL-26DU-VV8V&json=y"
   public Observable<EstimateResponse> getEstimate(String fromStation) {
@@ -118,7 +117,8 @@ public class Repository {
         .onErrorResumeNext(Observable.empty())
         .concatMap(pair ->
             Observable.fromCallable(
-                () -> bartService.routeSchedules("depart", pair.getFrom().getAbbr(), pair.getTo().getAbbr(), "now", "now", KEY, "1", "3", "0", "y")
+                () -> bartService.routeSchedules("depart", pair.getFrom().getAbbr(),
+                    pair.getTo().getAbbr(), "now", "now", KEY, "1", "3", "0", "y")
                     .execute())
                 .subscribeOn(Schedulers.io())
                 .map(Response::body)
@@ -129,12 +129,13 @@ public class Repository {
   }
 
   //https://api.bart.gov/api/sched.aspx? cmd=depart  &orig=DALY&  dest=FRMT&  date=now&  key=MW9S-E7SL-26DU-VV8V&  b=0  &a=4  &l=1&  json=y
-  public Observable<ScheduleFromAToB> getOneRouteSchedules(Pair<String, String> route, String date, String time, boolean isDepart) {
-    if(date == null) {
+  public Observable<ScheduleFromAToB> getOneRouteSchedules(Pair<String, String> route, String date,
+      String time, boolean isDepart) {
+    if (date == null) {
       date = "now";
     }
 
-    if(time == null) {
+    if (time == null) {
       time = "now";
     }
 
@@ -142,18 +143,19 @@ public class Repository {
     String finalDate = date;
     String depart = isDepart ? "depart" : "arrive";
     return Observable.fromCallable(
-        () -> bartService.routeSchedules(depart, route.first, route.second, finalTime, finalDate, KEY, "0", "4", "0", "y")
+        () -> bartService.routeSchedules(depart, route.first, route.second, finalTime, finalDate,
+            KEY, "0", "4", "0", "y")
             .execute())
         .map(Response::body)
-            .doOnNext(a->
-            {
-                Log.d("debug",a.toString());
-            })
+        .doOnNext(a ->
+        {
+          Log.d("debug", a.toString());
+        })
         .subscribeOn(Schedulers.io());
   }
 
   public Observable<Fares> getRouteFares(String origin, String dest, String date) {
-    if(date == null) {
+    if (date == null) {
       date = "today";
     }
     String finalD = date;
@@ -167,36 +169,50 @@ public class Repository {
   @SuppressLint("NewApi")
   public Observable<AccurateEtdResult> getAccurateEtdTime(List<RouteModel> routes) {
     return getRouteSchedules(routes)
-        .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1, 3), (n, i) -> i))
+        .retryWhen(
+            throwableObservable -> throwableObservable.zipWith(Observable.range(1, 3), (n, i) -> i))
         .concatMap(r -> {
           List<Trip> trips = r.getRoot().getSchedule().getRequest().getTrip();
           final List<Etd> etdList = new ArrayList<>();
           final Throwable[] error = new Throwable[1];
           return getEstimate(trips.get(0).getLeg().get(0).getOrigin())
-              .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1, 3), (n, i) -> i))
+              .retryWhen(throwableObservable -> throwableObservable.zipWith(Observable.range(1, 3),
+                  (n, i) -> i))
               .onErrorResumeNext(err -> {
                 error[0] = err;
                 return Observable.just(new EstimateResponse());
               })
               .map(d -> {
-                    if(d.getRoot() != null) {
-                      for(Etd etd : d.getRoot().getStation().get(0).getEtd()) {
-                        for(Trip trip : trips) {
-                          if(trip.getLeg().get(0).getTrainHeadStation().equalsIgnoreCase("San Francisco International Airport")) {
-                            trip.getLeg().get(0).setTrainHeadStation("SFO/Millbrae | SF Airport | San Francisco International Airport");
+                    if (d.getRoot() != null) {
+                      for (Etd etd : d.getRoot().getStation().get(0).getEtd()) {
+                        for (Trip trip : trips) {
+                          if (trip.getLeg()
+                              .get(0)
+                              .getTrainHeadStation()
+                              .equalsIgnoreCase("San Francisco International Airport")) {
+                            trip.getLeg()
+                                .get(0)
+                                .setTrainHeadStation(
+                                    "SFO/Millbrae | SF Airport | San Francisco International Airport");
                           }
-                          if(trip.getLeg().get(0).getTrainHeadStation().contains(etd.getDestination())) {
+                          if (trip.getLeg()
+                              .get(0)
+                              .getTrainHeadStation()
+                              .contains(etd.getDestination())) {
                             etdList.add(etd);
                           }
                         }
                       }
                     }
-                    if(etdList.isEmpty()) {
-                      return new OnError(new Throwable("Unable to get response!"), trips.get(0).getOrigin(), trips.get(0).getDestination());
+                    if (etdList.isEmpty()) {
+                      return new OnError(new Throwable("Unable to get response!"),
+                          trips.get(0).getOrigin(), trips.get(0).getDestination());
                     } else {
-                      etdList.sort((t1, t2) -> convertStringToInt(t1.getEstimate().get(0).getMinutes()) - convertStringToInt(t2.getEstimate().get(0).getMinutes()));
+                      etdList.sort((t1, t2) -> convertStringToInt(t1.getEstimate().get(0).getMinutes())
+                          - convertStringToInt(t2.getEstimate().get(0).getMinutes()));
                     }
-                    return new OnSuccess(new EtdResult(etdList, trips.get(0).getOrigin(), trips.get(0).getDestination()));
+                    return new OnSuccess(new EtdResult(etdList, trips.get(0).getOrigin(),
+                        trips.get(0).getDestination()));
                   }
               );
         });
@@ -206,12 +222,15 @@ public class Repository {
     return time.equalsIgnoreCase("Leaving") ? 0 : Integer.parseInt(time);
   }
 
-  public interface AccurateEtdResult {}
+  public interface AccurateEtdResult {
+  }
 
   public class OnSuccess implements AccurateEtdResult {
     private final EtdResult etdResult;
 
-    public OnSuccess(EtdResult etdResult) {this.etdResult = etdResult;}
+    public OnSuccess(EtdResult etdResult) {
+      this.etdResult = etdResult;
+    }
 
     public EtdResult getEtdResult() {
       return etdResult;
@@ -241,5 +260,4 @@ public class Repository {
       return to;
     }
   }
-
 }

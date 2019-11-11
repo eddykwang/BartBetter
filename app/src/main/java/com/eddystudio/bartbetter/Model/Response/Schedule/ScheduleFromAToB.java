@@ -6,16 +6,15 @@ import com.google.gson.annotations.SerializedName;
 
 public class ScheduleFromAToB {
 
-    @SerializedName("root")
-    @Expose
-    private Root root;
+  @SerializedName("root")
+  @Expose
+  private Root root;
 
-    public Root getRoot() {
-        return root;
-    }
+  public Root getRoot() {
+    return root;
+  }
 
-    public void setRoot(Root root) {
-        this.root = root;
-    }
-
+  public void setRoot(Root root) {
+    this.root = root;
+  }
 }

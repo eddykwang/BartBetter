@@ -22,6 +22,7 @@ public class Root {
     @Expose
     private Schedule schedule;
 
+
     public String getId() {
         return id;
     }
