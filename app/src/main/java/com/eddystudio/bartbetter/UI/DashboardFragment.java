@@ -525,7 +525,7 @@ public class DashboardFragment extends BaseFragment {
               warnningLayout.setVisibility(View.VISIBLE);
               return;
             }
-            if(returnRouteCheckbox.isChecked() && !dashboardList.contains(new RouteModel(origin, destination))) {
+            if(returnRouteCheckbox.isChecked() && !dashboardList.contains(new RouteModel(origin, destination)) && !dashboardList.contains(new RouteModel(destination, origin))) {
               addPreferencesData(new RouteModel(destination, origin));
             }
             dialogInterface.dismiss();
