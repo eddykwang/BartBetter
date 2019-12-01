@@ -45,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
   private final NotificationFragment notificationFragment = new NotificationFragment();
   @Inject
   public Repository repository;
-  private SharedPreferences sharedPreferences;
+  @Inject
+  public SharedPreferences sharedPreferences;
 
   public final static String DASHBOARDROUTS = "dashboardRouts_v1";
   public static final String BUDDLE_ARG_FROM = "Buddle_Arg_From";
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    Application.getAppComponet().inject(this);
     int Mode = sharedPreferences.getInt(THEME_MODE_PREFERENCE, AppCompatDelegate.getDefaultNightMode());
     AppCompatDelegate.setDefaultNightMode(Mode);
     setContentView(R.layout.activity_main);

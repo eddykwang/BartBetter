@@ -106,7 +106,7 @@ public class DashboardFragment extends BaseFragment {
       }
     }), 500);
 
-    loadOldDataToNewData();
+//    loadOldDataToNewData();
     init();
 
     return binding.getRoot();
@@ -115,8 +115,7 @@ public class DashboardFragment extends BaseFragment {
   @Override
   public void onStart() {
     super.onStart();
-    binding.getRoot().postDelayed(this::loadFromPreference
-        , 300);
+    loadFromPreference();
     setupRadioGroup();
   }
 
